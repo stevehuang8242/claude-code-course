@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<title>Claude Code 核心概念 — 概覽</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+TC:wght@300..900&display=swap" rel="stylesheet" />
+<style>
+  @font-face {
+    font-family: 'Geist Mono';
+    src: url('assets/fonts/GeistMono-VariableFont_wght.ttf') format('truetype-variations'),
+         url('assets/fonts/GeistMono-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900; font-style: normal; font-display: swap;
+  }
+
+  :root {
+    --bg: #f4f4f3;
+    --card-bg: #ffffff;
+    --text: #111111;
+    --muted: #6b6b6b;
+    --hairline: rgba(0, 0, 0, 0.08);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 2px 4px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.10);
+  }
+
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, 'Noto Sans TC', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-feature-settings: 'kern';
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 40px 48px 64px;
+    box-sizing: border-box;
+  }
+
+  .header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+  .header .sub {
+    font-size: 13px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    font-family: 'Geist Mono', ui-monospace, Menlo, Consolas, monospace;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+  /* On narrower viewports, gracefully drop columns. */
+  @media (max-width: 960px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .page { padding: 24px 20px 40px; }
+  }
+
+  .card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: var(--card-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+    will-change: transform;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .card:focus-visible {
+    outline: 2px solid #000;
+    outline-offset: 3px;
+  }
+
+  .thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #fff;
+    overflow: hidden;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .thumb iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    /* Iframe is non-interactive — clicks pass through to the parent <a>. */
+    pointer-events: none;
+  }
+  /* Transparent click-catcher above the iframe so the wrapping <a> captures clicks. */
+  .thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .meta {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 12px 14px 14px;
+  }
+  .num {
+    font-family: 'Geist Mono', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+  .label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="header">
+    <h1>Claude Code 核心概念 · 概覽</h1>
+    <span class="sub" id="count">— / —</span>
+  </div>
+  <main class="grid" id="grid"></main>
+</div>
+
+<script>
+  // Slide labels mirror Claude Code 核心概念.html
+  const SLIDES = [
+    '01 Agenda',
+    '02 Section · Foundations',
+    '03 Token',
+    '04 Context Window',
+    '05 Session',
+    '06 Section · Implementation',
+    '07 Context Engineering',
+    '08 CLAUDE.md',
+    '09 Skill',
+    '10 Overview',
+    '11 Closing',
+  ];
+
+  const DECK_HREF = 'Claude Code 核心概念.html';
+  const grid = document.getElementById('grid');
+  const frag = document.createDocumentFragment();
+
+  SLIDES.forEach((label, i) => {
+    const n = i + 1;
+    const num = String(n).padStart(2, '0');
+    const text = label.replace(/^\d+\s*/, '');
+
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = DECK_HREF + '#' + n;
+    a.setAttribute('aria-label', `第 ${n} 張：${text}`);
+
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
+
+    const iframe = document.createElement('iframe');
+    iframe.src = DECK_HREF + '#' + n;
+    iframe.loading = 'lazy';
+    iframe.setAttribute('aria-hidden', 'true');
+    iframe.setAttribute('tabindex', '-1');
+    iframe.title = `Slide ${num} thumbnail`;
+    thumb.appendChild(iframe);
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const numEl = document.createElement('span');
+    numEl.className = 'num';
+    numEl.textContent = num;
+    const labelEl = document.createElement('span');
+    labelEl.className = 'label';
+    labelEl.textContent = text;
+    meta.append(numEl, labelEl);
+
+    a.append(thumb, meta);
+    frag.appendChild(a);
+  });
+
+  grid.appendChild(frag);
+  document.getElementById('count').textContent = `${SLIDES.length} / ${SLIDES.length}`;
+</script>
+
+</body>
+</html>
