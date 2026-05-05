@@ -3,10 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <title>Claude Code 核心概念</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400..700;1,400..700&family=Noto+Sans+TC:wght@300..900&display=swap" rel="stylesheet" />
 <style>
+  @font-face {
+    font-family: 'Inter';
+    src: url('assets/fonts/Inter-VariableFont_opsz_wght.ttf') format('truetype-variations'),
+         url('assets/fonts/Inter-VariableFont_opsz_wght.ttf') format('truetype');
+    font-weight: 100 900; font-style: normal; font-display: swap;
+  }
   @font-face {
     font-family: 'Noto Sans TC';
     src: url('assets/fonts/NotoSansTC-VariableFont_wght.ttf') format('truetype-variations'),
@@ -20,8 +23,12 @@
     font-weight: 100 900; font-style: normal; font-display: swap;
   }
 
-  html, body { margin: 0; padding: 0; background: #faf9f5; }
-  body { font-family: Lora, 'Noto Sans TC', Georgia, serif; color: #141413; }
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  body {
+    font-family: Inter, 'Noto Sans TC', system-ui, sans-serif;
+    color: #000000;
+    font-feature-settings: 'kern';
+  }
   deck-stage section { overflow: hidden; }
 </style>
 </head>
@@ -51,11 +58,11 @@
   const mount = (id, el) => ReactDOM.createRoot(document.getElementById(id)).render(el);
 
   mount('s1',  <Agenda n={1} total={TOTAL} />);
-  mount('s2',  <SectionDivider kicker="Part 1 of 2" title="基礎認知" subtitle="Token · Context Window · Session——先搞懂 AI 怎麼「看」世界。" range="Chapters 01–03" n={2} total={TOTAL} />);
+  mount('s2',  <SectionDivider kicker="Part 1 of 2" title="基礎認知" subtitle="Token · Context Window · Session——先搞懂 AI 怎麼「看」世界。" range="Chapters 01–03" n={2} total={TOTAL} bg="#dceeb1" />);
   mount('s3',  <TokenCombined n={3} total={TOTAL} />);
   mount('s4',  <ContextWindowCombined n={4} total={TOTAL} />);
   mount('s5',  <SessionCombined n={5} total={TOTAL} />);
-  mount('s6',  <SectionDivider kicker="Part 2 of 2" title="實作框架" subtitle="Context Engineering 方法論，加上 CLAUDE.md、Skill 兩把實作工具。" range="Chapters 04–06" n={6} total={TOTAL} bg="#141413" />);
+  mount('s6',  <SectionDivider kicker="Part 2 of 2" title="實作框架" subtitle="Context Engineering 方法論，加上 CLAUDE.md、Skill 兩把實作工具。" range="Chapters 04–06" n={6} total={TOTAL} bg="#c5b0f4" />);
   mount('s7',  <CECombined n={7} total={TOTAL} />);
   mount('s8',  <ClaudeMd n={8} total={TOTAL} />);
   mount('s9',  <Skill n={9} total={TOTAL} />);

@@ -18,40 +18,82 @@ const SPACING = {
   itemGap: 28,
 };
 
-/* Anthropic brand palette
- * Main:    Dark #141413 · Light #faf9f5 · Mid Gray #b0aea5 · Light Gray #e8e6dc
- * Accents: Orange #d97757 (primary) · Blue #6a9bcc · Green #788c5d
- * Token names kept (pine/cedar/basalt/clay/...) for minimum diff.
+/* Figma marketing palette (per DESIGN.md), with magenta + dark grounds removed.
+ * Monochrome chrome + 7 oversized pastel color blocks. No saturated accent text.
+ *
+ * Design rule: weight (not opacity, not gray) carries body hierarchy.
+ *   → textSecondary / textDescription map to pure ink; lighten via fontWeight 320–340.
+ *
+ * Legacy token names (pine/cedar/clay/...) kept as a thin compatibility layer so
+ * existing component code keeps working without a wholesale refactor.
  */
 const C = {
-  pine: '#788c5d',          // tertiary accent (was deep green)
-  cedar: '#d97757',          // primary accent — Anthropic Orange (was teal-green)
-  basalt: '#141413',         // primary dark
-  clay: '#faf9f5',           // primary light / off-white
-  slate: '#e8e6dc',          // light gray surface
-  earth: '#faf9f5',          // page background
+  // Monochrome core
+  ink: '#000000',
+  canvas: '#ffffff',
+  inverseCanvas: '#000000',
+  inverseInk: '#ffffff',
+  hairline: '#e6e6e6',
+  hairlineSoft: '#f1f1f1',
+  surfaceSoft: '#f7f7f5',
+
+  // Color blocks — full-width section grounds. Limited to lime / cream / lilac
+  // (the set used on slide 7). The other names are kept as aliases for legacy
+  // call sites but resolve to one of the three approved colors.
+  blockLime: '#dceeb1',
+  blockLilac: '#c5b0f4',
+  blockCream: '#f4ecd6',
+  blockPink: '#c5b0f4',     // alias → lilac
+  blockMint: '#f4ecd6',     // alias → cream
+  blockCoral: '#f4ecd6',    // alias → cream
+  blockNavy: '#000000',     // alias → ink (only used as edge case, not as block bg)
+
+  // Magenta accent removed — emphasis carried by weight + lime/cream highlights.
+  // Token kept as alias of ink so any stray reference falls back gracefully.
+  accentMagenta: '#000000',
+  semanticSuccess: '#000000',  // alias → ink (slide 7 palette has no green semantic)
+
+  // ── Legacy aliases (do not introduce new uses) ─────────────────────────
+  // Map all former colored tokens to monochrome — weight differentiates.
+  pine: '#000000',
+  cedar: '#000000',         // legacy alias — emphasis now carried by weight, not color
+  basalt: '#000000',        // legacy alias → ink (navy retired)
+  clay: '#ffffff',
+  slate: '#f1f1f1',
+  earth: '#ffffff',
   white: '#ffffff',
-  ink: '#141413',
-  textSecondary: '#6b6a64',  // derived from mid gray, darker for AA contrast on light bg
-  textDescription: '#8a8980',
-  border: '#d6d4ca',
-  borderSoft: '#e8e6dc',
-  bgSecondary: '#f5f3ea',
-  tagGreen: '#eef0e5',
-  tagGreenText: '#5d6e48',
-  tagOrange: '#fbe8df',
-  tagOrangeText: '#b85a3e',
-  tagBlue: '#e2ecf5',
-  tagBlueText: '#4a7ba8',
-  tagRed: '#f5e1dc',
-  tagRedText: '#a04030',
-  tagGrey: '#e8e6dc',
-  tagGreyText: '#6b6a64',
-  chartGreen: '#788c5d',
-  chartOrange: '#d97757',
-  chartPurple: '#b39e87',    // brand has no purple — substituted with warm tan
-  chartBlue: '#6a9bcc',
-  chartYellow: '#d4c87a',
+  textSecondary: '#000000',
+  textDescription: '#000000',
+  border: '#e6e6e6',
+  borderSoft: '#f1f1f1',
+  bgSecondary: '#f7f7f5',
+  // Tag chips become small pastel blocks; text always ink.
+  tagGreen: '#dceeb1',
+  tagGreenText: '#000000',
+  tagOrange: '#f4ecd6',    // alias → cream
+  tagOrangeText: '#000000',
+  tagBlue: '#c5b0f4',
+  tagBlueText: '#000000',
+  tagRed: '#f4ecd6',       // cream — was pink (kept name as legacy alias)
+  tagRedText: '#000000',
+  tagGrey: '#f7f7f5',
+  tagGreyText: '#000000',
+  // Charts: limited to slide-7 palette (ink + lime + lilac + cream).
+  chartGreen: '#dceeb1',   // lime — was semantic green
+  chartOrange: '#000000',  // ink — was coral
+  chartPurple: '#f4ecd6',  // cream — was lilac
+  chartBlue: '#c5b0f4',    // lilac — was mint
+  chartYellow: '#dceeb1',  // lime
+};
+
+const ROUNDED = {
+  xs: 2,
+  sm: 6,
+  md: 8,
+  lg: 24,
+  xl: 32,
+  pill: 50,
+  full: 9999,
 };
 
 /* ============================================================
@@ -65,7 +107,7 @@ const Frame = ({ bg = C.white, children, style = {}, padded = true }) => (
     height: '100%',
     background: bg,
     color: C.ink,
-    fontFamily: "Lora, 'Noto Sans TC', Georgia, serif",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     display: 'flex',
     flexDirection: 'column',
     padding: padded ? `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px` : 0,
@@ -84,7 +126,7 @@ const Eyebrow = ({ children, color = C.cedar }) => (
     letterSpacing: '0.18em',
     textTransform: 'uppercase',
     color,
-    fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
   }}>{children}</div>
 );
 
@@ -129,19 +171,19 @@ const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
     fontSize: TYPE_SCALE.small,
     fontWeight: 500,
     padding: '8px 16px',
-    borderRadius: 4,
+    borderRadius: ROUNDED.xs,
     letterSpacing: '0.02em',
   }}>{children}</span>
 );
 
-const Code = ({ children, size = TYPE_SCALE.body }) => (
+const Code = ({ children, size = TYPE_SCALE.body, dark = false }) => (
   <span style={{
     fontFamily: "'Geist Mono', ui-monospace, monospace",
     fontSize: size,
-    background: C.slate,
-    color: C.pine,
+    background: dark ? 'rgba(255,255,255,0.14)' : C.surfaceSoft,
+    color: dark ? C.inverseInk : C.ink,
     padding: '4px 12px',
-    borderRadius: 4,
+    borderRadius: ROUNDED.xs,
   }}>{children}</span>
 );
 
@@ -173,7 +215,7 @@ const WhyMatters = ({ n, total }) => (
       <div style={{
         background: C.earth,
         border: `1px solid ${C.borderSoft}`,
-        borderRadius: 8,
+        borderRadius: ROUNDED.md,
         padding: 48,
       }}>
         <div style={{
@@ -188,7 +230,7 @@ const WhyMatters = ({ n, total }) => (
       <div style={{
         background: C.pine,
         color: C.clay,
-        borderRadius: 8,
+        borderRadius: ROUNDED.md,
         padding: 48,
       }}>
         <div style={{
@@ -231,7 +273,9 @@ const Agenda = ({ n, total }) => (
     <div style={{
       marginTop: 72,
       display: 'grid',
+      gridAutoFlow: 'column',
       gridTemplateColumns: '1fr 1fr',
+      gridTemplateRows: 'repeat(3, auto)',
       columnGap: 64,
       rowGap: 24,
     }}>
@@ -269,49 +313,57 @@ const Agenda = ({ n, total }) => (
 /* ============================================================
    Section Divider
    ============================================================ */
-const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.pine }) => (
-  <Frame padded={false} bg={bg} style={{ color: C.clay }}>
-    <div style={{
-      height: '100%',
-      padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
-      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-    }}>
-      <div>
-        <div style={{
-          fontSize: TYPE_SCALE.small,
-          letterSpacing: '0.22em',
-          textTransform: 'uppercase',
-          color: C.cedar,
-          fontWeight: 600,
-          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
-        }}>{kicker}</div>
-        <h1 style={{
-          fontSize: TYPE_SCALE.display,
-          fontWeight: 700,
-          lineHeight: 1.05,
-          letterSpacing: '-0.02em',
-          margin: '48px 0 32px 0',
-          color: C.clay,
-          maxWidth: 1500,
-        }}>{title}</h1>
-        <div style={{
-          fontSize: TYPE_SCALE.subtitle,
-          lineHeight: 1.3,
-          color: C.clay, opacity: 0.8,
-          fontWeight: 300,
-          maxWidth: 1400,
-        }}>{subtitle}</div>
-      </div>
+const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.blockLime }) => {
+  // Choose readable text color based on the panel ground
+  const dark = bg === C.blockNavy;
+  const fg = dark ? C.inverseInk : C.ink;
+  const eyebrowColor = dark ? C.inverseInk : C.ink;
+  return (
+    <Frame padded={false} bg={bg} style={{ color: fg }}>
       <div style={{
-        fontSize: TYPE_SCALE.tiny,
-        color: C.clay, opacity: 0.5,
-        fontFamily: "'Geist Mono', ui-monospace, monospace",
-        letterSpacing: '0.1em',
-      }}>{range}</div>
-    </div>
-    <SlideNumber n={n} total={total} color={C.clay} />
-  </Frame>
-);
+        height: '100%',
+        padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+      }}>
+        <div>
+          <div style={{
+            fontSize: TYPE_SCALE.small,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: eyebrowColor,
+            fontWeight: 400,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
+          }}>{kicker}</div>
+          <h1 style={{
+            fontSize: TYPE_SCALE.display,
+            fontWeight: 540,
+            lineHeight: 1.0,
+            letterSpacing: '-0.04em',
+            margin: '56px 0 36px 0',
+            color: fg,
+            maxWidth: 1500,
+          }}>{title}</h1>
+          <div style={{
+            fontSize: TYPE_SCALE.subtitle,
+            lineHeight: 1.35,
+            color: fg,
+            fontWeight: 330,
+            maxWidth: 1400,
+            letterSpacing: '-0.01em',
+          }}>{subtitle}</div>
+        </div>
+        <div style={{
+          fontSize: TYPE_SCALE.tiny,
+          color: fg,
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+        }}>{range}</div>
+      </div>
+      <SlideNumber n={n} total={total} color={fg} />
+    </Frame>
+  );
+};
 
 /* ============================================================
    Reusable section header for content slides
@@ -360,7 +412,7 @@ const TokenIntro = ({ n, total }) => (
       {/* Left: visual illustration */}
       <div style={{
         background: C.earth,
-        borderRadius: 12,
+        borderRadius: ROUNDED.lg,
         border: `1px solid ${C.borderSoft}`,
         padding: 56,
       }}>
@@ -384,7 +436,7 @@ const TokenIntro = ({ n, total }) => (
               background: C.tagGreen,
               color: C.tagGreenText,
               padding: '10px 16px',
-              borderRadius: 4,
+              borderRadius: ROUNDED.xs,
               fontSize: TYPE_SCALE.small,
               fontWeight: 500,
               fontFamily: "'Geist Mono', ui-monospace, monospace",
@@ -426,7 +478,7 @@ const TokenIntro = ({ n, total }) => (
 const KeyPoint = ({ num, title, desc }) => (
   <div style={{ display: 'grid', gridTemplateColumns: '64px 1fr', gap: 24 }}>
     <div style={{
-      width: 48, height: 48, borderRadius: 4,
+      width: 48, height: 48, borderRadius: ROUNDED.xs,
       background: C.pine, color: C.clay,
       fontSize: TYPE_SCALE.small, fontWeight: 600,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -462,7 +514,7 @@ const TokenScale = ({ n, total }) => (
       ].map((item, i) => (
         <div key={i} style={{
           background: C.white,
-          borderRadius: 12,
+          borderRadius: ROUNDED.lg,
           border: `1px solid ${C.borderSoft}`,
           padding: 48,
         }}>
@@ -495,7 +547,7 @@ const TokenScale = ({ n, total }) => (
       background: C.pine,
       color: C.clay,
       padding: '48px 56px',
-      borderRadius: 12,
+      borderRadius: ROUNDED.lg,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     }}>
       <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 500 }}>
@@ -536,7 +588,7 @@ const TokenPricing = ({ n, total }) => {
           <div key={i} style={{
             background: C.white,
             border: `1px solid ${C.borderSoft}`,
-            borderRadius: 12,
+            borderRadius: ROUNDED.lg,
             padding: 40,
             display: 'flex', flexDirection: 'column', gap: 28,
           }}>
@@ -560,7 +612,7 @@ const TokenPricing = ({ n, total }) => {
         marginTop: 56,
         padding: '32px 40px',
         background: C.slate,
-        borderRadius: 8,
+        borderRadius: ROUNDED.md,
         borderLeft: `4px solid ${C.cedar}`,
         fontSize: TYPE_SCALE.body,
         lineHeight: 1.5,
@@ -607,7 +659,7 @@ const ContextWindowIntro = ({ n, total }) => (
         <div style={{
           background: C.earth,
           border: `1px solid ${C.borderSoft}`,
-          borderRadius: 12,
+          borderRadius: ROUNDED.lg,
           padding: 40,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
@@ -616,7 +668,7 @@ const ContextWindowIntro = ({ n, total }) => (
           </div>
           {/* progress bar */}
           <div style={{
-            height: 16, background: C.slate, borderRadius: 6, overflow: 'hidden', marginBottom: 36,
+            height: 16, background: C.slate, borderRadius: ROUNDED.sm, overflow: 'hidden', marginBottom: 36,
           }}>
             <div style={{ width: '93%', height: '100%', background: C.cedar }} />
           </div>
@@ -646,7 +698,7 @@ const ContextWindowIntro = ({ n, total }) => (
           background: C.tagOrange,
           color: C.tagOrangeText,
           padding: '28px 32px',
-          borderRadius: 8,
+          borderRadius: ROUNDED.md,
           fontSize: TYPE_SCALE.small,
           fontWeight: 500,
           lineHeight: 1.5,
@@ -663,7 +715,7 @@ const ContextWindowIntro = ({ n, total }) => (
 const BreakdownRow = ({ label, value, color, pct }) => (
   <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr 80px', gap: 16, alignItems: 'center' }}>
     <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary }}>{label}</div>
-    <div style={{ height: 10, background: C.white, borderRadius: 4, overflow: 'hidden' }}>
+    <div style={{ height: 10, background: C.white, borderRadius: ROUNDED.xs, overflow: 'hidden' }}>
       <div style={{ width: `${pct}%`, height: '100%', background: color }} />
     </div>
     <div style={{ fontSize: TYPE_SCALE.small, fontFamily: "'Geist Mono', ui-monospace, monospace", color: C.ink, textAlign: 'right' }}>{value}</div>
@@ -703,7 +755,7 @@ const ContextWindowCompare = ({ n, total }) => {
           <div key={i} style={{
             background: C.white,
             border: `1px solid ${C.borderSoft}`,
-            borderRadius: 12,
+            borderRadius: ROUNDED.lg,
             padding: '28px 40px',
             display: 'grid',
             gridTemplateColumns: '200px 1fr',
@@ -728,8 +780,8 @@ const ContextWindowCompare = ({ n, total }) => {
                     <b>{m.name}</b>
                     <span style={{ color: C.textDescription, marginLeft: 12 }}>{m.tier}</span>
                   </div>
-                  <div style={{ height: 12, background: C.slate, borderRadius: 4 }}>
-                    <div style={{ width: `${m.bar}%`, height: '100%', background: row.color, borderRadius: 4 }} />
+                  <div style={{ height: 12, background: C.slate, borderRadius: ROUNDED.xs }}>
+                    <div style={{ width: `${m.bar}%`, height: '100%', background: row.color, borderRadius: ROUNDED.xs }} />
                   </div>
                   <div style={{
                     textAlign: 'right',
@@ -772,7 +824,7 @@ const SessionIntro = ({ n, total }) => (
     <div style={{
       marginTop: 80,
       background: C.earth,
-      borderRadius: 12,
+      borderRadius: ROUNDED.lg,
       border: `1px solid ${C.borderSoft}`,
       padding: '48px 56px',
     }}>
@@ -827,7 +879,7 @@ const InfoBox = ({ label, body, accent }) => (
     background: accent ? C.pine : C.white,
     color: accent ? C.clay : C.ink,
     border: accent ? 'none' : `1px solid ${C.borderSoft}`,
-    borderRadius: 8,
+    borderRadius: ROUNDED.md,
     padding: '28px 36px',
   }}>
     <div style={{
@@ -864,7 +916,7 @@ const SessionMemory = ({ n, total }) => (
       <div style={{
         background: 'rgba(250, 241, 235, 0.08)',
         border: `1px solid rgba(250, 241, 235, 0.18)`,
-        borderRadius: 12,
+        borderRadius: ROUNDED.lg,
         padding: 44,
       }}>
         <div style={{
@@ -879,7 +931,7 @@ const SessionMemory = ({ n, total }) => (
       <div style={{
         background: C.clay,
         color: C.basalt,
-        borderRadius: 12,
+        borderRadius: ROUNDED.lg,
         padding: 44,
       }}>
         <div style={{
@@ -899,7 +951,7 @@ const SessionMemory = ({ n, total }) => (
       padding: '36px 48px',
       borderLeft: `4px solid ${C.cedar}`,
       background: 'rgba(66, 133, 113, 0.12)',
-      borderRadius: 8,
+      borderRadius: ROUNDED.md,
       fontSize: TYPE_SCALE.body,
       lineHeight: 1.5,
       color: C.clay,
@@ -931,14 +983,14 @@ const CEIntro = ({ n, total }) => (
       padding: '56px 64px',
       background: C.pine,
       color: C.clay,
-      borderRadius: 16,
+      borderRadius: ROUNDED.lg,
       display: 'flex', flexDirection: 'column', gap: 28,
     }}>
       <div style={{
         fontSize: TYPE_SCALE.small, fontWeight: 600,
         letterSpacing: '0.16em', textTransform: 'uppercase',
         color: C.cedar,
-        fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
       }}>核心命題</div>
       <div style={{ fontSize: TYPE_SCALE.display, fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.02em' }}>
         Context 的品質，<br/>直接決定輸出的品質。
@@ -999,13 +1051,13 @@ const CEThreePillars = ({ n, total }) => {
           <div key={i} style={{
             background: C.white,
             border: `1px solid ${C.borderSoft}`,
-            borderRadius: 12,
+            borderRadius: ROUNDED.lg,
             padding: 48,
             display: 'flex', flexDirection: 'column', gap: 24,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <div style={{
-                width: 56, height: 56, borderRadius: 8,
+                width: 56, height: 56, borderRadius: ROUNDED.md,
                 background: C.pine, color: C.clay,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: TYPE_SCALE.body, fontWeight: 700,
@@ -1075,7 +1127,7 @@ const CEWorkflow = ({ n, total }) => (
         <div key={i} style={{
           background: s.color,
           color: C.clay,
-          borderRadius: 12,
+          borderRadius: ROUNDED.lg,
           padding: 44,
           minHeight: 380,
           display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
@@ -1083,7 +1135,7 @@ const CEWorkflow = ({ n, total }) => (
           <div style={{
             fontSize: TYPE_SCALE.small,
             letterSpacing: '0.2em', color: C.cedar,
-            fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             fontWeight: 600,
           }}>{s.phase.toUpperCase()}</div>
           <div>
@@ -1107,7 +1159,7 @@ const CEWorkflow = ({ n, total }) => (
       marginTop: 48,
       padding: '28px 40px',
       background: C.slate,
-      borderRadius: 8,
+      borderRadius: ROUNDED.md,
       borderLeft: `4px solid ${C.cedar}`,
       fontSize: TYPE_SCALE.body,
       lineHeight: 1.5,
@@ -1138,68 +1190,68 @@ const ClaudeMd = ({ n, total }) => (
       gap: 40,
       alignItems: 'stretch',
     }}>
-      {/* Mocked file panel */}
+      {/* Mocked file panel — cream "light editor" theme */}
       <div style={{
-        background: C.basalt,
-        borderRadius: 12,
+        background: C.blockCream,
+        borderRadius: ROUNDED.lg,
         overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
-        boxShadow: '0 6px 24px rgba(28, 56, 48, .16)',
       }}>
         <div style={{
           padding: '14px 20px',
           display: 'flex', alignItems: 'center', gap: 10,
-          borderBottom: '1px solid rgba(250, 241, 235, 0.1)',
+          borderBottom: `1px solid rgba(0, 0, 0, 0.08)`,
         }}>
           <div style={{ display: 'flex', gap: 8 }}>
             <Dot color="#ed6a5e" /><Dot color="#f5bf4f" /><Dot color="#62c554" />
           </div>
           <div style={{
             marginLeft: 16,
-            fontSize: TYPE_SCALE.tiny, color: C.clay, opacity: 0.64,
+            fontSize: TYPE_SCALE.tiny, color: C.ink, fontWeight: 400,
             fontFamily: "'Geist Mono', ui-monospace, monospace",
+            letterSpacing: '0.04em',
           }}>CLAUDE.md</div>
         </div>
         <div style={{
           padding: '24px 32px',
-          color: C.clay,
+          color: C.ink,
           fontFamily: "'Geist Mono', ui-monospace, monospace",
           fontSize: 18,
           lineHeight: 1.7,
           flex: 1,
         }}>
-          <div><span style={{ color: C.cedar }}># 專案名稱</span></div>
+          <div><span style={{ color: C.ink, fontWeight: 700 }}># 專案名稱</span></div>
           <div style={{ height: 12 }} />
-          <div><span style={{ color: C.cedar }}>## 技術棧</span></div>
+          <div><span style={{ color: C.ink, fontWeight: 700 }}>## 技術棧</span></div>
           <div>- React 18 + TypeScript</div>
           <div>- Tailwind CSS v4</div>
           <div>- shadcn/ui 元件庫</div>
           <div style={{ height: 12 }} />
-          <div><span style={{ color: C.cedar }}>## Design System</span></div>
-          <div>- 主色：<span style={{ color: '#c9a3ed' }}>#2563EB</span></div>
+          <div><span style={{ color: C.ink, fontWeight: 700 }}>## Design System</span></div>
+          <div>- 主色：<span style={{ color: C.blockLilac, fontWeight: 700 }}>#2563EB</span></div>
           <div>- 圓角：8px / 12px / 16px</div>
           <div>- 字型：Inter, Noto Sans TC</div>
           <div style={{ height: 12 }} />
-          <div><span style={{ color: C.cedar }}>## 程式碼慣例</span></div>
+          <div><span style={{ color: C.ink, fontWeight: 700 }}>## 程式碼慣例</span></div>
           <div>- 元件 PascalCase</div>
           <div>- 所有元件支援 dark mode</div>
         </div>
       </div>
 
-      {/* Right: analogy */}
+      {/* Right: analogy — lime block */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div style={{
-          background: C.white,
-          border: `1px solid ${C.borderSoft}`,
-          borderRadius: 12,
-          padding: 28,
+          background: C.blockLime,
+          borderRadius: ROUNDED.lg,
+          padding: 32,
         }}>
           <div style={{
-            fontSize: TYPE_SCALE.small, color: C.cedar, fontWeight: 600,
-            letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12,
+            fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 400,
+            letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
           }}>設計師類比</div>
-          <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5, color: C.ink }}>
-            <b>Design System 的 Principles 頁</b>——不是具體元件規格，<br/>是所有人都要遵守的基本規則。
+          <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 330, lineHeight: 1.5, color: C.ink }}>
+            <b style={{ fontWeight: 700 }}>Design System 的 Principles 頁</b>——不是具體元件規格，<br/>是所有人都要遵守的基本規則。
           </div>
         </div>
 
@@ -1234,7 +1286,7 @@ const CompareTable = ({ header, rows }) => (
   <div style={{
     background: C.white,
     border: `1px solid ${C.borderSoft}`,
-    borderRadius: 8,
+    borderRadius: ROUNDED.md,
     overflow: 'hidden',
     fontSize: TYPE_SCALE.small,
   }}>
@@ -1282,28 +1334,29 @@ const Skill = ({ n, total }) => (
       gap: 40,
       flex: 1,
     }}>
-      {/* Left: analogy */}
+      {/* Left: analogy — cream block */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div style={{
-          background: C.earth,
-          border: `1px solid ${C.borderSoft}`,
-          borderRadius: 12,
-          padding: 28,
+          background: C.blockCream,
+          borderRadius: ROUNDED.lg,
+          padding: 32,
         }}>
           <div style={{
-            fontSize: TYPE_SCALE.small, color: C.cedar, fontWeight: 600,
-            letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12,
+            fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 400,
+            letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
           }}>設計師類比</div>
-          <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5, color: C.ink }}>
-            Figma 裡的 <b>Component Documentation</b>——<br/>
+          <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 330, lineHeight: 1.5, color: C.ink }}>
+            Figma 裡的 <b style={{ fontWeight: 700 }}>Component Documentation</b>——<br/>
             每個元件有自己的使用規範、variant、誤用情況。
           </div>
         </div>
 
         <div>
           <div style={{
-            fontSize: TYPE_SCALE.small, color: C.cedar, fontWeight: 600,
-            letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16,
+            fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 400,
+            letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
           }}>為什麼強大</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <WhyItem title="品質一致性" desc="不管誰用，產出都遵循同一套規範。" />
@@ -1313,17 +1366,17 @@ const Skill = ({ n, total }) => (
         </div>
       </div>
 
-      {/* Right: flow */}
+      {/* Right: flow — lilac block */}
       <div style={{
-        background: C.basalt,
-        borderRadius: 12,
-        padding: 32,
-        color: C.clay,
+        background: C.blockLilac,
+        borderRadius: ROUNDED.lg,
+        padding: 36,
+        color: C.ink,
       }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, color: C.cedar, fontWeight: 600,
-          letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20,
-          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+          fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 400,
+          letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 20,
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
         }}>Skill 怎麼運作</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <FlowStep icon="💬" text="使用者：「幫我建一個 Avatar component」" />
@@ -1343,10 +1396,10 @@ const Skill = ({ n, total }) => (
 
 const WhyItem = ({ title, desc }) => (
   <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr', gap: 16, alignItems: 'start' }}>
-    <div style={{ color: C.cedar, fontSize: TYPE_SCALE.body, lineHeight: 1, marginTop: 6 }}>▸</div>
+    <div style={{ color: C.ink, fontSize: TYPE_SCALE.body, lineHeight: 1, marginTop: 6, fontWeight: 700 }}>▸</div>
     <div>
-      <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, marginBottom: 4, color: C.ink }}>{title}</div>
-      <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, lineHeight: 1.5 }}>{desc}</div>
+      <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, marginBottom: 4, color: C.ink, letterSpacing: '-0.01em' }}>{title}</div>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 330, lineHeight: 1.5 }}>{desc}</div>
     </div>
   </div>
 );
@@ -1355,24 +1408,25 @@ const FlowStep = ({ icon, text, highlight }) => (
   <div style={{
     display: 'grid', gridTemplateColumns: '48px 1fr', alignItems: 'center', gap: 16,
     padding: '16px 20px',
-    background: highlight ? C.cedar : 'rgba(250, 241, 235, 0.08)',
-    color: highlight ? C.clay : C.clay,
-    borderRadius: 8,
+    background: C.canvas,
+    color: C.ink,
+    border: highlight ? `2px solid ${C.ink}` : 'none',
+    borderRadius: ROUNDED.md,
   }}>
     <div style={{
-      width: 36, height: 36, borderRadius: '50%',
-      background: highlight ? C.clay : 'rgba(250, 241, 235, 0.12)',
-      color: highlight ? C.pine : C.cedar,
+      width: 36, height: 36, borderRadius: ROUNDED.full,
+      background: highlight ? C.ink : C.surfaceSoft,
+      color: highlight ? C.canvas : C.ink,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: 20, fontWeight: 600,
+      fontSize: 20, fontWeight: 700,
     }}>{icon}</div>
-    <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.4, fontWeight: highlight ? 600 : 400 }}>{text}</div>
+    <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.4, fontWeight: highlight ? 700 : 330 }}>{text}</div>
   </div>
 );
 
 const FlowArrow = () => (
   <div style={{
-    width: 2, height: 20, background: 'rgba(250, 241, 235, 0.2)',
+    width: 2, height: 20, background: 'rgba(0, 0, 0, 0.22)',
     marginLeft: 23,
   }} />
 );
@@ -1401,7 +1455,7 @@ const Git = ({ n, total }) => (
       ].map((s, i) => (
         <div key={i} style={{
           background: C.white,
-          borderRadius: 12,
+          borderRadius: ROUNDED.lg,
           border: `1px solid ${C.borderSoft}`,
           padding: 40,
           display: 'flex', flexDirection: 'column', gap: 24,
@@ -1424,7 +1478,7 @@ const Git = ({ n, total }) => (
             background: C.basalt,
             color: C.clay,
             padding: '14px 18px',
-            borderRadius: 6,
+            borderRadius: ROUNDED.sm,
             fontFamily: "'Geist Mono', ui-monospace, monospace",
             fontSize: 22,
           }}>
@@ -1439,7 +1493,7 @@ const Git = ({ n, total }) => (
       padding: '32px 48px',
       background: C.pine,
       color: C.clay,
-      borderRadius: 12,
+      borderRadius: ROUNDED.lg,
       fontSize: TYPE_SCALE.subtitle,
       fontWeight: 500,
       textAlign: 'center',
@@ -1469,18 +1523,17 @@ const Overview = ({ n, total }) => (
       alignItems: 'center',
       flex: 1,
     }}>
-      {/* Diagram */}
+      {/* Diagram — cream block */}
       <div style={{
-        background: C.earth,
-        border: `1px solid ${C.borderSoft}`,
-        borderRadius: 12,
-        padding: 28,
+        background: C.blockCream,
+        borderRadius: ROUNDED.lg,
+        padding: 32,
         display: 'flex', flexDirection: 'column', gap: 8,
       }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, color: C.textDescription,
-          letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8,
-          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif", fontWeight: 600,
+          fontSize: TYPE_SCALE.small, color: C.ink,
+          letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8,
+          fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 400,
         }}>基礎認知</div>
         <MapNode label="Token" sub="最小單位" indent={0} />
         <MapConn />
@@ -1492,9 +1545,9 @@ const Overview = ({ n, total }) => (
 
         <div style={{ height: 12 }} />
         <div style={{
-          fontSize: TYPE_SCALE.small, color: C.textDescription,
-          letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8,
-          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif", fontWeight: 600,
+          fontSize: TYPE_SCALE.small, color: C.ink,
+          letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8,
+          fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 400,
         }}>實作框架</div>
         <MapNode label="Context Engineering" sub="Research → Plan → Implement" indent={0} accent />
         <MapConn />
@@ -1508,24 +1561,25 @@ const Overview = ({ n, total }) => (
       <div>
         <div style={{
           fontSize: TYPE_SCALE.subtitle,
-          lineHeight: 1.4,
+          lineHeight: 1.35,
           color: C.ink,
-          fontWeight: 500,
+          fontWeight: 330,
           marginBottom: 32,
+          letterSpacing: '-0.01em',
         }}>
           這七個概念其實只在講一件事——<br/>
-          <span style={{ color: C.pine, fontWeight: 700 }}>怎麼讓 AI 在有限的記憶裡，每次都給好回覆。</span>
+          <span style={{ fontWeight: 700 }}>怎麼讓 AI 在有限的記憶裡，每次都給好回覆。</span>
         </div>
         <div style={{
           padding: '28px 36px',
-          background: C.slate,
-          borderLeft: `4px solid ${C.cedar}`,
-          borderRadius: 8,
+          background: C.blockLime,
+          borderRadius: ROUNDED.lg,
           fontSize: TYPE_SCALE.body,
           color: C.ink,
+          fontWeight: 330,
           lineHeight: 1.5,
         }}>
-          AI 工具會一直迭代。但 Context 品質決定輸出品質的核心邏輯，不會變。
+          AI 工具會一直迭代。但 <b style={{ fontWeight: 700 }}>Context 品質決定輸出品質</b> 的核心邏輯，不會變。
         </div>
       </div>
     </div>
@@ -1538,23 +1592,24 @@ const MapNode = ({ label, sub, indent = 0, accent, tight }) => (
   <div style={{
     marginLeft: indent * 24,
     padding: tight ? '10px 18px' : '12px 22px',
-    background: accent ? C.pine : C.white,
-    color: accent ? C.clay : C.ink,
-    border: accent ? 'none' : `1px solid ${C.borderSoft}`,
-    borderRadius: 8,
+    background: accent ? C.ink : C.canvas,
+    color: accent ? C.inverseInk : C.ink,
+    border: accent ? 'none' : `1px solid ${C.hairline}`,
+    borderRadius: ROUNDED.md,
     display: 'flex', alignItems: 'baseline', gap: 16,
   }}>
-    <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 600 }}>{label}</div>
+    <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 700, letterSpacing: '-0.01em' }}>{label}</div>
     <div style={{
       fontSize: TYPE_SCALE.tiny,
-      color: accent ? 'rgba(250, 241, 235, 0.7)' : C.textDescription,
+      color: accent ? C.inverseInk : C.ink,
+      fontWeight: 330,
     }}>{sub}</div>
   </div>
 );
 
 const MapConn = () => (
   <div style={{
-    width: 2, height: 8, background: C.border,
+    width: 2, height: 8, background: C.hairline,
     marginLeft: 20,
   }} />
 );
@@ -1588,7 +1643,7 @@ const TokenCombined = ({ n, total }) => (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         <div style={{
           background: C.earth, border: `1px solid ${C.borderSoft}`,
-          borderRadius: 12, padding: 32,
+          borderRadius: ROUNDED.lg, padding: 32,
         }}>
           <div style={{ fontSize: TYPE_SCALE.small, color: C.textDescription, marginBottom: 14, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             例：「幫我設計一個登入頁面」
@@ -1597,7 +1652,7 @@ const TokenCombined = ({ n, total }) => (
             {['幫', '我', '設', '計', '一', '個', '登', '入', '頁', '面'].map((t, i) => (
               <div key={i} style={{
                 background: C.tagGreen, color: C.tagGreenText,
-                padding: '8px 14px', borderRadius: 4,
+                padding: '8px 14px', borderRadius: ROUNDED.xs,
                 fontSize: TYPE_SCALE.small, fontWeight: 500,
                 fontFamily: "'Geist Mono', ui-monospace, monospace",
               }}>{t}</div>
@@ -1617,7 +1672,7 @@ const TokenCombined = ({ n, total }) => (
             { qty: '100K', unit: 'tokens', label: '300 頁英文書' },
           ].map((item, i) => (
             <div key={i} style={{
-              background: C.white, borderRadius: 8,
+              background: C.white, borderRadius: ROUNDED.md,
               border: `1px solid ${C.borderSoft}`, padding: 20,
             }}>
               <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription, marginBottom: 6 }}>{item.label}</div>
@@ -1630,11 +1685,11 @@ const TokenCombined = ({ n, total }) => (
         </div>
 
         <div style={{
-          padding: '20px 28px', background: C.pine, color: C.clay,
-          borderRadius: 8,
-          fontSize: TYPE_SCALE.small, lineHeight: 1.5,
+          padding: '24px 28px', background: C.blockCream, color: C.ink,
+          borderRadius: ROUNDED.lg,
+          fontSize: TYPE_SCALE.small, fontWeight: 330, lineHeight: 1.5,
         }}>
-          <b>1M tokens</b> ≈ 10 本《哈利波特 1：神秘的魔法石》
+          <b style={{ fontWeight: 700 }}>1M tokens</b> ≈ 10 本《哈利波特 1：神秘的魔法石》
         </div>
       </div>
 
@@ -1643,7 +1698,7 @@ const TokenCombined = ({ n, total }) => (
         <div style={{
           fontSize: TYPE_SCALE.small, fontWeight: 600,
           color: C.cedar, letterSpacing: '0.1em', textTransform: 'uppercase',
-          marginBottom: 20, fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+          marginBottom: 20, fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         }}>讀 / 寫一本哈利波特要多少錢？</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {[
@@ -1653,7 +1708,7 @@ const TokenCombined = ({ n, total }) => (
           ].map((m, i) => (
             <div key={i} style={{
               background: C.white, border: `1px solid ${C.borderSoft}`,
-              borderRadius: 12, padding: '22px 28px',
+              borderRadius: ROUNDED.lg, padding: '22px 28px',
               display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 20,
               alignItems: 'center',
             }}>
@@ -1678,7 +1733,7 @@ const TokenCombined = ({ n, total }) => (
         <div style={{
           marginTop: 20,
           padding: '18px 24px',
-          background: C.slate, borderRadius: 8,
+          background: C.slate, borderRadius: ROUNDED.md,
           borderLeft: `4px solid ${C.cedar}`,
           fontSize: TYPE_SCALE.small, lineHeight: 1.5,
         }}>
@@ -1729,27 +1784,32 @@ const ContextWindowCombined = ({ n, total }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div style={{
             background: C.earth, border: `1px solid ${C.borderSoft}`,
-            borderRadius: 12, padding: 28,
+            borderRadius: ROUNDED.lg, padding: 28,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
               <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, fontWeight: 500 }}>Context Window</div>
               <div style={{ fontSize: TYPE_SCALE.small, color: C.pine, fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 600 }}>187 / 200K</div>
             </div>
-            <div style={{ height: 14, background: C.slate, borderRadius: 6, overflow: 'hidden', marginBottom: 24 }}>
+            <div style={{ height: 14, background: C.slate, borderRadius: ROUNDED.sm, overflow: 'hidden', marginBottom: 24 }}>
               <div style={{ width: '93%', height: '100%', background: C.cedar }} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <BreakdownRow label="對話紀錄" value="82K" color={C.chartGreen} pct={44} />
-              <BreakdownRow label="讀入的檔案" value="65K" color={C.chartOrange} pct={35} />
-              <BreakdownRow label="CLAUDE.md" value="18K" color={C.chartBlue} pct={10} />
-              <BreakdownRow label="這次 prompt" value="22K" color={C.chartPurple} pct={11} />
+              <BreakdownRow label="對話紀錄" value="82K" color={C.ink} pct={44} />
+              <BreakdownRow label="讀入的檔案" value="65K" color={C.ink} pct={35} />
+              <BreakdownRow label="CLAUDE.md" value="18K" color={C.ink} pct={10} />
+              <BreakdownRow label="這次 prompt" value="22K" color={C.ink} pct={11} />
             </div>
           </div>
           <div style={{
-            background: C.tagOrange, color: C.tagOrangeText,
-            padding: '20px 24px', borderRadius: 8,
-            fontSize: TYPE_SCALE.small, fontWeight: 500, lineHeight: 1.5,
+            background: C.blockCream, color: C.ink,
+            padding: '24px 28px', borderRadius: ROUNDED.lg,
+            fontSize: TYPE_SCALE.small, fontWeight: 330, lineHeight: 1.5,
           }}>
+            <div style={{
+              fontSize: TYPE_SCALE.tiny, fontWeight: 400,
+              letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8,
+              fontFamily: "'Geist Mono', ui-monospace, monospace",
+            }}>Watch Out</div>
             快滿時 AI 回應品質會下降，所以要主動管理 context。<br/>
             指令：<Code size={TYPE_SCALE.small}>/context</Code>
           </div>
@@ -1758,17 +1818,17 @@ const ContextWindowCombined = ({ n, total }) => {
         {/* Right: comparison */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div style={{
-            fontSize: TYPE_SCALE.small, fontWeight: 600,
-            color: C.cedar, letterSpacing: '0.1em', textTransform: 'uppercase',
-            fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+            fontSize: TYPE_SCALE.small, fontWeight: 400,
+            color: C.ink, letterSpacing: '0.16em', textTransform: 'uppercase',
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
           }}>各家模型的記憶容量</div>
           {rows.map((row, i) => (
             <div key={i} style={{
               background: C.earth, border: `1px solid ${C.borderSoft}`,
-              borderRadius: 10, padding: '14px 22px',
+              borderRadius: ROUNDED.md, padding: '14px 22px',
               display: 'grid', gridTemplateColumns: '160px 1fr', gap: 24, alignItems: 'center',
             }}>
-              <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: row.color }}>{row.brand}</div>
+              <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>{row.brand}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {row.models.map((m, j) => (
                   <div key={j} style={{
@@ -1779,8 +1839,8 @@ const ContextWindowCombined = ({ n, total }) => {
                       <b>{m.name}</b>
                       <span style={{ color: C.textDescription, marginLeft: 10 }}>{m.tier}</span>
                     </div>
-                    <div style={{ height: 10, background: C.slate, borderRadius: 4 }}>
-                      <div style={{ width: `${m.bar}%`, height: '100%', background: row.color, borderRadius: 4 }} />
+                    <div style={{ height: 10, background: C.slate, borderRadius: ROUNDED.xs }}>
+                      <div style={{ width: `${m.bar}%`, height: '100%', background: row.color, borderRadius: ROUNDED.xs }} />
                     </div>
                     <div style={{
                       textAlign: 'right', fontSize: TYPE_SCALE.small, fontWeight: 600,
@@ -1811,7 +1871,7 @@ const SessionCombined = ({ n, total }) => (
     {/* Lifecycle steps */}
     <div style={{
       marginTop: 36,
-      background: C.earth, borderRadius: 12,
+      background: C.earth, borderRadius: ROUNDED.lg,
       border: `1px solid ${C.borderSoft}`,
       padding: '28px 36px',
     }}>
@@ -1825,15 +1885,16 @@ const SessionCombined = ({ n, total }) => (
         ].map((step, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 10 }}>
             <div style={{
-              width: 44, height: 44, borderRadius: '50%',
-              background: i === 4 ? C.tagRed : C.pine,
-              color: i === 4 ? C.tagRedText : C.clay,
+              width: 44, height: 44, borderRadius: ROUNDED.full,
+              background: i === 4 ? C.blockCream : C.canvas,
+              color: C.ink,
+              border: i === 4 ? 'none' : `1.5px solid ${C.ink}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: TYPE_SCALE.tiny, fontWeight: 600,
+              fontSize: TYPE_SCALE.tiny, fontWeight: 700,
               fontFamily: "'Geist Mono', ui-monospace, monospace",
             }}>{String(i + 1).padStart(2, '0')}</div>
-            <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.ink }}>{step.label}</div>
-            <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription }}>{step.desc}</div>
+            <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>{step.label}</div>
+            <div style={{ fontSize: TYPE_SCALE.tiny, color: C.ink, fontWeight: 330 }}>{step.desc}</div>
           </div>
         ))}
       </div>
@@ -1847,43 +1908,47 @@ const SessionCombined = ({ n, total }) => (
       gap: 20,
     }}>
       <div style={{
-        background: C.white, border: `1px solid ${C.borderSoft}`,
-        borderRadius: 12, padding: 28,
+        background: C.canvas, border: `1px solid ${C.hairline}`,
+        borderRadius: ROUNDED.lg, padding: 28,
       }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.tagGreyText,
-          letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12,
+          fontSize: TYPE_SCALE.small, fontWeight: 400, color: C.ink,
+          letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12,
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
         }}>Figma 習慣</div>
-        <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.5, color: C.ink }}>
+        <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 330, lineHeight: 1.5, color: C.ink }}>
           自動儲存所有修改，下次打開檔案一切都在。
         </div>
       </div>
       <div style={{
-        background: C.basalt, color: C.clay,
-        borderRadius: 12, padding: 28,
+        background: C.blockLilac, color: C.ink,
+        borderRadius: ROUNDED.lg, padding: 28,
       }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.cedar,
-          letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12,
+          fontSize: TYPE_SCALE.small, fontWeight: 400, color: C.ink,
+          letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12,
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
         }}>AI 不是這樣</div>
-        <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.5 }}>
-          Session 內：AI 記得所有事 · Session 結束：<b>完全忘光</b>。
+        <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 330, lineHeight: 1.5 }}>
+          Session 內：AI 記得所有事 · Session 結束：<b style={{ fontWeight: 700 }}>完全忘光</b>。
           可用 <Code size={TYPE_SCALE.tiny}>/resume</Code> 接回之前的 session。
         </div>
       </div>
     </div>
 
-    {/* Bridge to Context Engineering */}
+    {/* Bridge to Context Engineering — lime block */}
     <div style={{
       marginTop: 24,
-      padding: '20px 32px',
-      background: C.slate, borderLeft: `4px solid ${C.cedar}`,
-      borderRadius: 8,
+      padding: '24px 32px',
+      background: C.blockLime,
+      borderRadius: ROUNDED.lg,
       fontSize: TYPE_SCALE.small, lineHeight: 1.5,
+      color: C.ink,
+      fontWeight: 330,
     }}>
-      <b style={{ color: C.pine }}>所以問題變成：</b>
-      <span style={{ color: C.ink }}>記憶會歸零、容量又有限，怎麼每次都得到好回覆？</span>
-      <span style={{ color: C.cedar, fontWeight: 600 }}> → Context Engineering</span>
+      <b style={{ fontWeight: 700 }}>所以問題變成：</b>
+      <span>記憶會歸零、容量又有限，怎麼每次都得到好回覆？</span>
+      <b style={{ fontWeight: 700 }}> → Context Engineering</b>
     </div>
     <Footmark />
     <SlideNumber n={n} total={total} />
@@ -1910,85 +1975,89 @@ const CECombined = ({ n, total }) => {
         title="在有限的 context 裡，主動決定給模型看什麼。"
       />
 
-      {/* Thesis bar */}
+      {/* Thesis bar — lime block */}
       <div style={{
         marginTop: 28,
-        padding: '22px 32px',
-        background: C.pine, color: C.clay,
-        borderRadius: 12,
+        padding: '28px 36px',
+        background: C.blockLime, color: C.ink,
+        borderRadius: ROUNDED.lg,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.cedar,
-          letterSpacing: '0.16em', textTransform: 'uppercase',
-          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+          fontSize: TYPE_SCALE.small, fontWeight: 400,
+          letterSpacing: '0.18em', textTransform: 'uppercase',
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
         }}>核心命題</div>
-        <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, letterSpacing: '-0.01em' }}>
+        <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 540, letterSpacing: '-0.01em' }}>
           Context 的品質，直接決定輸出的品質。
         </div>
       </div>
 
       {/* Three pillars */}
-      <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.cedar,
-          letterSpacing: '0.1em', textTransform: 'uppercase',
-          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+          fontSize: TYPE_SCALE.small, fontWeight: 400,
+          letterSpacing: '0.16em', textTransform: 'uppercase',
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
         }}>主動管理三件事</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {pillars.map((p, i) => (
             <div key={i} style={{
-              background: C.white, border: `1px solid ${C.borderSoft}`,
-              borderRadius: 10, padding: 24,
-              display: 'flex', flexDirection: 'column', gap: 12,
+              background: C.canvas, border: `1px solid ${C.hairline}`,
+              borderRadius: ROUNDED.lg, padding: 28,
+              display: 'flex', flexDirection: 'column', gap: 14,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{
-                  width: 36, height: 36, borderRadius: 6,
-                  background: C.pine, color: C.clay,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: TYPE_SCALE.tiny, fontWeight: 700,
+                  padding: '4px 10px', borderRadius: ROUNDED.sm,
+                  background: C.surfaceSoft, color: C.ink,
+                  fontSize: TYPE_SCALE.tiny, fontWeight: 400,
                   fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  letterSpacing: '0.08em',
                 }}>{String(i + 1).padStart(2, '0')}</div>
                 <Tag>{p.tag}</Tag>
               </div>
-              <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.ink }}>{p.title}</div>
-              <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, lineHeight: 1.5 }}>{p.desc}</div>
+              <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>{p.title}</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 330, lineHeight: 1.5 }}>{p.desc}</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* R-P-I workflow */}
-      <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* R-P-I workflow — three-color rhythm: lime / cream / navy */}
+      <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.cedar,
-          letterSpacing: '0.1em', textTransform: 'uppercase',
-          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+          fontSize: TYPE_SCALE.small, fontWeight: 400,
+          letterSpacing: '0.16em', textTransform: 'uppercase',
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
         }}>馬上能用的工作流</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-          {flow.map((s, i) => (
-            <div key={i} style={{
-              background: i === 0 ? C.cedar : i === 1 ? C.pine : C.basalt,
-              color: C.clay,
-              borderRadius: 10, padding: '20px 24px',
-              display: 'flex', alignItems: 'center', gap: 18,
-            }}>
-              <div style={{
-                fontSize: 36, fontWeight: 700, lineHeight: 1,
-                color: C.clay, opacity: 0.9,
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
-              }}>{s.num}</div>
-              <div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {flow.map((s, i) => {
+            const grounds = [C.blockLime, C.blockCream, C.blockLilac];
+            return (
+              <div key={i} style={{
+                background: grounds[i],
+                color: C.ink,
+                borderRadius: ROUNDED.lg, padding: '24px 28px',
+                display: 'flex', alignItems: 'center', gap: 20,
+              }}>
                 <div style={{
-                  fontSize: TYPE_SCALE.tiny, color: C.clay, opacity: 0.7,
-                  letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 4,
-                }}>{s.phase}</div>
-                <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, marginBottom: 4 }}>{s.title}</div>
-                <div style={{ fontSize: TYPE_SCALE.tiny, opacity: 0.85, lineHeight: 1.4 }}>{s.desc}</div>
+                  fontSize: 44, fontWeight: 540, lineHeight: 1,
+                  color: C.ink, letterSpacing: '-0.04em',
+                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                }}>{s.num}</div>
+                <div>
+                  <div style={{
+                    fontSize: TYPE_SCALE.tiny, color: C.ink, fontWeight: 400,
+                    letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 6,
+                    fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  }}>{s.phase}</div>
+                  <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, marginBottom: 4, letterSpacing: '-0.01em' }}>{s.title}</div>
+                  <div style={{ fontSize: TYPE_SCALE.tiny, fontWeight: 330, lineHeight: 1.4 }}>{s.desc}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <Footmark />
@@ -1998,7 +2067,7 @@ const CECombined = ({ n, total }) => {
 };
 
 const ClosingNoLogo = ({ n, total }) => (
-  <Frame padded={false} bg={C.basalt} style={{ color: C.clay }}>
+  <Frame padded={false} bg={C.blockCream} style={{ color: C.ink }}>
     <div style={{
       position: 'relative', height: '100%',
       padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
@@ -2006,38 +2075,45 @@ const ClosingNoLogo = ({ n, total }) => (
     }}>
       <div style={{
         fontSize: TYPE_SCALE.small,
-        letterSpacing: '0.22em', textTransform: 'uppercase',
-        color: C.cedar, fontWeight: 600,
-        fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
-      }}>一句話帶走</div>
+        letterSpacing: '0.16em', textTransform: 'uppercase',
+        color: C.ink, fontWeight: 400,
+        fontFamily: "'Geist Mono', ui-monospace, monospace",
+      }}>一句話帶走 · One takeaway</div>
       <div>
         <div style={{
-          fontSize: 120, fontWeight: 700, lineHeight: 1.02,
-          letterSpacing: '-0.03em', color: C.clay,
+          fontSize: TYPE_SCALE.hero, fontWeight: 540, lineHeight: 1.05,
+          letterSpacing: '-0.04em', color: C.ink,
         }}>
           AI 的輸出品質，<br/>
-          <span style={{ color: C.cedar }}>取決於你給它的 Context 品質。</span>
+          取決於你給它的&nbsp;
+          <span style={{
+            background: C.blockLime,
+            padding: '0.04em 0.18em',
+            fontWeight: 700,
+          }}>Context 品質</span>
+          。
         </div>
         <div style={{
-          marginTop: 56, fontSize: TYPE_SCALE.subtitle, lineHeight: 1.4,
-          color: C.clay, opacity: 0.72, fontWeight: 300, maxWidth: 1200,
+          marginTop: 48, fontSize: TYPE_SCALE.subtitle, lineHeight: 1.4,
+          color: C.ink, fontWeight: 330, maxWidth: 1200,
+          letterSpacing: '-0.01em',
         }}>
           工具會變，邏輯不會。學好 Context Engineering，<br/>你比工具活得更久。
         </div>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, color: C.clay, opacity: 0.6,
+          fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 400,
           letterSpacing: '0.16em', textTransform: 'uppercase',
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
         }}>Thank you</div>
         <div style={{
-          fontSize: TYPE_SCALE.small, color: C.clay, opacity: 0.5,
+          fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 700,
           fontFamily: "'Geist Mono', ui-monospace, monospace",
-          letterSpacing: '0.1em',
+          letterSpacing: '0.12em', textTransform: 'uppercase',
         }}>Q & A</div>
       </div>
     </div>
-    <SlideNumber n={n} total={total} color="rgba(250, 241, 235, 0.4)" />
   </Frame>
 );
 
