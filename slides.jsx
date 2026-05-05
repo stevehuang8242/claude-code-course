@@ -1,0 +1,2047 @@
+/* Chthonia-styled slides for Claude Code 核心概念 deck */
+
+const TYPE_SCALE = {
+  hero: 108,
+  display: 88,
+  title: 56,         // was 64 — content slides feel less top-heavy
+  subtitle: 36,      // was 44 — pulls body content up
+  body: 32,          // was 34
+  small: 26,         // was 28
+  tiny: 22,
+};
+
+const SPACING = {
+  paddingTop: 72,    // was 100
+  paddingBottom: 56, // was 80
+  paddingX: 120,
+  titleGap: 36,      // was 52
+  itemGap: 28,
+};
+
+/* Anthropic brand palette
+ * Main:    Dark #141413 · Light #faf9f5 · Mid Gray #b0aea5 · Light Gray #e8e6dc
+ * Accents: Orange #d97757 (primary) · Blue #6a9bcc · Green #788c5d
+ * Token names kept (pine/cedar/basalt/clay/...) for minimum diff.
+ */
+const C = {
+  pine: '#788c5d',          // tertiary accent (was deep green)
+  cedar: '#d97757',          // primary accent — Anthropic Orange (was teal-green)
+  basalt: '#141413',         // primary dark
+  clay: '#faf9f5',           // primary light / off-white
+  slate: '#e8e6dc',          // light gray surface
+  earth: '#faf9f5',          // page background
+  white: '#ffffff',
+  ink: '#141413',
+  textSecondary: '#6b6a64',  // derived from mid gray, darker for AA contrast on light bg
+  textDescription: '#8a8980',
+  border: '#d6d4ca',
+  borderSoft: '#e8e6dc',
+  bgSecondary: '#f5f3ea',
+  tagGreen: '#eef0e5',
+  tagGreenText: '#5d6e48',
+  tagOrange: '#fbe8df',
+  tagOrangeText: '#b85a3e',
+  tagBlue: '#e2ecf5',
+  tagBlueText: '#4a7ba8',
+  tagRed: '#f5e1dc',
+  tagRedText: '#a04030',
+  tagGrey: '#e8e6dc',
+  tagGreyText: '#6b6a64',
+  chartGreen: '#788c5d',
+  chartOrange: '#d97757',
+  chartPurple: '#b39e87',    // brand has no purple — substituted with warm tan
+  chartBlue: '#6a9bcc',
+  chartYellow: '#d4c87a',
+};
+
+/* ============================================================
+   Shared primitives
+   ============================================================ */
+
+const Frame = ({ bg = C.white, children, style = {}, padded = true }) => (
+  <div style={{
+    boxSizing: 'border-box',
+    width: '100%',
+    height: '100%',
+    background: bg,
+    color: C.ink,
+    fontFamily: "Lora, 'Noto Sans TC', Georgia, serif",
+    display: 'flex',
+    flexDirection: 'column',
+    padding: padded ? `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px` : 0,
+    position: 'relative',
+    overflow: 'hidden',
+    ...style,
+  }}>
+    {children}
+  </div>
+);
+
+const Eyebrow = ({ children, color = C.cedar }) => (
+  <div style={{
+    fontSize: TYPE_SCALE.small,
+    fontWeight: 600,
+    letterSpacing: '0.18em',
+    textTransform: 'uppercase',
+    color,
+    fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+  }}>{children}</div>
+);
+
+const SlideNumber = ({ n, total, color = C.textDescription }) => (
+  <div style={{
+    position: 'absolute',
+    bottom: 44,
+    right: SPACING.paddingX,
+    fontSize: TYPE_SCALE.tiny,
+    color,
+    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    letterSpacing: '0.08em',
+  }}>
+    {String(n).padStart(2, '0')} / {String(total).padStart(2, '0')}
+  </div>
+);
+
+const Footmark = ({ color = C.textDescription }) => (
+  <div style={{
+    position: 'absolute',
+    bottom: 44,
+    left: SPACING.paddingX,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 16,
+  }}>
+    <div style={{
+      fontSize: TYPE_SCALE.tiny,
+      color,
+      letterSpacing: '0.16em',
+      textTransform: 'uppercase',
+      fontWeight: 500,
+    }}>Claude Code 核心概念</div>
+  </div>
+);
+
+const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
+  <span style={{
+    display: 'inline-block',
+    background: bg,
+    color: fg,
+    fontSize: TYPE_SCALE.small,
+    fontWeight: 500,
+    padding: '8px 16px',
+    borderRadius: 4,
+    letterSpacing: '0.02em',
+  }}>{children}</span>
+);
+
+const Code = ({ children, size = TYPE_SCALE.body }) => (
+  <span style={{
+    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontSize: size,
+    background: C.slate,
+    color: C.pine,
+    padding: '4px 12px',
+    borderRadius: 4,
+  }}>{children}</span>
+);
+
+/* Cover component is unused (mount uses Agenda for s1). Removed to drop SVG deps. */
+
+/* ============================================================
+   Slide 02 — Why this matters
+   ============================================================ */
+const WhyMatters = ({ n, total }) => (
+  <Frame>
+    <Eyebrow>Why this matters</Eyebrow>
+    <h1 style={{
+      fontSize: TYPE_SCALE.title,
+      fontWeight: 600,
+      lineHeight: 1.18,
+      margin: `${SPACING.titleGap}px 0 0 0`,
+      maxWidth: 1500,
+    }}>
+      AI 的輸出品質，<br/>取決於你給它的 Context 品質。
+    </h1>
+
+    <div style={{
+      marginTop: 72,
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 40,
+      alignItems: 'stretch',
+    }}>
+      <div style={{
+        background: C.earth,
+        border: `1px solid ${C.borderSoft}`,
+        borderRadius: 8,
+        padding: 48,
+      }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 600,
+          color: C.tagRedText, marginBottom: 20,
+          letterSpacing: '0.06em', textTransform: 'uppercase',
+        }}>沒在管理 Context 的人</div>
+        <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5, color: C.ink }}>
+          打開 Claude Code，一路聊到底，什麼檔案都讀進來，然後抱怨「Claude 怎麼越用越笨」。
+        </div>
+      </div>
+      <div style={{
+        background: C.pine,
+        color: C.clay,
+        borderRadius: 8,
+        padding: 48,
+      }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 600,
+          color: C.clay, opacity: 0.72, marginBottom: 20,
+          letterSpacing: '0.06em', textTransform: 'uppercase',
+        }}>做 Context Engineering 的人</div>
+        <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5 }}>
+          主動管理每個 session 的輸入、狀態與分工，讓 AI 在有限的記憶裡給出最好的回覆。
+        </div>
+      </div>
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+/* ============================================================
+   Slide 03 — Agenda
+   ============================================================ */
+const AGENDA = [
+  { n: '01', title: 'Token', sub: 'AI 的最小計量單位', tag: '基礎認知' },
+  { n: '02', title: 'Context Window', sub: 'AI 的工作記憶', tag: '基礎認知' },
+  { n: '03', title: 'Session', sub: '一次對話的生命週期', tag: '基礎認知' },
+  { n: '04', title: 'Context Engineering', sub: '核心方法論', tag: '實作框架' },
+  { n: '05', title: 'CLAUDE.md', sub: '你的專案說明書', tag: '實作框架' },
+  { n: '06', title: 'Skill', sub: '可重用的專業知識模組', tag: '實作框架' },
+];
+
+const Agenda = ({ n, total }) => (
+  <Frame bg={C.earth}>
+    <Eyebrow>Agenda</Eyebrow>
+    <h1 style={{
+      fontSize: TYPE_SCALE.title,
+      fontWeight: 600,
+      margin: `${SPACING.titleGap}px 0 0 0`,
+      lineHeight: 1.15,
+    }}>今天會講的 6 個概念</h1>
+
+    <div style={{
+      marginTop: 72,
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      columnGap: 64,
+      rowGap: 24,
+    }}>
+      {AGENDA.map((item, i) => (
+        <div key={i} style={{
+          display: 'grid',
+          gridTemplateColumns: '80px 1fr auto',
+          alignItems: 'center',
+          gap: 24,
+          padding: '20px 0',
+          borderBottom: `1px solid ${C.borderSoft}`,
+        }}>
+          <div style={{
+            fontSize: TYPE_SCALE.small,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            color: C.cedar,
+            letterSpacing: '0.04em',
+          }}>{item.n}</div>
+          <div>
+            <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.ink, marginBottom: 6 }}>{item.title}</div>
+            <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary }}>{item.sub}</div>
+          </div>
+          <Tag
+            bg={item.tag === '基礎認知' ? C.tagGreen : C.tagBlue}
+            fg={item.tag === '基礎認知' ? C.tagGreenText : C.tagBlueText}
+          >{item.tag}</Tag>
+        </div>
+      ))}
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+/* ============================================================
+   Section Divider
+   ============================================================ */
+const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.pine }) => (
+  <Frame padded={false} bg={bg} style={{ color: C.clay }}>
+    <div style={{
+      height: '100%',
+      padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
+      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+    }}>
+      <div>
+        <div style={{
+          fontSize: TYPE_SCALE.small,
+          letterSpacing: '0.22em',
+          textTransform: 'uppercase',
+          color: C.cedar,
+          fontWeight: 600,
+          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+        }}>{kicker}</div>
+        <h1 style={{
+          fontSize: TYPE_SCALE.display,
+          fontWeight: 700,
+          lineHeight: 1.05,
+          letterSpacing: '-0.02em',
+          margin: '48px 0 32px 0',
+          color: C.clay,
+          maxWidth: 1500,
+        }}>{title}</h1>
+        <div style={{
+          fontSize: TYPE_SCALE.subtitle,
+          lineHeight: 1.3,
+          color: C.clay, opacity: 0.8,
+          fontWeight: 300,
+          maxWidth: 1400,
+        }}>{subtitle}</div>
+      </div>
+      <div style={{
+        fontSize: TYPE_SCALE.tiny,
+        color: C.clay, opacity: 0.5,
+        fontFamily: "'Geist Mono', ui-monospace, monospace",
+        letterSpacing: '0.1em',
+      }}>{range}</div>
+    </div>
+    <SlideNumber n={n} total={total} color={C.clay} />
+  </Frame>
+);
+
+/* ============================================================
+   Reusable section header for content slides
+   ============================================================ */
+const SlideHead = ({ kicker, title, sub }) => (
+  <div>
+    {kicker && <Eyebrow>{kicker}</Eyebrow>}
+    <h1 style={{
+      fontSize: TYPE_SCALE.title,
+      fontWeight: 600,
+      lineHeight: 1.15,
+      margin: `${kicker ? SPACING.titleGap : 0}px 0 0 0`,
+      letterSpacing: '-0.01em',
+    }}>{title}</h1>
+    {sub && (
+      <div style={{
+        fontSize: TYPE_SCALE.subtitle,
+        color: C.textSecondary,
+        marginTop: 20,
+        lineHeight: 1.35,
+        fontWeight: 400,
+        maxWidth: 1400,
+      }}>{sub}</div>
+    )}
+  </div>
+);
+
+/* ============================================================
+   Slide — Token intro
+   ============================================================ */
+const TokenIntro = ({ n, total }) => (
+  <Frame>
+    <SlideHead
+      kicker="01 · Token"
+      title="AI 的最小計量單位"
+      sub="你跟 AI 的每一次互動，背後都以 token 為單位被計算。"
+    />
+    <div style={{
+      flex: 1,
+      marginTop: 64,
+      display: 'grid',
+      gridTemplateColumns: '1.1fr 1fr',
+      gap: 56,
+      alignItems: 'center',
+    }}>
+      {/* Left: visual illustration */}
+      <div style={{
+        background: C.earth,
+        borderRadius: 12,
+        border: `1px solid ${C.borderSoft}`,
+        padding: 56,
+      }}>
+        <div style={{ fontSize: TYPE_SCALE.small, color: C.textDescription, marginBottom: 24, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          例：輸入這段文字
+        </div>
+        <div style={{
+          fontSize: TYPE_SCALE.subtitle,
+          lineHeight: 1.6,
+          color: C.ink,
+          fontWeight: 500,
+          marginBottom: 32,
+        }}>
+          “幫我設計一個登入頁面”
+        </div>
+        <div style={{
+          display: 'flex', flexWrap: 'wrap', gap: 8,
+        }}>
+          {['幫', '我', '設', '計', '一', '個', '登', '入', '頁', '面'].map((t, i) => (
+            <div key={i} style={{
+              background: C.tagGreen,
+              color: C.tagGreenText,
+              padding: '10px 16px',
+              borderRadius: 4,
+              fontSize: TYPE_SCALE.small,
+              fontWeight: 500,
+              fontFamily: "'Geist Mono', ui-monospace, monospace",
+            }}>{t}</div>
+          ))}
+        </div>
+        <div style={{
+          marginTop: 28, fontSize: TYPE_SCALE.small,
+          color: C.textSecondary,
+        }}>
+          中文 1 字 ≈ 1.5–2 token · 英文 1 字 ≈ 1 token
+        </div>
+      </div>
+
+      {/* Right: key points */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
+        <KeyPoint
+          num="1"
+          title="輸入 + 輸出都要算"
+          desc="你說的話和 AI 的回覆，全都轉換成 token 才計費。"
+        />
+        <KeyPoint
+          num="2"
+          title="你不需要學怎麼算"
+          desc="只需要知道 token 是 AI 世界的「單位」。"
+        />
+        <KeyPoint
+          num="3"
+          title="Token 決定了費用"
+          desc="不同模型、不同任務，每 token 的單價不同。"
+        />
+      </div>
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+const KeyPoint = ({ num, title, desc }) => (
+  <div style={{ display: 'grid', gridTemplateColumns: '64px 1fr', gap: 24 }}>
+    <div style={{
+      width: 48, height: 48, borderRadius: 4,
+      background: C.pine, color: C.clay,
+      fontSize: TYPE_SCALE.small, fontWeight: 600,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontFamily: "'Geist Mono', ui-monospace, monospace",
+    }}>{num}</div>
+    <div>
+      <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, marginBottom: 8 }}>{title}</div>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, lineHeight: 1.5 }}>{desc}</div>
+    </div>
+  </div>
+);
+
+/* ============================================================
+   Slide — Token sense of scale
+   ============================================================ */
+const TokenScale = ({ n, total }) => (
+  <Frame bg={C.earth}>
+    <SlideHead
+      kicker="01 · Token"
+      title="一點 token 長什麼樣？"
+      sub="用你熟悉的東西換算一下，就有感了。"
+    />
+    <div style={{
+      marginTop: 80,
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: 32,
+    }}>
+      {[
+        { qty: '300–500', unit: 'tokens', label: '一封 email', icon: '✉' },
+        { qty: '~5,000', unit: 'tokens', label: '一份 10 頁 PDF 報告', icon: '▤' },
+        { qty: '~100,000', unit: 'tokens', label: '一本 300 頁英文書', icon: '❑' },
+      ].map((item, i) => (
+        <div key={i} style={{
+          background: C.white,
+          borderRadius: 12,
+          border: `1px solid ${C.borderSoft}`,
+          padding: 48,
+        }}>
+          <div style={{
+            fontSize: TYPE_SCALE.small,
+            color: C.textDescription,
+            letterSpacing: '0.08em',
+            marginBottom: 28,
+          }}>{item.label}</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <div style={{
+              fontSize: TYPE_SCALE.display,
+              fontWeight: 700,
+              color: C.pine,
+              letterSpacing: '-0.02em',
+              lineHeight: 1,
+            }}>{item.qty}</div>
+            <div style={{
+              fontSize: TYPE_SCALE.small,
+              color: C.textSecondary,
+              fontFamily: "'Geist Mono', ui-monospace, monospace",
+            }}>{item.unit}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div style={{
+      marginTop: 64,
+      background: C.pine,
+      color: C.clay,
+      padding: '48px 56px',
+      borderRadius: 12,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    }}>
+      <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 500 }}>
+        1,000,000 tokens
+      </div>
+      <div style={{ fontSize: TYPE_SCALE.subtitle, opacity: 0.9, fontWeight: 300 }}>
+        ≈ 10 本《哈利波特 1：神秘的魔法石》
+      </div>
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+/* ============================================================
+   Slide — Token pricing
+   ============================================================ */
+const TokenPricing = ({ n, total }) => {
+  const models = [
+    { name: 'Opus 4.7', tag: '旗艦', tagBg: C.tagRed, tagFg: C.tagRedText, traits: '最強 · 最慢 · 最貴', use: '複雜推理、架構設計', read: 'NT$ 16', write: 'NT$ 80' },
+    { name: 'Sonnet 4.6', tag: '中階', tagBg: C.tagBlue, tagFg: C.tagBlueText, traits: '速度與品質兼顧', use: '日常編程、內容創作', read: 'NT$ 10', write: 'NT$ 50' },
+    { name: 'Haiku 4.5', tag: '輕量', tagBg: C.tagGreen, tagFg: C.tagGreenText, traits: '最快 · 最便宜', use: '簡單任務、顏色微調', read: 'NT$ 3', write: 'NT$ 16' },
+  ];
+  return (
+    <Frame>
+      <SlideHead
+        kicker="01 · Token"
+        title="讀 / 寫一本哈利波特要多少錢？"
+        sub="模型越強，單價越高。善用不同模型能大幅節省成本。"
+      />
+      <div style={{
+        marginTop: 64,
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 28,
+      }}>
+        {models.map((m, i) => (
+          <div key={i} style={{
+            background: C.white,
+            border: `1px solid ${C.borderSoft}`,
+            borderRadius: 12,
+            padding: 40,
+            display: 'flex', flexDirection: 'column', gap: 28,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 600 }}>{m.name}</div>
+              <Tag bg={m.tagBg} fg={m.tagFg}>{m.tag}</Tag>
+            </div>
+            <div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, marginBottom: 4 }}>{m.traits}</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.textDescription }}>{m.use}</div>
+            </div>
+            <div style={{ borderTop: `1px solid ${C.borderSoft}`, paddingTop: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <PriceRow label="讀 100K tokens" value={m.read} />
+              <PriceRow label="寫 100K tokens" value={m.write} muted />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{
+        marginTop: 56,
+        padding: '32px 40px',
+        background: C.slate,
+        borderRadius: 8,
+        borderLeft: `4px solid ${C.cedar}`,
+        fontSize: TYPE_SCALE.body,
+        lineHeight: 1.5,
+      }}>
+        <b style={{ color: C.pine }}>策略：</b>
+        <span style={{ color: C.ink }}> Plan 階段用 Opus，執行用 Sonnet，調顏色用 Haiku。</span>
+      </div>
+      <Footmark />
+      <SlideNumber n={n} total={total} />
+    </Frame>
+  );
+};
+
+const PriceRow = ({ label, value, muted }) => (
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+    <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary }}>{label}</div>
+    <div style={{
+      fontSize: TYPE_SCALE.body, fontWeight: 600,
+      color: muted ? C.cedar : C.pine,
+      fontFamily: "'Geist Mono', ui-monospace, monospace",
+    }}>{value}</div>
+  </div>
+);
+
+/* ============================================================
+   Slide — Context Window intro
+   ============================================================ */
+const ContextWindowIntro = ({ n, total }) => (
+  <Frame>
+    <SlideHead
+      kicker="02 · Context Window"
+      title="AI 的工作記憶，有上限。"
+      sub="模型生成回應時能「看到」的所有文字範圍——提示詞、對話紀錄、檔案內容、CLAUDE.md 的設定。"
+    />
+    <div style={{
+      marginTop: 80,
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 72,
+      alignItems: 'center',
+    }}>
+      {/* Left: window visual */}
+      <div>
+        <div style={{
+          background: C.earth,
+          border: `1px solid ${C.borderSoft}`,
+          borderRadius: 12,
+          padding: 40,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
+            <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, fontWeight: 500 }}>Context Window</div>
+            <div style={{ fontSize: TYPE_SCALE.small, color: C.pine, fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 600 }}>187 / 200K tokens</div>
+          </div>
+          {/* progress bar */}
+          <div style={{
+            height: 16, background: C.slate, borderRadius: 6, overflow: 'hidden', marginBottom: 36,
+          }}>
+            <div style={{ width: '93%', height: '100%', background: C.cedar }} />
+          </div>
+          {/* breakdown */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <BreakdownRow label="對話紀錄" value="82K" color={C.chartGreen} pct={44} />
+            <BreakdownRow label="讀入的檔案" value="65K" color={C.chartOrange} pct={35} />
+            <BreakdownRow label="CLAUDE.md" value="18K" color={C.chartBlue} pct={10} />
+            <BreakdownRow label="這次 prompt" value="22K" color={C.chartPurple} pct={11} />
+          </div>
+        </div>
+      </div>
+
+      {/* Right: key idea */}
+      <div>
+        <div style={{
+          fontSize: TYPE_SCALE.subtitle,
+          lineHeight: 1.4,
+          color: C.ink,
+          fontWeight: 500,
+          marginBottom: 32,
+        }}>
+          把它想成 AI 的<span style={{ color: C.pine, fontWeight: 700 }}>「短期記憶」</span>——<br/>
+          容量以 token 計，每家模型不一樣。
+        </div>
+        <div style={{
+          background: C.tagOrange,
+          color: C.tagOrangeText,
+          padding: '28px 32px',
+          borderRadius: 8,
+          fontSize: TYPE_SCALE.small,
+          fontWeight: 500,
+          lineHeight: 1.5,
+        }}>
+          快滿的時候，AI 回應品質會下降。<br/>所以我們需要主動管理 context。
+        </div>
+      </div>
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+const BreakdownRow = ({ label, value, color, pct }) => (
+  <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr 80px', gap: 16, alignItems: 'center' }}>
+    <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary }}>{label}</div>
+    <div style={{ height: 10, background: C.white, borderRadius: 4, overflow: 'hidden' }}>
+      <div style={{ width: `${pct}%`, height: '100%', background: color }} />
+    </div>
+    <div style={{ fontSize: TYPE_SCALE.small, fontFamily: "'Geist Mono', ui-monospace, monospace", color: C.ink, textAlign: 'right' }}>{value}</div>
+  </div>
+);
+
+/* ============================================================
+   Slide — Context Window compare
+   ============================================================ */
+const ContextWindowCompare = ({ n, total }) => {
+  const rows = [
+    { brand: 'Anthropic', color: C.pine, models: [
+      { name: 'Claude Opus 4.7', tier: '旗艦', size: '1M', bar: 100 },
+      { name: 'Claude Sonnet 4.6', tier: '中階', size: '1M', bar: 100 },
+      { name: 'Claude Haiku 4.5', tier: '輕量', size: '200K', bar: 20 },
+    ]},
+    { brand: 'OpenAI', color: C.chartGreen, models: [
+      { name: 'GPT-5.4', tier: '旗艦', size: '272K', bar: 27.2 },
+      { name: 'GPT-5.4 mini', tier: '中階', size: '400K', bar: 40 },
+      { name: 'GPT-5.4 nano', tier: '輕量', size: '400K', bar: 40 },
+    ]},
+    { brand: 'Google', color: C.chartBlue, models: [
+      { name: 'Gemini 3.1 Pro', tier: '旗艦', size: '1M', bar: 100 },
+      { name: 'Gemini 3 Flash', tier: '中階', size: '1M', bar: 100 },
+      { name: 'Gemini 3.1 Flash-Lite', tier: '輕量', size: '1M', bar: 100 },
+    ]},
+  ];
+
+  return (
+    <Frame bg={C.earth}>
+      <SlideHead
+        kicker="02 · Context Window"
+        title="各家模型的記憶容量"
+      />
+      <div style={{ marginTop: 56, display: 'flex', flexDirection: 'column', gap: 24 }}>
+        {rows.map((row, i) => (
+          <div key={i} style={{
+            background: C.white,
+            border: `1px solid ${C.borderSoft}`,
+            borderRadius: 12,
+            padding: '28px 40px',
+            display: 'grid',
+            gridTemplateColumns: '200px 1fr',
+            gap: 40,
+            alignItems: 'center',
+          }}>
+            <div style={{
+              fontSize: TYPE_SCALE.body,
+              fontWeight: 600,
+              color: row.color,
+              letterSpacing: '0.04em',
+            }}>{row.brand}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {row.models.map((m, j) => (
+                <div key={j} style={{
+                  display: 'grid',
+                  gridTemplateColumns: '320px 1fr 120px',
+                  alignItems: 'center',
+                  gap: 20,
+                }}>
+                  <div style={{ fontSize: TYPE_SCALE.small, color: C.ink }}>
+                    <b>{m.name}</b>
+                    <span style={{ color: C.textDescription, marginLeft: 12 }}>{m.tier}</span>
+                  </div>
+                  <div style={{ height: 12, background: C.slate, borderRadius: 4 }}>
+                    <div style={{ width: `${m.bar}%`, height: '100%', background: row.color, borderRadius: 4 }} />
+                  </div>
+                  <div style={{
+                    textAlign: 'right',
+                    fontSize: TYPE_SCALE.small,
+                    fontWeight: 600,
+                    fontFamily: "'Geist Mono', ui-monospace, monospace",
+                    color: C.ink,
+                  }}>{m.size}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{
+        marginTop: 36,
+        fontSize: TYPE_SCALE.small,
+        color: C.textDescription,
+        fontFamily: "'Geist Mono', ui-monospace, monospace",
+      }}>
+        在 Claude Code 中用 <Code size={TYPE_SCALE.small}>/context</Code> 查看目前用量
+      </div>
+      <Footmark />
+      <SlideNumber n={n} total={total} />
+    </Frame>
+  );
+};
+
+/* ============================================================
+   Slide — Session intro
+   ============================================================ */
+const SessionIntro = ({ n, total }) => (
+  <Frame>
+    <SlideHead
+      kicker="03 · Session"
+      title="一次對話的生命週期"
+      sub="打開一個 Claude Code 視窗、開始新對話——系統就建立了一個新的 session。"
+    />
+
+    <div style={{
+      marginTop: 80,
+      background: C.earth,
+      borderRadius: 12,
+      border: `1px solid ${C.borderSoft}`,
+      padding: '48px 56px',
+    }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', alignItems: 'center', gap: 16 }}>
+        {[
+          { label: '開啟視窗', desc: 'New session' },
+          { label: '第一個 prompt', desc: '需求 / 問題' },
+          { label: '累積對話', desc: '每一次互動' },
+          { label: '讀取檔案', desc: '全在同一個 session' },
+          { label: '關閉視窗', desc: 'Session end' },
+        ].map((step, i) => (
+          <React.Fragment key={i}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 14 }}>
+              <div style={{
+                width: 56, height: 56, borderRadius: '50%',
+                background: i === 4 ? C.tagRed : C.pine,
+                color: i === 4 ? C.tagRedText : C.clay,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: TYPE_SCALE.small, fontWeight: 600,
+                fontFamily: "'Geist Mono', ui-monospace, monospace",
+              }}>{String(i + 1).padStart(2, '0')}</div>
+              <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.ink }}>{step.label}</div>
+              <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription, lineHeight: 1.4 }}>{step.desc}</div>
+            </div>
+            {i < 4 && (
+              <div style={{
+                gridColumn: 'auto',
+                display: 'none',
+              }} />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+
+    <div style={{
+      marginTop: 56,
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 32,
+    }}>
+      <InfoBox label="類比" body="就像 Figma 的一個分頁——你開的是這個檔案的一次編輯階段。" />
+      <InfoBox label="指令" body={<>用 <Code size={TYPE_SCALE.small}>/resume</Code> 可以接回之前的 session</>} accent />
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+const InfoBox = ({ label, body, accent }) => (
+  <div style={{
+    background: accent ? C.pine : C.white,
+    color: accent ? C.clay : C.ink,
+    border: accent ? 'none' : `1px solid ${C.borderSoft}`,
+    borderRadius: 8,
+    padding: '28px 36px',
+  }}>
+    <div style={{
+      fontSize: TYPE_SCALE.small, fontWeight: 600,
+      color: accent ? C.cedar : C.cedar,
+      letterSpacing: '0.1em', textTransform: 'uppercase',
+      marginBottom: 12,
+    }}>{label}</div>
+    <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5 }}>{body}</div>
+  </div>
+);
+
+/* ============================================================
+   Slide — Session memory resets
+   ============================================================ */
+const SessionMemory = ({ n, total }) => (
+  <Frame bg={C.basalt} style={{ color: C.clay }}>
+    <Eyebrow color={C.cedar}>03 · Session</Eyebrow>
+    <h1 style={{
+      fontSize: TYPE_SCALE.title,
+      fontWeight: 600,
+      lineHeight: 1.15,
+      margin: `${SPACING.titleGap}px 0 0 0`,
+      color: C.clay,
+      letterSpacing: '-0.01em',
+    }}>Session 結束 = 記憶歸零</h1>
+
+    <div style={{
+      marginTop: 72,
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 40,
+    }}>
+      <div style={{
+        background: 'rgba(250, 241, 235, 0.08)',
+        border: `1px solid rgba(250, 241, 235, 0.18)`,
+        borderRadius: 12,
+        padding: 44,
+      }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 600,
+          color: C.cedar, letterSpacing: '0.1em', textTransform: 'uppercase',
+          marginBottom: 20,
+        }}>Figma 習慣</div>
+        <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5, color: C.clay, opacity: 0.88 }}>
+          自動儲存所有修改，<br/>下次打開檔案一切都在。
+        </div>
+      </div>
+      <div style={{
+        background: C.clay,
+        color: C.basalt,
+        borderRadius: 12,
+        padding: 44,
+      }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 600,
+          color: C.pine, letterSpacing: '0.1em', textTransform: 'uppercase',
+          marginBottom: 20,
+        }}>AI 不是這樣</div>
+        <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5 }}>
+          Session 內：AI 記得所有事。<br/>
+          Session 結束：<b>完全忘光</b>。
+        </div>
+      </div>
+    </div>
+
+    <div style={{
+      marginTop: 56,
+      padding: '36px 48px',
+      borderLeft: `4px solid ${C.cedar}`,
+      background: 'rgba(66, 133, 113, 0.12)',
+      borderRadius: 8,
+      fontSize: TYPE_SCALE.body,
+      lineHeight: 1.5,
+      color: C.clay,
+    }}>
+      <b>所以問題變成：</b>在記憶會歸零、容量又有限的情況下，我要怎麼每一次都得到好的回覆？<br/>
+      <span style={{ color: C.cedar, fontWeight: 600 }}>答案 → Context Engineering</span>
+    </div>
+    <SlideNumber n={n} total={total} color="rgba(250, 241, 235, 0.4)" />
+  </Frame>
+);
+
+/* ============================================================
+   Section 2 Divider
+   ============================================================ */
+/* uses SectionDivider */
+
+/* ============================================================
+   Slide — Context Engineering intro
+   ============================================================ */
+const CEIntro = ({ n, total }) => (
+  <Frame>
+    <SlideHead
+      kicker="04 · Context Engineering"
+      title="在有限的 context 裡，主動決定給模型看什麼。"
+      sub="模型沒有記憶，每一次回答都只基於當下 context 裡的內容。"
+    />
+    <div style={{
+      marginTop: 72,
+      padding: '56px 64px',
+      background: C.pine,
+      color: C.clay,
+      borderRadius: 16,
+      display: 'flex', flexDirection: 'column', gap: 28,
+    }}>
+      <div style={{
+        fontSize: TYPE_SCALE.small, fontWeight: 600,
+        letterSpacing: '0.16em', textTransform: 'uppercase',
+        color: C.cedar,
+        fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+      }}>核心命題</div>
+      <div style={{ fontSize: TYPE_SCALE.display, fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.02em' }}>
+        Context 的品質，<br/>直接決定輸出的品質。
+      </div>
+    </div>
+
+    <div style={{
+      marginTop: 48,
+      fontSize: TYPE_SCALE.body,
+      lineHeight: 1.6,
+      color: C.textSecondary,
+      maxWidth: 1500,
+    }}>
+      做 context engineering 的人，會在 session 中主動管理<b style={{ color: C.pine }}>三件事</b>——下一頁告訴你。
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+/* ============================================================
+   Slide — Context Engineering three pillars
+   ============================================================ */
+const CEThreePillars = ({ n, total }) => {
+  const pillars = [
+    {
+      tag: 'Input',
+      title: '放什麼進去',
+      desc: '這個 session 要做什麼？需要讀哪個檔案、哪張圖？什麼不必放？',
+      examples: ['調整 layout', '優化 UX 流程', '參考某個元件'],
+    },
+    {
+      tag: 'State',
+      title: '保留什麼、丟掉什麼',
+      desc: '對話變長時怎麼瘦身？什麼時候開新的 session？',
+      examples: ['/compact 壓縮', '/clear 重開', '另開 session'],
+    },
+    {
+      tag: 'Scope',
+      title: '怎麼分工',
+      desc: '這個任務要不要交給 sub-agent？要不要用 Skills 或 Slash commands？',
+      examples: ['Sub-agent', 'Skill', 'Slash command'],
+    },
+  ];
+  return (
+    <Frame bg={C.earth}>
+      <SlideHead
+        kicker="04 · Context Engineering"
+        title="主動管理的三件事"
+      />
+      <div style={{
+        marginTop: 72,
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 32,
+      }}>
+        {pillars.map((p, i) => (
+          <div key={i} style={{
+            background: C.white,
+            border: `1px solid ${C.borderSoft}`,
+            borderRadius: 12,
+            padding: 48,
+            display: 'flex', flexDirection: 'column', gap: 24,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{
+                width: 56, height: 56, borderRadius: 8,
+                background: C.pine, color: C.clay,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: TYPE_SCALE.body, fontWeight: 700,
+                fontFamily: "'Geist Mono', ui-monospace, monospace",
+              }}>{String(i + 1).padStart(2, '0')}</div>
+              <Tag>{p.tag}</Tag>
+            </div>
+            <div>
+              <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 600, marginBottom: 12, color: C.ink }}>{p.title}</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, lineHeight: 1.55 }}>{p.desc}</div>
+            </div>
+            <div style={{ borderTop: `1px solid ${C.borderSoft}`, paddingTop: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {p.examples.map((ex, j) => (
+                <div key={j} style={{
+                  fontSize: TYPE_SCALE.tiny,
+                  color: C.textSecondary,
+                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  display: 'flex', alignItems: 'center', gap: 10,
+                }}>
+                  <span style={{ color: C.cedar }}>▸</span>{ex}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <Footmark />
+      <SlideNumber n={n} total={total} />
+    </Frame>
+  );
+};
+
+/* ============================================================
+   Slide — Research, Plan, Implement
+   ============================================================ */
+const CEWorkflow = ({ n, total }) => (
+  <Frame>
+    <SlideHead
+      kicker="04 · Context Engineering"
+      title="一個可以馬上用的工作流"
+      sub="每個新任務都開新 session，並依序走過這三步。"
+    />
+
+    <div style={{
+      marginTop: 80,
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: 16,
+    }}>
+      {[
+        {
+          num: '01', phase: 'Research', title: '研究',
+          desc: '讓 AI 先讀資料、整理脈絡，不要急著動手。',
+          color: C.cedar,
+        },
+        {
+          num: '02', phase: 'Plan', title: '規劃',
+          desc: '請 AI 寫出明確的計畫與步驟，你 review 後確認。',
+          color: C.pine,
+        },
+        {
+          num: '03', phase: 'Implement', title: '執行',
+          desc: '按計畫落地。有 plan 就不會天馬行空。',
+          color: C.basalt,
+        },
+      ].map((s, i) => (
+        <div key={i} style={{
+          background: s.color,
+          color: C.clay,
+          borderRadius: 12,
+          padding: 44,
+          minHeight: 380,
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        }}>
+          <div style={{
+            fontSize: TYPE_SCALE.small,
+            letterSpacing: '0.2em', color: C.cedar,
+            fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+            fontWeight: 600,
+          }}>{s.phase.toUpperCase()}</div>
+          <div>
+            <div style={{
+              fontSize: TYPE_SCALE.display,
+              fontWeight: 700,
+              lineHeight: 1,
+              color: C.clay,
+              opacity: 0.9,
+              marginBottom: 16,
+              fontFamily: "'Geist Mono', ui-monospace, monospace",
+            }}>{s.num}</div>
+            <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 600, marginBottom: 16 }}>{s.title}</div>
+            <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.5, opacity: 0.82 }}>{s.desc}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div style={{
+      marginTop: 48,
+      padding: '28px 40px',
+      background: C.slate,
+      borderRadius: 8,
+      borderLeft: `4px solid ${C.cedar}`,
+      fontSize: TYPE_SCALE.body,
+      lineHeight: 1.5,
+    }}>
+      <b style={{ color: C.pine }}>小習慣：</b>
+      <span style={{ color: C.ink }}> 每個新任務 → 新 session；complex task → research → plan → implement。</span>
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+/* ============================================================
+   Slide — CLAUDE.md
+   ============================================================ */
+const ClaudeMd = ({ n, total }) => (
+  <Frame bg={C.earth}>
+    <SlideHead
+      kicker="05 · CLAUDE.md"
+      title="你的專案說明書"
+      sub="放在專案根目錄的檔案，Claude Code 每次啟動 session 都會自動讀取。"
+    />
+    <div style={{
+      flex: 1,
+      marginTop: 32,
+      display: 'grid',
+      gridTemplateColumns: '1.1fr 1fr',
+      gap: 40,
+      alignItems: 'stretch',
+    }}>
+      {/* Mocked file panel */}
+      <div style={{
+        background: C.basalt,
+        borderRadius: 12,
+        overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
+        boxShadow: '0 6px 24px rgba(28, 56, 48, .16)',
+      }}>
+        <div style={{
+          padding: '14px 20px',
+          display: 'flex', alignItems: 'center', gap: 10,
+          borderBottom: '1px solid rgba(250, 241, 235, 0.1)',
+        }}>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Dot color="#ed6a5e" /><Dot color="#f5bf4f" /><Dot color="#62c554" />
+          </div>
+          <div style={{
+            marginLeft: 16,
+            fontSize: TYPE_SCALE.tiny, color: C.clay, opacity: 0.64,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
+          }}>CLAUDE.md</div>
+        </div>
+        <div style={{
+          padding: '24px 32px',
+          color: C.clay,
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontSize: 18,
+          lineHeight: 1.7,
+          flex: 1,
+        }}>
+          <div><span style={{ color: C.cedar }}># 專案名稱</span></div>
+          <div style={{ height: 12 }} />
+          <div><span style={{ color: C.cedar }}>## 技術棧</span></div>
+          <div>- React 18 + TypeScript</div>
+          <div>- Tailwind CSS v4</div>
+          <div>- shadcn/ui 元件庫</div>
+          <div style={{ height: 12 }} />
+          <div><span style={{ color: C.cedar }}>## Design System</span></div>
+          <div>- 主色：<span style={{ color: '#c9a3ed' }}>#2563EB</span></div>
+          <div>- 圓角：8px / 12px / 16px</div>
+          <div>- 字型：Inter, Noto Sans TC</div>
+          <div style={{ height: 12 }} />
+          <div><span style={{ color: C.cedar }}>## 程式碼慣例</span></div>
+          <div>- 元件 PascalCase</div>
+          <div>- 所有元件支援 dark mode</div>
+        </div>
+      </div>
+
+      {/* Right: analogy */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{
+          background: C.white,
+          border: `1px solid ${C.borderSoft}`,
+          borderRadius: 12,
+          padding: 28,
+        }}>
+          <div style={{
+            fontSize: TYPE_SCALE.small, color: C.cedar, fontWeight: 600,
+            letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12,
+          }}>設計師類比</div>
+          <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5, color: C.ink }}>
+            <b>Design System 的 Principles 頁</b>——不是具體元件規格，<br/>是所有人都要遵守的基本規則。
+          </div>
+        </div>
+
+        <CompareTable
+          header={['', 'CLAUDE.md', '對話中的指令']}
+          rows={[
+            ['生命週期', '跨 session 持久', '只在當前 session'],
+            ['用途', '專案層級規則', '單次任務指令'],
+            ['類比', 'Design System', '單一 ticket 需求'],
+          ]}
+        />
+
+        <div style={{
+          fontSize: TYPE_SCALE.small,
+          color: C.textSecondary,
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
+        }}>
+          拿到既有專案 → 跑 <Code size={TYPE_SCALE.small}>/init</Code> 自動建立。
+        </div>
+      </div>
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+const Dot = ({ color }) => (
+  <div style={{ width: 12, height: 12, borderRadius: '50%', background: color }} />
+);
+
+const CompareTable = ({ header, rows }) => (
+  <div style={{
+    background: C.white,
+    border: `1px solid ${C.borderSoft}`,
+    borderRadius: 8,
+    overflow: 'hidden',
+    fontSize: TYPE_SCALE.small,
+  }}>
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: '1.1fr 1fr 1fr',
+      padding: '16px 20px',
+      background: C.slate,
+      fontWeight: 600,
+      color: C.textSecondary,
+      letterSpacing: '0.04em',
+    }}>
+      {header.map((h, i) => <div key={i}>{h}</div>)}
+    </div>
+    {rows.map((row, i) => (
+      <div key={i} style={{
+        display: 'grid',
+        gridTemplateColumns: '1.1fr 1fr 1fr',
+        padding: '16px 20px',
+        borderTop: i === 0 ? 'none' : `1px solid ${C.borderSoft}`,
+        color: C.ink,
+      }}>
+        <div style={{ fontWeight: 600 }}>{row[0]}</div>
+        <div>{row[1]}</div>
+        <div style={{ color: C.textSecondary }}>{row[2]}</div>
+      </div>
+    ))}
+  </div>
+);
+
+/* ============================================================
+   Slide — Skill
+   ============================================================ */
+const Skill = ({ n, total }) => (
+  <Frame>
+    <SlideHead
+      kicker="06 · Skill"
+      title="可重用的專業知識模組"
+      sub="比 CLAUDE.md 更細粒度——針對「特定類型任務」提供知識與範本。"
+    />
+    <div style={{
+      marginTop: 32,
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 40,
+      flex: 1,
+    }}>
+      {/* Left: analogy */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{
+          background: C.earth,
+          border: `1px solid ${C.borderSoft}`,
+          borderRadius: 12,
+          padding: 28,
+        }}>
+          <div style={{
+            fontSize: TYPE_SCALE.small, color: C.cedar, fontWeight: 600,
+            letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12,
+          }}>設計師類比</div>
+          <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5, color: C.ink }}>
+            Figma 裡的 <b>Component Documentation</b>——<br/>
+            每個元件有自己的使用規範、variant、誤用情況。
+          </div>
+        </div>
+
+        <div>
+          <div style={{
+            fontSize: TYPE_SCALE.small, color: C.cedar, fontWeight: 600,
+            letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16,
+          }}>為什麼強大</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <WhyItem title="品質一致性" desc="不管誰用，產出都遵循同一套規範。" />
+            <WhyItem title="知識累積" desc="踩過的坑、最佳實踐都能寫進 Skill。" />
+            <WhyItem title="降低 context 消耗" desc="按需載入，不像 CLAUDE.md 每次都全載。" />
+          </div>
+        </div>
+      </div>
+
+      {/* Right: flow */}
+      <div style={{
+        background: C.basalt,
+        borderRadius: 12,
+        padding: 32,
+        color: C.clay,
+      }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, color: C.cedar, fontWeight: 600,
+          letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20,
+          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+        }}>Skill 怎麼運作</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <FlowStep icon="💬" text="使用者：「幫我建一個 Avatar component」" />
+          <FlowArrow />
+          <FlowStep icon="◎" text="Claude 判斷：這是「建立 React Component」類任務" />
+          <FlowArrow />
+          <FlowStep icon="▤" text="自動載入 SKILL.md" highlight />
+          <FlowArrow />
+          <FlowStep icon="✓" text="依 Skill 的規則、範本產出" />
+        </div>
+      </div>
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+const WhyItem = ({ title, desc }) => (
+  <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr', gap: 16, alignItems: 'start' }}>
+    <div style={{ color: C.cedar, fontSize: TYPE_SCALE.body, lineHeight: 1, marginTop: 6 }}>▸</div>
+    <div>
+      <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, marginBottom: 4, color: C.ink }}>{title}</div>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, lineHeight: 1.5 }}>{desc}</div>
+    </div>
+  </div>
+);
+
+const FlowStep = ({ icon, text, highlight }) => (
+  <div style={{
+    display: 'grid', gridTemplateColumns: '48px 1fr', alignItems: 'center', gap: 16,
+    padding: '16px 20px',
+    background: highlight ? C.cedar : 'rgba(250, 241, 235, 0.08)',
+    color: highlight ? C.clay : C.clay,
+    borderRadius: 8,
+  }}>
+    <div style={{
+      width: 36, height: 36, borderRadius: '50%',
+      background: highlight ? C.clay : 'rgba(250, 241, 235, 0.12)',
+      color: highlight ? C.pine : C.cedar,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: 20, fontWeight: 600,
+    }}>{icon}</div>
+    <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.4, fontWeight: highlight ? 600 : 400 }}>{text}</div>
+  </div>
+);
+
+const FlowArrow = () => (
+  <div style={{
+    width: 2, height: 20, background: 'rgba(250, 241, 235, 0.2)',
+    marginLeft: 23,
+  }} />
+);
+
+/* ============================================================
+   Slide — Git
+   ============================================================ */
+const Git = ({ n, total }) => (
+  <Frame bg={C.earth}>
+    <SlideHead
+      kicker="07 · Git"
+      title="你的安全網"
+      sub="AI 會直接改你的程式碼。改壞了怎麼辦？Git 幫你記錄每次變更，隨時復原。"
+    />
+
+    <div style={{
+      marginTop: 72,
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: 28,
+    }}>
+      {[
+        { num: '01', title: 'Commit', sub: '= 存檔點', desc: '讓 AI 做大改動前，先建立存檔點。', cmd: 'git commit -m "..."' },
+        { num: '02', title: 'Diff', sub: '= 看改了什麼', desc: 'AI 改完後用 diff 檢查它動了哪些東西。', cmd: 'git diff' },
+        { num: '03', title: 'Restore', sub: '= 復原', desc: '不滿意？一鍵回到存檔點。', cmd: 'git restore .' },
+      ].map((s, i) => (
+        <div key={i} style={{
+          background: C.white,
+          borderRadius: 12,
+          border: `1px solid ${C.borderSoft}`,
+          padding: 40,
+          display: 'flex', flexDirection: 'column', gap: 24,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 16 }}>
+            <div style={{
+              fontSize: TYPE_SCALE.title,
+              fontWeight: 700,
+              color: C.cedar,
+              lineHeight: 1,
+              fontFamily: "'Geist Mono', ui-monospace, monospace",
+            }}>{s.num}</div>
+            <div>
+              <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 600, color: C.ink }}>{s.title}</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary }}>{s.sub}</div>
+            </div>
+          </div>
+          <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, lineHeight: 1.5 }}>{s.desc}</div>
+          <div style={{
+            background: C.basalt,
+            color: C.clay,
+            padding: '14px 18px',
+            borderRadius: 6,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontSize: 22,
+          }}>
+            <span style={{ color: C.cedar }}>$</span> {s.cmd}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div style={{
+      marginTop: 64,
+      padding: '32px 48px',
+      background: C.pine,
+      color: C.clay,
+      borderRadius: 12,
+      fontSize: TYPE_SCALE.subtitle,
+      fontWeight: 500,
+      textAlign: 'center',
+      letterSpacing: '-0.01em',
+    }}>
+      在 AI 動手前先 <span style={{ color: C.cedar }}>commit</span>，動手後先看 <span style={{ color: C.cedar }}>diff</span>。
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+/* ============================================================
+   Slide — Overview map
+   ============================================================ */
+const Overview = ({ n, total }) => (
+  <Frame>
+    <SlideHead
+      kicker="Putting it together"
+      title="一張圖看完全部"
+    />
+    <div style={{
+      marginTop: 28,
+      display: 'grid',
+      gridTemplateColumns: '1fr 1.2fr',
+      gap: 40,
+      alignItems: 'center',
+      flex: 1,
+    }}>
+      {/* Diagram */}
+      <div style={{
+        background: C.earth,
+        border: `1px solid ${C.borderSoft}`,
+        borderRadius: 12,
+        padding: 28,
+        display: 'flex', flexDirection: 'column', gap: 8,
+      }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, color: C.textDescription,
+          letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8,
+          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif", fontWeight: 600,
+        }}>基礎認知</div>
+        <MapNode label="Token" sub="最小單位" indent={0} />
+        <MapConn />
+        <MapNode label="Context" sub="AI 能看到的資訊" indent={1} />
+        <MapConn />
+        <MapNode label="Context Window" sub="有限的容量" indent={2} />
+        <MapConn />
+        <MapNode label="Session" sub="一次對話的生命週期" indent={3} />
+
+        <div style={{ height: 12 }} />
+        <div style={{
+          fontSize: TYPE_SCALE.small, color: C.textDescription,
+          letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8,
+          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif", fontWeight: 600,
+        }}>實作框架</div>
+        <MapNode label="Context Engineering" sub="Research → Plan → Implement" indent={0} accent />
+        <MapConn />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <MapNode label="CLAUDE.md" sub="專案層級" indent={0} tight />
+          <MapNode label="Skill" sub="任務層級" indent={0} tight />
+        </div>
+      </div>
+
+      {/* Text side */}
+      <div>
+        <div style={{
+          fontSize: TYPE_SCALE.subtitle,
+          lineHeight: 1.4,
+          color: C.ink,
+          fontWeight: 500,
+          marginBottom: 32,
+        }}>
+          這七個概念其實只在講一件事——<br/>
+          <span style={{ color: C.pine, fontWeight: 700 }}>怎麼讓 AI 在有限的記憶裡，每次都給好回覆。</span>
+        </div>
+        <div style={{
+          padding: '28px 36px',
+          background: C.slate,
+          borderLeft: `4px solid ${C.cedar}`,
+          borderRadius: 8,
+          fontSize: TYPE_SCALE.body,
+          color: C.ink,
+          lineHeight: 1.5,
+        }}>
+          AI 工具會一直迭代。但 Context 品質決定輸出品質的核心邏輯，不會變。
+        </div>
+      </div>
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+const MapNode = ({ label, sub, indent = 0, accent, tight }) => (
+  <div style={{
+    marginLeft: indent * 24,
+    padding: tight ? '10px 18px' : '12px 22px',
+    background: accent ? C.pine : C.white,
+    color: accent ? C.clay : C.ink,
+    border: accent ? 'none' : `1px solid ${C.borderSoft}`,
+    borderRadius: 8,
+    display: 'flex', alignItems: 'baseline', gap: 16,
+  }}>
+    <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 600 }}>{label}</div>
+    <div style={{
+      fontSize: TYPE_SCALE.tiny,
+      color: accent ? 'rgba(250, 241, 235, 0.7)' : C.textDescription,
+    }}>{sub}</div>
+  </div>
+);
+
+const MapConn = () => (
+  <div style={{
+    width: 2, height: 8, background: C.border,
+    marginLeft: 20,
+  }} />
+);
+
+/* ============================================================
+   Slide — Closing
+   ============================================================ */
+/* Closing component is unused (mount uses ClosingNoLogo). Removed to drop SVG deps. */
+const ClosingFooter = () => null;
+
+/* ============================================================
+   MERGED SLIDES (11-slide version)
+   ============================================================ */
+
+/* --- Token combined: definition + scale + pricing --- */
+const TokenCombined = ({ n, total }) => (
+  <Frame>
+    <SlideHead
+      kicker="01 · Token"
+      title="AI 的最小計量單位"
+      sub="你跟 AI 的每一次互動，都以 token 為單位被計算。輸入和輸出都算。"
+    />
+    <div style={{
+      marginTop: 48,
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 48,
+      flex: 1,
+    }}>
+      {/* Left: tokenization + scale */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{
+          background: C.earth, border: `1px solid ${C.borderSoft}`,
+          borderRadius: 12, padding: 32,
+        }}>
+          <div style={{ fontSize: TYPE_SCALE.small, color: C.textDescription, marginBottom: 14, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            例：「幫我設計一個登入頁面」
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {['幫', '我', '設', '計', '一', '個', '登', '入', '頁', '面'].map((t, i) => (
+              <div key={i} style={{
+                background: C.tagGreen, color: C.tagGreenText,
+                padding: '8px 14px', borderRadius: 4,
+                fontSize: TYPE_SCALE.small, fontWeight: 500,
+                fontFamily: "'Geist Mono', ui-monospace, monospace",
+              }}>{t}</div>
+            ))}
+          </div>
+          <div style={{ marginTop: 16, fontSize: TYPE_SCALE.small, color: C.textSecondary }}>
+            中文 1 字 ≈ 1.5–2 token · 英文 1 字 ≈ 1 token
+          </div>
+        </div>
+
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12,
+        }}>
+          {[
+            { qty: '300', unit: 'tokens', label: '一封 email' },
+            { qty: '5K', unit: 'tokens', label: '10 頁 PDF' },
+            { qty: '100K', unit: 'tokens', label: '300 頁英文書' },
+          ].map((item, i) => (
+            <div key={i} style={{
+              background: C.white, borderRadius: 8,
+              border: `1px solid ${C.borderSoft}`, padding: 20,
+            }}>
+              <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription, marginBottom: 6 }}>{item.label}</div>
+              <div style={{
+                fontSize: 40, fontWeight: 700, color: C.pine,
+                lineHeight: 1, fontFamily: "'Geist Mono', ui-monospace, monospace",
+              }}>{item.qty}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{
+          padding: '20px 28px', background: C.pine, color: C.clay,
+          borderRadius: 8,
+          fontSize: TYPE_SCALE.small, lineHeight: 1.5,
+        }}>
+          <b>1M tokens</b> ≈ 10 本《哈利波特 1：神秘的魔法石》
+        </div>
+      </div>
+
+      {/* Right: pricing */}
+      <div>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 600,
+          color: C.cedar, letterSpacing: '0.1em', textTransform: 'uppercase',
+          marginBottom: 20, fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+        }}>讀 / 寫一本哈利波特要多少錢？</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {[
+            { name: 'Opus 4.7', tag: '旗艦', tagBg: C.tagRed, tagFg: C.tagRedText, traits: '最強 · 最慢 · 最貴', read: 'NT$ 16', write: 'NT$ 80' },
+            { name: 'Sonnet 4.6', tag: '中階', tagBg: C.tagBlue, tagFg: C.tagBlueText, traits: '速度與品質兼顧', read: 'NT$ 10', write: 'NT$ 50' },
+            { name: 'Haiku 4.5', tag: '輕量', tagBg: C.tagGreen, tagFg: C.tagGreenText, traits: '最快 · 最便宜', read: 'NT$ 3', write: 'NT$ 16' },
+          ].map((m, i) => (
+            <div key={i} style={{
+              background: C.white, border: `1px solid ${C.borderSoft}`,
+              borderRadius: 12, padding: '22px 28px',
+              display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 20,
+              alignItems: 'center',
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+                  <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600 }}>{m.name}</div>
+                  <Tag bg={m.tagBg} fg={m.tagFg}>{m.tag}</Tag>
+                </div>
+                <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textSecondary }}>{m.traits}</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription, marginBottom: 4 }}>讀 100K</div>
+                <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.pine, fontFamily: "'Geist Mono', ui-monospace, monospace" }}>{m.read}</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription, marginBottom: 4 }}>寫 100K</div>
+                <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.cedar, fontFamily: "'Geist Mono', ui-monospace, monospace" }}>{m.write}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{
+          marginTop: 20,
+          padding: '18px 24px',
+          background: C.slate, borderRadius: 8,
+          borderLeft: `4px solid ${C.cedar}`,
+          fontSize: TYPE_SCALE.small, lineHeight: 1.5,
+        }}>
+          <b style={{ color: C.pine }}>策略：</b>
+          <span style={{ color: C.ink }}> Plan 用 Opus，執行用 Sonnet，調顏色用 Haiku。</span>
+        </div>
+      </div>
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+/* --- Context Window combined: definition + comparison --- */
+const ContextWindowCombined = ({ n, total }) => {
+  const rows = [
+    { brand: 'Anthropic', color: C.pine, models: [
+      { name: 'Claude Opus 4.7', tier: '旗艦', size: '1M', bar: 100 },
+      { name: 'Claude Sonnet 4.6', tier: '中階', size: '1M', bar: 100 },
+      { name: 'Claude Haiku 4.5', tier: '輕量', size: '200K', bar: 20 },
+    ]},
+    { brand: 'OpenAI', color: C.chartGreen, models: [
+      { name: 'GPT-5.4', tier: '旗艦', size: '272K', bar: 27.2 },
+      { name: 'GPT-5.4 mini', tier: '中階', size: '400K', bar: 40 },
+      { name: 'GPT-5.4 nano', tier: '輕量', size: '400K', bar: 40 },
+    ]},
+    { brand: 'Google', color: C.chartBlue, models: [
+      { name: 'Gemini 3.1 Pro', tier: '旗艦', size: '1M', bar: 100 },
+      { name: 'Gemini 3 Flash', tier: '中階', size: '1M', bar: 100 },
+      { name: 'Gemini 3.1 Flash-Lite', tier: '輕量', size: '1M', bar: 100 },
+    ]},
+  ];
+  return (
+    <Frame>
+      <SlideHead
+        kicker="02 · Context Window"
+        title="AI 的工作記憶，有上限。"
+        sub="模型生成回應時能「看到」的所有文字範圍——提示詞、對話紀錄、檔案、CLAUDE.md。"
+      />
+      <div style={{
+        marginTop: 28,
+        display: 'grid',
+        gridTemplateColumns: '0.95fr 1.4fr',
+        gap: 28,
+        flex: 1,
+      }}>
+        {/* Left: window visual + warning */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{
+            background: C.earth, border: `1px solid ${C.borderSoft}`,
+            borderRadius: 12, padding: 28,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, fontWeight: 500 }}>Context Window</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.pine, fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 600 }}>187 / 200K</div>
+            </div>
+            <div style={{ height: 14, background: C.slate, borderRadius: 6, overflow: 'hidden', marginBottom: 24 }}>
+              <div style={{ width: '93%', height: '100%', background: C.cedar }} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <BreakdownRow label="對話紀錄" value="82K" color={C.chartGreen} pct={44} />
+              <BreakdownRow label="讀入的檔案" value="65K" color={C.chartOrange} pct={35} />
+              <BreakdownRow label="CLAUDE.md" value="18K" color={C.chartBlue} pct={10} />
+              <BreakdownRow label="這次 prompt" value="22K" color={C.chartPurple} pct={11} />
+            </div>
+          </div>
+          <div style={{
+            background: C.tagOrange, color: C.tagOrangeText,
+            padding: '20px 24px', borderRadius: 8,
+            fontSize: TYPE_SCALE.small, fontWeight: 500, lineHeight: 1.5,
+          }}>
+            快滿時 AI 回應品質會下降，所以要主動管理 context。<br/>
+            指令：<Code size={TYPE_SCALE.small}>/context</Code>
+          </div>
+        </div>
+
+        {/* Right: comparison */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{
+            fontSize: TYPE_SCALE.small, fontWeight: 600,
+            color: C.cedar, letterSpacing: '0.1em', textTransform: 'uppercase',
+            fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+          }}>各家模型的記憶容量</div>
+          {rows.map((row, i) => (
+            <div key={i} style={{
+              background: C.earth, border: `1px solid ${C.borderSoft}`,
+              borderRadius: 10, padding: '14px 22px',
+              display: 'grid', gridTemplateColumns: '160px 1fr', gap: 24, alignItems: 'center',
+            }}>
+              <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: row.color }}>{row.brand}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {row.models.map((m, j) => (
+                  <div key={j} style={{
+                    display: 'grid', gridTemplateColumns: '280px 1fr 100px',
+                    alignItems: 'center', gap: 16,
+                  }}>
+                    <div style={{ fontSize: TYPE_SCALE.small, color: C.ink }}>
+                      <b>{m.name}</b>
+                      <span style={{ color: C.textDescription, marginLeft: 10 }}>{m.tier}</span>
+                    </div>
+                    <div style={{ height: 10, background: C.slate, borderRadius: 4 }}>
+                      <div style={{ width: `${m.bar}%`, height: '100%', background: row.color, borderRadius: 4 }} />
+                    </div>
+                    <div style={{
+                      textAlign: 'right', fontSize: TYPE_SCALE.small, fontWeight: 600,
+                      fontFamily: "'Geist Mono', ui-monospace, monospace", color: C.ink,
+                    }}>{m.size}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <Footmark />
+      <SlideNumber n={n} total={total} />
+    </Frame>
+  );
+};
+
+/* --- Session combined: lifecycle + memory resets --- */
+const SessionCombined = ({ n, total }) => (
+  <Frame>
+    <SlideHead
+      kicker="03 · Session"
+      title="一次對話的生命週期"
+      sub="打開 Claude Code 視窗、開始新對話——系統建立一個新 session。"
+    />
+
+    {/* Lifecycle steps */}
+    <div style={{
+      marginTop: 36,
+      background: C.earth, borderRadius: 12,
+      border: `1px solid ${C.borderSoft}`,
+      padding: '28px 36px',
+    }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', alignItems: 'center', gap: 12 }}>
+        {[
+          { label: '開啟視窗', desc: 'New session' },
+          { label: '第一個 prompt', desc: '需求 / 問題' },
+          { label: '累積對話', desc: '每一次互動' },
+          { label: '讀取檔案', desc: '同一 session' },
+          { label: '關閉視窗', desc: 'Session end' },
+        ].map((step, i) => (
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 10 }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: '50%',
+              background: i === 4 ? C.tagRed : C.pine,
+              color: i === 4 ? C.tagRedText : C.clay,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: TYPE_SCALE.tiny, fontWeight: 600,
+              fontFamily: "'Geist Mono', ui-monospace, monospace",
+            }}>{String(i + 1).padStart(2, '0')}</div>
+            <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.ink }}>{step.label}</div>
+            <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription }}>{step.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Memory reset comparison */}
+    <div style={{
+      marginTop: 28,
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 20,
+    }}>
+      <div style={{
+        background: C.white, border: `1px solid ${C.borderSoft}`,
+        borderRadius: 12, padding: 28,
+      }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.tagGreyText,
+          letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12,
+        }}>Figma 習慣</div>
+        <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.5, color: C.ink }}>
+          自動儲存所有修改，下次打開檔案一切都在。
+        </div>
+      </div>
+      <div style={{
+        background: C.basalt, color: C.clay,
+        borderRadius: 12, padding: 28,
+      }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.cedar,
+          letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12,
+        }}>AI 不是這樣</div>
+        <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.5 }}>
+          Session 內：AI 記得所有事 · Session 結束：<b>完全忘光</b>。
+          可用 <Code size={TYPE_SCALE.tiny}>/resume</Code> 接回之前的 session。
+        </div>
+      </div>
+    </div>
+
+    {/* Bridge to Context Engineering */}
+    <div style={{
+      marginTop: 24,
+      padding: '20px 32px',
+      background: C.slate, borderLeft: `4px solid ${C.cedar}`,
+      borderRadius: 8,
+      fontSize: TYPE_SCALE.small, lineHeight: 1.5,
+    }}>
+      <b style={{ color: C.pine }}>所以問題變成：</b>
+      <span style={{ color: C.ink }}>記憶會歸零、容量又有限，怎麼每次都得到好回覆？</span>
+      <span style={{ color: C.cedar, fontWeight: 600 }}> → Context Engineering</span>
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+/* --- Context Engineering combined: thesis + 3 pillars + R-P-I --- */
+const CECombined = ({ n, total }) => {
+  const pillars = [
+    { tag: 'Input', title: '放什麼進去', desc: '這個 session 要做什麼？需要哪些檔案？' },
+    { tag: 'State', title: '保留 / 丟掉', desc: '何時 /compact、何時 /clear 重開？' },
+    { tag: 'Scope', title: '怎麼分工', desc: '要不要用 sub-agent、Skill、Slash command？' },
+  ];
+  const flow = [
+    { num: '01', phase: 'Research', title: '研究', desc: '先讀資料、整理脈絡。' },
+    { num: '02', phase: 'Plan', title: '規劃', desc: '寫出明確計畫，你 review。' },
+    { num: '03', phase: 'Implement', title: '執行', desc: '按計畫落地，不會天馬行空。' },
+  ];
+
+  return (
+    <Frame bg={C.earth}>
+      <SlideHead
+        kicker="04 · Context Engineering"
+        title="在有限的 context 裡，主動決定給模型看什麼。"
+      />
+
+      {/* Thesis bar */}
+      <div style={{
+        marginTop: 28,
+        padding: '22px 32px',
+        background: C.pine, color: C.clay,
+        borderRadius: 12,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.cedar,
+          letterSpacing: '0.16em', textTransform: 'uppercase',
+          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+        }}>核心命題</div>
+        <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, letterSpacing: '-0.01em' }}>
+          Context 的品質，直接決定輸出的品質。
+        </div>
+      </div>
+
+      {/* Three pillars */}
+      <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.cedar,
+          letterSpacing: '0.1em', textTransform: 'uppercase',
+          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+        }}>主動管理三件事</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {pillars.map((p, i) => (
+            <div key={i} style={{
+              background: C.white, border: `1px solid ${C.borderSoft}`,
+              borderRadius: 10, padding: 24,
+              display: 'flex', flexDirection: 'column', gap: 12,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 6,
+                  background: C.pine, color: C.clay,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: TYPE_SCALE.tiny, fontWeight: 700,
+                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                }}>{String(i + 1).padStart(2, '0')}</div>
+                <Tag>{p.tag}</Tag>
+              </div>
+              <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.ink }}>{p.title}</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, lineHeight: 1.5 }}>{p.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* R-P-I workflow */}
+      <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.cedar,
+          letterSpacing: '0.1em', textTransform: 'uppercase',
+          fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+        }}>馬上能用的工作流</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          {flow.map((s, i) => (
+            <div key={i} style={{
+              background: i === 0 ? C.cedar : i === 1 ? C.pine : C.basalt,
+              color: C.clay,
+              borderRadius: 10, padding: '20px 24px',
+              display: 'flex', alignItems: 'center', gap: 18,
+            }}>
+              <div style={{
+                fontSize: 36, fontWeight: 700, lineHeight: 1,
+                color: C.clay, opacity: 0.9,
+                fontFamily: "'Geist Mono', ui-monospace, monospace",
+              }}>{s.num}</div>
+              <div>
+                <div style={{
+                  fontSize: TYPE_SCALE.tiny, color: C.clay, opacity: 0.7,
+                  letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 4,
+                }}>{s.phase}</div>
+                <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, marginBottom: 4 }}>{s.title}</div>
+                <div style={{ fontSize: TYPE_SCALE.tiny, opacity: 0.85, lineHeight: 1.4 }}>{s.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <Footmark />
+      <SlideNumber n={n} total={total} />
+    </Frame>
+  );
+};
+
+const ClosingNoLogo = ({ n, total }) => (
+  <Frame padded={false} bg={C.basalt} style={{ color: C.clay }}>
+    <div style={{
+      position: 'relative', height: '100%',
+      padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
+      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+    }}>
+      <div style={{
+        fontSize: TYPE_SCALE.small,
+        letterSpacing: '0.22em', textTransform: 'uppercase',
+        color: C.cedar, fontWeight: 600,
+        fontFamily: "Poppins, 'Noto Sans TC', Arial, sans-serif",
+      }}>一句話帶走</div>
+      <div>
+        <div style={{
+          fontSize: 120, fontWeight: 700, lineHeight: 1.02,
+          letterSpacing: '-0.03em', color: C.clay,
+        }}>
+          AI 的輸出品質，<br/>
+          <span style={{ color: C.cedar }}>取決於你給它的 Context 品質。</span>
+        </div>
+        <div style={{
+          marginTop: 56, fontSize: TYPE_SCALE.subtitle, lineHeight: 1.4,
+          color: C.clay, opacity: 0.72, fontWeight: 300, maxWidth: 1200,
+        }}>
+          工具會變，邏輯不會。學好 Context Engineering，<br/>你比工具活得更久。
+        </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, color: C.clay, opacity: 0.6,
+          letterSpacing: '0.16em', textTransform: 'uppercase',
+        }}>Thank you</div>
+        <div style={{
+          fontSize: TYPE_SCALE.small, color: C.clay, opacity: 0.5,
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          letterSpacing: '0.1em',
+        }}>Q & A</div>
+      </div>
+    </div>
+    <SlideNumber n={n} total={total} color="rgba(250, 241, 235, 0.4)" />
+  </Frame>
+);
+
+Object.assign(window, {
+  TokenCombined, ContextWindowCombined, SessionCombined, CECombined,
+  ClosingNoLogo,
+});
