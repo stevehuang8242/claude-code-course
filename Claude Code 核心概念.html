@@ -23,11 +23,12 @@
     font-weight: 100 900; font-style: normal; font-display: swap;
   }
 
-  html, body { margin: 0; padding: 0; background: #ffffff; }
+  html, body { margin: 0; padding: 0; background: #090909; }
   body {
     font-family: Inter, 'Noto Sans TC', system-ui, sans-serif;
-    color: #000000;
-    font-feature-settings: 'kern';
+    color: #ffffff;
+    /* Inter Variable character variants — Framer's body voice. */
+    font-feature-settings: 'cv01', 'cv05', 'cv09', 'cv11', 'ss03', 'ss07', 'kern';
   }
   deck-stage section { overflow: hidden; }
 </style>
@@ -58,11 +59,11 @@
   const mount = (id, el) => ReactDOM.createRoot(document.getElementById(id)).render(el);
 
   mount('s1',  <Agenda n={1} total={TOTAL} />);
-  mount('s2',  <SectionDivider kicker="Part 1 of 2" title="基礎認知" subtitle="Token · Context Window · Session——先搞懂 AI 怎麼「看」世界。" range="Chapters 01–03" n={2} total={TOTAL} bg="#dceeb1" />);
+  mount('s2',  <SectionDivider kicker="Part 1 of 2" title="基礎認知" subtitle="Token · Context Window · Session——先搞懂 AI 怎麼「看」世界。" range="Chapters 01–03" n={2} total={TOTAL} bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)" />);
   mount('s3',  <TokenCombined n={3} total={TOTAL} />);
   mount('s4',  <ContextWindowCombined n={4} total={TOTAL} />);
   mount('s5',  <SessionCombined n={5} total={TOTAL} />);
-  mount('s6',  <SectionDivider kicker="Part 2 of 2" title="實作框架" subtitle="Context Engineering 方法論，加上 CLAUDE.md、Skill 兩把實作工具。" range="Chapters 04–06" n={6} total={TOTAL} bg="#c5b0f4" />);
+  mount('s6',  <SectionDivider kicker="Part 2 of 2" title="實作框架" subtitle="Context Engineering 方法論，加上 CLAUDE.md、Skill 兩把實作工具。" range="Chapters 04–06" n={6} total={TOTAL} bg="linear-gradient(135deg, #d44df0 0%, #ff7a3d 100%)" />);
   mount('s7',  <CECombined n={7} total={TOTAL} />);
   mount('s8',  <ClaudeMd n={8} total={TOTAL} />);
   mount('s9',  <Skill n={9} total={TOTAL} />);

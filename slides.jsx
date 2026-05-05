@@ -1,98 +1,123 @@
-/* Chthonia-styled slides for Claude Code 核心概念 deck */
+/* Framer-styled slides for Claude Code 核心概念 deck.
+ * Migrated from a light pastel system to Framer's dark-canvas system per
+ * /Users/steve/Apps/Claude Code 教學/framer-DESIGN.md.
+ *
+ * Core moves:
+ *   - Pure black canvas (#090909) is the only page ground.
+ *   - Inter Variable + cv01/05/09/11/ss03/ss07 character variants for body voice.
+ *   - Surface lift carries hierarchy: canvas → surface-1 (#141414) → surface-2 (#1c1c1c).
+ *   - Hierarchy is binary: ink (#fff) vs ink-muted (#999) — no gray ramps.
+ *   - Display sizes use aggressive negative tracking; CJK lines cap at -2.5%.
+ *   - Gradient spotlight grounds (violet, magenta) appear sparsely on section
+ *     dividers and the closing slide — never as content cards.
+ */
 
 const TYPE_SCALE = {
   hero: 108,
   display: 88,
-  title: 56,         // was 64 — content slides feel less top-heavy
-  subtitle: 36,      // was 44 — pulls body content up
-  body: 32,          // was 34
-  small: 26,         // was 28
+  title: 56,
+  subtitle: 36,
+  body: 32,
+  small: 26,
   tiny: 22,
 };
 
+/* Tracking baked per size. Mixed CJK+Latin caps at -2.5% so Chinese
+ * characters don't overlap; Latin-only contexts can push to -4.5%. */
+const TRACK = {
+  hero:     '-0.025em',
+  heroLat:  '-0.045em',
+  display:  '-0.025em',
+  title:    '-0.02em',
+  subtitle: '-0.012em',
+  body:     '-0.008em',
+  small:    '-0.005em',
+  tiny:     '0em',
+};
+
 const SPACING = {
-  paddingTop: 72,    // was 100
-  paddingBottom: 56, // was 80
+  paddingTop: 72,
+  paddingBottom: 56,
   paddingX: 120,
-  titleGap: 36,      // was 52
+  titleGap: 36,
   itemGap: 28,
 };
 
-/* Figma marketing palette (per DESIGN.md), with magenta + dark grounds removed.
- * Monochrome chrome + 7 oversized pastel color blocks. No saturated accent text.
- *
- * Design rule: weight (not opacity, not gray) carries body hierarchy.
- *   → textSecondary / textDescription map to pure ink; lighten via fontWeight 320–340.
- *
- * Legacy token names (pine/cedar/clay/...) kept as a thin compatibility layer so
- * existing component code keeps working without a wholesale refactor.
+/* Framer dark palette. Legacy alias names (pine, cedar, basalt, ...)
+ * remap to the new dark tokens so non-mounted legacy slides still resolve.
  */
 const C = {
-  // Monochrome core
-  ink: '#000000',
-  canvas: '#ffffff',
-  inverseCanvas: '#000000',
-  inverseInk: '#ffffff',
-  hairline: '#e6e6e6',
-  hairlineSoft: '#f1f1f1',
-  surfaceSoft: '#f7f7f5',
+  // Framer canon
+  canvas:        '#090909',
+  surface1:      '#141414',
+  surface2:      '#1c1c1c',
+  ink:           '#ffffff',
+  inkMuted:      '#999999',
+  hairline:      '#262626',
+  hairlineSoft:  '#1a1a1a',
+  inverseCanvas: '#ffffff',
+  inverseInk:    '#000000',
 
-  // Color blocks — full-width section grounds. Limited to lime / cream / lilac
-  // (the set used on slide 7). The other names are kept as aliases for legacy
-  // call sites but resolve to one of the three approved colors.
-  blockLime: '#dceeb1',
-  blockLilac: '#c5b0f4',
-  blockCream: '#f4ecd6',
-  blockPink: '#c5b0f4',     // alias → lilac
-  blockMint: '#f4ecd6',     // alias → cream
-  blockCoral: '#f4ecd6',    // alias → cream
-  blockNavy: '#000000',     // alias → ink (only used as edge case, not as block bg)
-
-  // Magenta accent removed — emphasis carried by weight + lime/cream highlights.
-  // Token kept as alias of ink so any stray reference falls back gracefully.
-  accentMagenta: '#000000',
-  semanticSuccess: '#000000',  // alias → ink (slide 7 palette has no green semantic)
+  // Gradient spotlight family — only on section grounds + closing slide.
+  gradientViolet:  '#6a4cf5',
+  gradientMagenta: '#d44df0',
+  gradientOrange:  '#ff7a3d',
+  gradientCoral:   '#ff5577',
 
   // ── Legacy aliases (do not introduce new uses) ─────────────────────────
-  // Map all former colored tokens to monochrome — weight differentiates.
-  pine: '#000000',
-  cedar: '#000000',         // legacy alias — emphasis now carried by weight, not color
-  basalt: '#000000',        // legacy alias → ink (navy retired)
-  clay: '#ffffff',
-  slate: '#f1f1f1',
-  earth: '#ffffff',
-  white: '#ffffff',
-  textSecondary: '#000000',
-  textDescription: '#000000',
-  border: '#e6e6e6',
-  borderSoft: '#f1f1f1',
-  bgSecondary: '#f7f7f5',
-  // Tag chips become small pastel blocks; text always ink.
-  tagGreen: '#dceeb1',
-  tagGreenText: '#000000',
-  tagOrange: '#f4ecd6',    // alias → cream
-  tagOrangeText: '#000000',
-  tagBlue: '#c5b0f4',
-  tagBlueText: '#000000',
-  tagRed: '#f4ecd6',       // cream — was pink (kept name as legacy alias)
-  tagRedText: '#000000',
-  tagGrey: '#f7f7f5',
-  tagGreyText: '#000000',
-  // Charts: limited to slide-7 palette (ink + lime + lilac + cream).
-  chartGreen: '#dceeb1',   // lime — was semantic green
-  chartOrange: '#000000',  // ink — was coral
-  chartPurple: '#f4ecd6',  // cream — was lilac
-  chartBlue: '#c5b0f4',    // lilac — was mint
-  chartYellow: '#dceeb1',  // lime
+  pine:        '#ffffff',  // emphasis bg/text → ink white (was black)
+  cedar:       '#999999',  // muted → ink-muted
+  basalt:      '#090909',  // dark ground → canvas
+  clay:        '#ffffff',  // primary text → ink (was cream)
+  slate:       '#262626',  // → hairline (was light gray)
+  earth:       '#141414',  // → surface-1 (was off-white card bg)
+  white:       '#141414',  // → surface-1 (most cards used C.white as bg)
+  surfaceSoft: '#141414',  // → surface-1
+  textSecondary:   '#999999',
+  textDescription: '#999999',
+  border:      '#262626',
+  borderSoft:  '#1a1a1a',
+  bgSecondary: '#141414',
+
+  // Tag chips: monochrome lift only. Three tier tags differ by inner text.
+  tagGreen:    '#1c1c1c',  tagGreenText:  '#ffffff',
+  tagOrange:   '#1c1c1c',  tagOrangeText: '#ffffff',
+  tagBlue:     '#1c1c1c',  tagBlueText:   '#ffffff',
+  tagRed:      '#1c1c1c',  tagRedText:    '#ffffff',
+  tagGrey:     '#141414',  tagGreyText:   '#999999',
+
+  // Block grounds: gradient grounds are passed via the mount call in HTML
+  // (e.g. "#6a4cf5" for the violet section divider) — these aliases default
+  // to surface-1 so any in-component "color block" card stays on the dark
+  // chrome instead of becoming a gradient.
+  blockLime:   '#141414',
+  blockLilac:  '#141414',
+  blockCream:  '#141414',
+  blockPink:   '#141414',
+  blockMint:   '#141414',
+  blockCoral:  '#141414',
+  blockNavy:   '#090909',
+
+  // Charts: ink + two muted shades for visual hierarchy without color.
+  chartGreen:  '#666666',
+  chartOrange: '#ffffff',
+  chartPurple: '#666666',
+  chartBlue:   '#999999',
+  chartYellow: '#ffffff',
+
+  // Retired accents — fall back to ink so stray references stay visible.
+  accentMagenta:   '#ffffff',
+  semanticSuccess: '#ffffff',
 };
 
 const ROUNDED = {
-  xs: 2,
-  sm: 6,
-  md: 8,
-  lg: 24,
-  xl: 32,
-  pill: 50,
+  xs: 4,    // utility chip
+  sm: 6,    // inline tag
+  md: 10,   // form input, list item
+  lg: 20,   // Framer card (was 24)
+  xl: 30,   // Framer gradient card (was 32)
+  xxl: 40,
+  pill: 100, // Framer pill (was 50)
   full: 9999,
 };
 
@@ -100,7 +125,7 @@ const ROUNDED = {
    Shared primitives
    ============================================================ */
 
-const Frame = ({ bg = C.white, children, style = {}, padded = true }) => (
+const Frame = ({ bg = C.canvas, children, style = {}, padded = true }) => (
   <div style={{
     boxSizing: 'border-box',
     width: '100%',
@@ -119,14 +144,16 @@ const Frame = ({ bg = C.white, children, style = {}, padded = true }) => (
   </div>
 );
 
-const Eyebrow = ({ children, color = C.cedar }) => (
+/* Framer caption-style eyebrow — non-caps, ink-muted, monospace numerics.
+ * The aggressive small-caps tracked-out kicker style reads "editorial" and
+ * conflicts with Framer's poster register, so we drop it. */
+const Eyebrow = ({ children, color = C.inkMuted }) => (
   <div style={{
     fontSize: TYPE_SCALE.small,
-    fontWeight: 600,
-    letterSpacing: '0.18em',
-    textTransform: 'uppercase',
+    fontWeight: 500,
+    letterSpacing: TRACK.small,
     color,
-    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+    fontFamily: "'Geist Mono', ui-monospace, monospace",
   }}>{children}</div>
 );
 
@@ -170,20 +197,22 @@ const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
     color: fg,
     fontSize: TYPE_SCALE.small,
     fontWeight: 500,
-    padding: '8px 16px',
-    borderRadius: ROUNDED.xs,
-    letterSpacing: '0.02em',
+    padding: '6px 14px',
+    borderRadius: ROUNDED.pill,
+    letterSpacing: TRACK.small,
   }}>{children}</span>
 );
 
-const Code = ({ children, size = TYPE_SCALE.body, dark = false }) => (
+/* Always lifts above its parent surface — surface-2 chip works on canvas
+ * (#090909) and on surface-1 cards (#141414). The `dark` prop is vestigial. */
+const Code = ({ children, size = TYPE_SCALE.body }) => (
   <span style={{
     fontFamily: "'Geist Mono', ui-monospace, monospace",
     fontSize: size,
-    background: dark ? 'rgba(255,255,255,0.14)' : C.surfaceSoft,
-    color: dark ? C.inverseInk : C.ink,
+    background: C.surface2,
+    color: C.ink,
     padding: '4px 12px',
-    borderRadius: ROUNDED.xs,
+    borderRadius: ROUNDED.sm,
   }}>{children}</span>
 );
 
@@ -313,13 +342,12 @@ const Agenda = ({ n, total }) => (
 /* ============================================================
    Section Divider
    ============================================================ */
-const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.blockLime }) => {
-  // Choose readable text color based on the panel ground
-  const dark = bg === C.blockNavy;
-  const fg = dark ? C.inverseInk : C.ink;
-  const eyebrowColor = dark ? C.inverseInk : C.ink;
+/* Section dividers are the deck's gradient spotlight moments — the bg is
+ * passed in by the mount call as a literal hex (e.g. "#6a4cf5" violet,
+ * "#d44df0" magenta). All gradient grounds use white type. */
+const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.gradientViolet }) => {
   return (
-    <Frame padded={false} bg={bg} style={{ color: fg }}>
+    <Frame padded={false} bg={bg} style={{ color: C.ink }}>
       <div style={{
         height: '100%',
         padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
@@ -328,39 +356,40 @@ const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.block
         <div>
           <div style={{
             fontSize: TYPE_SCALE.small,
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            color: eyebrowColor,
-            fontWeight: 400,
+            letterSpacing: TRACK.small,
+            color: C.ink,
+            fontWeight: 500,
             fontFamily: "'Geist Mono', ui-monospace, monospace",
+            opacity: 0.78,
           }}>{kicker}</div>
           <h1 style={{
             fontSize: TYPE_SCALE.display,
-            fontWeight: 540,
-            lineHeight: 1.0,
-            letterSpacing: '-0.04em',
+            fontWeight: 500,
+            lineHeight: 0.95,
+            letterSpacing: TRACK.display,
             margin: '56px 0 36px 0',
-            color: fg,
+            color: C.ink,
             maxWidth: 1500,
           }}>{title}</h1>
           <div style={{
             fontSize: TYPE_SCALE.subtitle,
-            lineHeight: 1.35,
-            color: fg,
-            fontWeight: 330,
+            lineHeight: 1.3,
+            color: C.ink,
+            fontWeight: 400,
             maxWidth: 1400,
-            letterSpacing: '-0.01em',
+            letterSpacing: TRACK.subtitle,
+            opacity: 0.92,
           }}>{subtitle}</div>
         </div>
         <div style={{
           fontSize: TYPE_SCALE.tiny,
-          color: fg,
+          color: C.ink,
           fontFamily: "'Geist Mono', ui-monospace, monospace",
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
+          letterSpacing: TRACK.small,
+          opacity: 0.7,
         }}>{range}</div>
       </div>
-      <SlideNumber n={n} total={total} color={fg} />
+      <SlideNumber n={n} total={total} color={C.ink} />
     </Frame>
   );
 };
@@ -373,19 +402,21 @@ const SlideHead = ({ kicker, title, sub }) => (
     {kicker && <Eyebrow>{kicker}</Eyebrow>}
     <h1 style={{
       fontSize: TYPE_SCALE.title,
-      fontWeight: 600,
-      lineHeight: 1.15,
+      fontWeight: 500,
+      lineHeight: 1.05,
       margin: `${kicker ? SPACING.titleGap : 0}px 0 0 0`,
-      letterSpacing: '-0.01em',
+      letterSpacing: TRACK.title,
+      color: C.ink,
     }}>{title}</h1>
     {sub && (
       <div style={{
         fontSize: TYPE_SCALE.subtitle,
-        color: C.textSecondary,
+        color: C.inkMuted,
         marginTop: 20,
-        lineHeight: 1.35,
+        lineHeight: 1.3,
         fontWeight: 400,
         maxWidth: 1400,
+        letterSpacing: TRACK.subtitle,
       }}>{sub}</div>
     )}
   </div>
@@ -714,8 +745,8 @@ const ContextWindowIntro = ({ n, total }) => (
 
 const BreakdownRow = ({ label, value, color, pct }) => (
   <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr 80px', gap: 16, alignItems: 'center' }}>
-    <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary }}>{label}</div>
-    <div style={{ height: 10, background: C.white, borderRadius: ROUNDED.xs, overflow: 'hidden' }}>
+    <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted }}>{label}</div>
+    <div style={{ height: 10, background: C.hairline, borderRadius: ROUNDED.xs, overflow: 'hidden' }}>
       <div style={{ width: `${pct}%`, height: '100%', background: color }} />
     </div>
     <div style={{ fontSize: TYPE_SCALE.small, fontFamily: "'Geist Mono', ui-monospace, monospace", color: C.ink, textAlign: 'right' }}>{value}</div>
@@ -1176,7 +1207,7 @@ const CEWorkflow = ({ n, total }) => (
    Slide — CLAUDE.md
    ============================================================ */
 const ClaudeMd = ({ n, total }) => (
-  <Frame bg={C.earth}>
+  <Frame>
     <SlideHead
       kicker="05 · CLAUDE.md"
       title="你的專案說明書"
@@ -1190,26 +1221,27 @@ const ClaudeMd = ({ n, total }) => (
       gap: 40,
       alignItems: 'stretch',
     }}>
-      {/* Mocked file panel — cream "light editor" theme */}
+      {/* Mocked file panel — dark editor surface (Framer product-mockup-tile) */}
       <div style={{
-        background: C.blockCream,
+        background: C.surface2,
         borderRadius: ROUNDED.lg,
         overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
+        border: `1px solid ${C.hairline}`,
       }}>
         <div style={{
           padding: '14px 20px',
           display: 'flex', alignItems: 'center', gap: 10,
-          borderBottom: `1px solid rgba(0, 0, 0, 0.08)`,
+          borderBottom: `1px solid ${C.hairline}`,
         }}>
           <div style={{ display: 'flex', gap: 8 }}>
             <Dot color="#ed6a5e" /><Dot color="#f5bf4f" /><Dot color="#62c554" />
           </div>
           <div style={{
             marginLeft: 16,
-            fontSize: TYPE_SCALE.tiny, color: C.ink, fontWeight: 400,
+            fontSize: TYPE_SCALE.tiny, color: C.inkMuted, fontWeight: 400,
             fontFamily: "'Geist Mono', ui-monospace, monospace",
-            letterSpacing: '0.04em',
+            letterSpacing: TRACK.tiny,
           }}>CLAUDE.md</div>
         </div>
         <div style={{
@@ -1223,18 +1255,18 @@ const ClaudeMd = ({ n, total }) => (
           <div><span style={{ color: C.ink, fontWeight: 700 }}># 專案名稱</span></div>
           <div style={{ height: 12 }} />
           <div><span style={{ color: C.ink, fontWeight: 700 }}>## 技術棧</span></div>
-          <div>- React 18 + TypeScript</div>
-          <div>- Tailwind CSS v4</div>
-          <div>- shadcn/ui 元件庫</div>
+          <div style={{ color: C.inkMuted }}>- React 18 + TypeScript</div>
+          <div style={{ color: C.inkMuted }}>- Tailwind CSS v4</div>
+          <div style={{ color: C.inkMuted }}>- shadcn/ui 元件庫</div>
           <div style={{ height: 12 }} />
           <div><span style={{ color: C.ink, fontWeight: 700 }}>## Design System</span></div>
-          <div>- 主色：<span style={{ color: C.blockLilac, fontWeight: 700 }}>#2563EB</span></div>
-          <div>- 圓角：8px / 12px / 16px</div>
-          <div>- 字型：Inter, Noto Sans TC</div>
+          <div style={{ color: C.inkMuted }}>- 主色：<span style={{ color: '#2563EB', fontWeight: 700 }}>#2563EB</span></div>
+          <div style={{ color: C.inkMuted }}>- 圓角：8px / 12px / 16px</div>
+          <div style={{ color: C.inkMuted }}>- 字型：Inter, Noto Sans TC</div>
           <div style={{ height: 12 }} />
           <div><span style={{ color: C.ink, fontWeight: 700 }}>## 程式碼慣例</span></div>
-          <div>- 元件 PascalCase</div>
-          <div>- 所有元件支援 dark mode</div>
+          <div style={{ color: C.inkMuted }}>- 元件 PascalCase</div>
+          <div style={{ color: C.inkMuted }}>- 所有元件支援 dark mode</div>
         </div>
       </div>
 
@@ -1408,25 +1440,25 @@ const FlowStep = ({ icon, text, highlight }) => (
   <div style={{
     display: 'grid', gridTemplateColumns: '48px 1fr', alignItems: 'center', gap: 16,
     padding: '16px 20px',
-    background: C.canvas,
-    color: C.ink,
-    border: highlight ? `2px solid ${C.ink}` : 'none',
+    background: highlight ? C.ink : C.surface2,
+    color: highlight ? C.canvas : C.ink,
+    border: 'none',
     borderRadius: ROUNDED.md,
   }}>
     <div style={{
       width: 36, height: 36, borderRadius: ROUNDED.full,
-      background: highlight ? C.ink : C.surfaceSoft,
-      color: highlight ? C.canvas : C.ink,
+      background: highlight ? C.canvas : C.hairline,
+      color: highlight ? C.ink : C.ink,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: 20, fontWeight: 700,
     }}>{icon}</div>
-    <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.4, fontWeight: highlight ? 700 : 330 }}>{text}</div>
+    <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.4, fontWeight: highlight ? 700 : 400 }}>{text}</div>
   </div>
 );
 
 const FlowArrow = () => (
   <div style={{
-    width: 2, height: 20, background: 'rgba(0, 0, 0, 0.22)',
+    width: 2, height: 20, background: 'rgba(255, 255, 255, 0.22)',
     marginLeft: 23,
   }} />
 );
@@ -1787,11 +1819,11 @@ const ContextWindowCombined = ({ n, total }) => {
             borderRadius: ROUNDED.lg, padding: 28,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-              <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, fontWeight: 500 }}>Context Window</div>
-              <div style={{ fontSize: TYPE_SCALE.small, color: C.pine, fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 600 }}>187 / 200K</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, fontWeight: 500 }}>Context Window</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 600 }}>187 / 200K</div>
             </div>
-            <div style={{ height: 14, background: C.slate, borderRadius: ROUNDED.sm, overflow: 'hidden', marginBottom: 24 }}>
-              <div style={{ width: '93%', height: '100%', background: C.cedar }} />
+            <div style={{ height: 14, background: C.surface2, borderRadius: ROUNDED.sm, overflow: 'hidden', marginBottom: 24 }}>
+              <div style={{ width: '93%', height: '100%', background: C.ink }} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <BreakdownRow label="對話紀錄" value="82K" color={C.ink} pct={44} />
@@ -1886,15 +1918,15 @@ const SessionCombined = ({ n, total }) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 10 }}>
             <div style={{
               width: 44, height: 44, borderRadius: ROUNDED.full,
-              background: i === 4 ? C.blockCream : C.canvas,
-              color: C.ink,
+              background: i === 4 ? C.ink : 'transparent',
+              color: i === 4 ? C.canvas : C.ink,
               border: i === 4 ? 'none' : `1.5px solid ${C.ink}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: TYPE_SCALE.tiny, fontWeight: 700,
               fontFamily: "'Geist Mono', ui-monospace, monospace",
             }}>{String(i + 1).padStart(2, '0')}</div>
-            <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>{step.label}</div>
-            <div style={{ fontSize: TYPE_SCALE.tiny, color: C.ink, fontWeight: 330 }}>{step.desc}</div>
+            <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 700, color: C.ink, letterSpacing: TRACK.small }}>{step.label}</div>
+            <div style={{ fontSize: TYPE_SCALE.tiny, color: C.inkMuted, fontWeight: 400 }}>{step.desc}</div>
           </div>
         ))}
       </div>
@@ -1908,46 +1940,46 @@ const SessionCombined = ({ n, total }) => (
       gap: 20,
     }}>
       <div style={{
-        background: C.canvas, border: `1px solid ${C.hairline}`,
+        background: C.surface1, border: `1px solid ${C.hairline}`,
         borderRadius: ROUNDED.lg, padding: 28,
       }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 400, color: C.ink,
-          letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12,
+          fontSize: TYPE_SCALE.small, fontWeight: 500, color: C.inkMuted,
+          letterSpacing: TRACK.small, marginBottom: 12,
           fontFamily: "'Geist Mono', ui-monospace, monospace",
         }}>Figma 習慣</div>
-        <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 330, lineHeight: 1.5, color: C.ink }}>
+        <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 400, lineHeight: 1.5, color: C.ink }}>
           自動儲存所有修改，下次打開檔案一切都在。
         </div>
       </div>
       <div style={{
-        background: C.blockLilac, color: C.ink,
+        background: C.surface2, color: C.ink,
         borderRadius: ROUNDED.lg, padding: 28,
       }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 400, color: C.ink,
-          letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12,
+          fontSize: TYPE_SCALE.small, fontWeight: 500, color: C.inkMuted,
+          letterSpacing: TRACK.small, marginBottom: 12,
           fontFamily: "'Geist Mono', ui-monospace, monospace",
         }}>AI 不是這樣</div>
-        <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 330, lineHeight: 1.5 }}>
+        <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 400, lineHeight: 1.5 }}>
           Session 內：AI 記得所有事 · Session 結束：<b style={{ fontWeight: 700 }}>完全忘光</b>。
           可用 <Code size={TYPE_SCALE.tiny}>/resume</Code> 接回之前的 session。
         </div>
       </div>
     </div>
 
-    {/* Bridge to Context Engineering — lime block */}
+    {/* Bridge to Context Engineering — surface-2 lift band */}
     <div style={{
       marginTop: 24,
       padding: '24px 32px',
-      background: C.blockLime,
+      background: C.surface2,
       borderRadius: ROUNDED.lg,
       fontSize: TYPE_SCALE.small, lineHeight: 1.5,
       color: C.ink,
-      fontWeight: 330,
+      fontWeight: 400,
     }}>
       <b style={{ fontWeight: 700 }}>所以問題變成：</b>
-      <span>記憶會歸零、容量又有限，怎麼每次都得到好回覆？</span>
+      <span style={{ color: C.inkMuted }}>記憶會歸零、容量又有限，怎麼每次都得到好回覆？</span>
       <b style={{ fontWeight: 700 }}> → Context Engineering</b>
     </div>
     <Footmark />
@@ -1969,17 +2001,17 @@ const CECombined = ({ n, total }) => {
   ];
 
   return (
-    <Frame bg={C.earth}>
+    <Frame>
       <SlideHead
         kicker="04 · Context Engineering"
         title="在有限的 context 裡，主動決定給模型看什麼。"
       />
 
-      {/* Thesis bar — lime block */}
+      {/* Thesis bar — surface-2 lift (the "core thesis" emphasis) */}
       <div style={{
         marginTop: 28,
         padding: '28px 36px',
-        background: C.blockLime, color: C.ink,
+        background: C.surface2, color: C.ink,
         borderRadius: ROUNDED.lg,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
@@ -2003,17 +2035,17 @@ const CECombined = ({ n, total }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {pillars.map((p, i) => (
             <div key={i} style={{
-              background: C.canvas, border: `1px solid ${C.hairline}`,
+              background: C.surface1, border: `1px solid ${C.hairline}`,
               borderRadius: ROUNDED.lg, padding: 28,
               display: 'flex', flexDirection: 'column', gap: 14,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{
                   padding: '4px 10px', borderRadius: ROUNDED.sm,
-                  background: C.surfaceSoft, color: C.ink,
-                  fontSize: TYPE_SCALE.tiny, fontWeight: 400,
+                  background: C.surface2, color: C.inkMuted,
+                  fontSize: TYPE_SCALE.tiny, fontWeight: 500,
                   fontFamily: "'Geist Mono', ui-monospace, monospace",
-                  letterSpacing: '0.08em',
+                  letterSpacing: TRACK.tiny,
                 }}>{String(i + 1).padStart(2, '0')}</div>
                 <Tag>{p.tag}</Tag>
               </div>
@@ -2066,8 +2098,10 @@ const CECombined = ({ n, total }) => {
   );
 };
 
+/* Closing slide is the deck's third (and final) gradient spotlight moment.
+ * Violet→magenta diagonal blend, mirroring the s2 section divider. */
 const ClosingNoLogo = ({ n, total }) => (
-  <Frame padded={false} bg={C.blockCream} style={{ color: C.ink }}>
+  <Frame padded={false} bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)" style={{ color: C.ink }}>
     <div style={{
       position: 'relative', height: '100%',
       padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
@@ -2075,42 +2109,47 @@ const ClosingNoLogo = ({ n, total }) => (
     }}>
       <div style={{
         fontSize: TYPE_SCALE.small,
-        letterSpacing: '0.16em', textTransform: 'uppercase',
-        color: C.ink, fontWeight: 400,
+        letterSpacing: TRACK.small,
+        color: C.ink, fontWeight: 500,
         fontFamily: "'Geist Mono', ui-monospace, monospace",
+        opacity: 0.78,
       }}>一句話帶走 · One takeaway</div>
       <div>
         <div style={{
-          fontSize: TYPE_SCALE.hero, fontWeight: 540, lineHeight: 1.05,
-          letterSpacing: '-0.04em', color: C.ink,
+          fontSize: TYPE_SCALE.hero, fontWeight: 500, lineHeight: 1.0,
+          letterSpacing: TRACK.hero, color: C.ink,
         }}>
           AI 的輸出品質，<br/>
           取決於你給它的&nbsp;
           <span style={{
-            background: C.blockLime,
-            padding: '0.04em 0.18em',
+            background: C.ink,
+            color: C.gradientViolet,
+            padding: '0.02em 0.18em',
             fontWeight: 700,
+            borderRadius: '0.06em',
           }}>Context 品質</span>
           。
         </div>
         <div style={{
-          marginTop: 48, fontSize: TYPE_SCALE.subtitle, lineHeight: 1.4,
-          color: C.ink, fontWeight: 330, maxWidth: 1200,
-          letterSpacing: '-0.01em',
+          marginTop: 48, fontSize: TYPE_SCALE.subtitle, lineHeight: 1.3,
+          color: C.ink, fontWeight: 400, maxWidth: 1200,
+          letterSpacing: TRACK.subtitle,
+          opacity: 0.92,
         }}>
           工具會變，邏輯不會。學好 Context Engineering，<br/>你比工具活得更久。
         </div>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div style={{
-          fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 400,
-          letterSpacing: '0.16em', textTransform: 'uppercase',
+          fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
+          letterSpacing: TRACK.small,
           fontFamily: "'Geist Mono', ui-monospace, monospace",
+          opacity: 0.78,
         }}>Thank you</div>
         <div style={{
           fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 700,
           fontFamily: "'Geist Mono', ui-monospace, monospace",
-          letterSpacing: '0.12em', textTransform: 'uppercase',
+          letterSpacing: TRACK.small,
         }}>Q & A</div>
       </div>
     </div>
