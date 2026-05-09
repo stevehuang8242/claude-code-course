@@ -14,6 +14,11 @@
  *  (f) print — `@media print` lays every slide out as its own page at the
  *      design size, so the browser's Print → Save as PDF produces a clean
  *      one-page-per-slide PDF with no extra setup.
+ *  (g) overview — press `o` to toggle a full-screen grid of thumbnails;
+ *      click a thumbnail to jump. Esc closes. Thumbnails are deep clones
+ *      (display-only, no React) of the live slide DOM, scaled with
+ *      transform; the overlay lives in document.body so clones inherit
+ *      document fonts & global stylesheets.
  *
  * Slides are HIDDEN, not unmounted. Non-active slides stay in the DOM with
  * `visibility: hidden` + `opacity: 0`, so their state (videos, iframes,
@@ -55,7 +60,127 @@
   const OVERLAY_HIDE_MS = 1800;
   const VALIDATE_ATTR = 'no_overflowing_text,no_overlapping_text,slide_sized_text';
 
+  /* Overview thumbnail size = 380×214 (≈1/5 of 1920×1080).
+   * Scale = 380 / DESIGN_W_DEFAULT — re-derived in _buildOverviewContent
+   * if the deck is using a non-default authoring size. */
+  const OVERVIEW_THUMB_W = 380;
+
   const pad2 = (n) => String(n).padStart(2, '0');
+
+  /* Lives in document <head>, NOT shadow DOM, because thumbnails are clones
+   * of light-DOM slides that need access to document fonts (Inter / Noto Sans
+   * TC) and any global stylesheet rules the slides depend on. */
+  const OVERVIEW_CSS = `
+    .deck-overview-host {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 9, 9, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 2147482500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+      overflow: auto;
+      padding: 56px 56px 80px;
+      box-sizing: border-box;
+      color: #fff;
+      font-family: Inter, 'Noto Sans TC', system-ui, sans-serif;
+    }
+    .deck-overview-host[data-open] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .deck-overview-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      font-weight: 500;
+      margin-bottom: 36px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .deck-overview-title .label {
+      color: #fff;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    .deck-overview-title .hint { display: inline-flex; align-items: center; gap: 6px; }
+    .deck-overview-title .kbd {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 18px; height: 18px; padding: 0 5px;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 10px; line-height: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .deck-overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, ${OVERVIEW_THUMB_W}px);
+      gap: 32px 24px;
+      justify-content: center;
+      max-width: ${OVERVIEW_THUMB_W * 4 + 24 * 3 + 80}px;
+      margin: 0 auto;
+    }
+    .deck-thumb {
+      cursor: pointer;
+      user-select: none;
+      transition: transform 160ms cubic-bezier(.2,.8,.2,1);
+    }
+    .deck-thumb:hover { transform: translateY(-3px); }
+    .deck-thumb-frame {
+      width: ${OVERVIEW_THUMB_W}px;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
+      background: #090909;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+      position: relative;
+    }
+    .deck-thumb:hover .deck-thumb-frame {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    .deck-thumb[data-active] .deck-thumb-frame {
+      border-color: #ffffff;
+      box-shadow: 0 0 0 1px #ffffff;
+    }
+    .deck-thumb-inner {
+      transform-origin: top left;
+      pointer-events: none;
+    }
+    .deck-thumb-inner > * {
+      position: absolute !important;
+      inset: 0 !important;
+      box-sizing: border-box !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: none !important;
+    }
+    .deck-thumb-label {
+      margin-top: 10px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 13px;
+      letter-spacing: 0.005em;
+      color: rgba(255, 255, 255, 0.55);
+    }
+    .deck-thumb-num {
+      color: rgba(255, 255, 255, 0.4);
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      min-width: 22px;
+    }
+    .deck-thumb[data-active] .deck-thumb-label { color: #fff; }
+    .deck-thumb[data-active] .deck-thumb-num { color: rgba(255, 255, 255, 0.85); }
+    @media print { .deck-overview-host { display: none !important; } }
+  `;
 
   const stylesheet = `
     :host {
@@ -276,6 +401,8 @@
       this._notes = [];
       this._hideTimer = null;
       this._mouseIdleTimer = null;
+      this._overviewOpen = false;
+      this._overviewHost = null;
 
       this._onKey = this._onKey.bind(this);
       this._onResize = this._onResize.bind(this);
@@ -296,6 +423,7 @@
       this._render();
       this._loadNotes();
       this._syncPrintPageRule();
+      this._injectOverviewStyles();
       window.addEventListener('keydown', this._onKey);
       window.addEventListener('resize', this._onResize);
       window.addEventListener('mousemove', this._onMouseMove, { passive: true });
@@ -308,6 +436,10 @@
       window.removeEventListener('mousemove', this._onMouseMove);
       if (this._hideTimer) clearTimeout(this._hideTimer);
       if (this._mouseIdleTimer) clearTimeout(this._mouseIdleTimer);
+      if (this._overviewHost && this._overviewHost.parentNode) {
+        this._overviewHost.parentNode.removeChild(this._overviewHost);
+        this._overviewHost = null;
+      }
     }
 
     attributeChangedCallback() {
@@ -513,6 +645,7 @@
 
       this._prevIndex = curr;
       if (showOverlay) this._flashOverlay();
+      this._refreshOverviewActive();
     }
 
     _flashOverlay() {
@@ -522,6 +655,134 @@
       this._hideTimer = setTimeout(() => {
         this._overlay.removeAttribute('data-visible');
       }, OVERLAY_HIDE_MS);
+    }
+
+    /* Overview mode --------------------------------------------------------
+     * Press 'o' to toggle a full-screen grid of slide thumbnails. Each
+     * thumbnail is a deep clone of the live slide DOM, scaled with
+     * transform: scale() — clones are static (no React, no state), which is
+     * fine for visual previews. Lives in document.body (light DOM) so the
+     * thumbnails inherit document fonts and global stylesheets. */
+
+    _injectOverviewStyles() {
+      if (document.getElementById('deck-stage-overview-style')) return;
+      const style = document.createElement('style');
+      style.id = 'deck-stage-overview-style';
+      style.textContent = OVERVIEW_CSS;
+      document.head.appendChild(style);
+    }
+
+    _toggleOverview() {
+      if (this._overviewOpen) this._closeOverview();
+      else this._openOverview();
+    }
+
+    _openOverview() {
+      if (!this._slides.length) return;
+      if (!this._overviewHost) {
+        this._overviewHost = document.createElement('div');
+        this._overviewHost.className = 'deck-overview-host';
+        this._overviewHost.setAttribute('role', 'dialog');
+        this._overviewHost.setAttribute('aria-label', 'Slides overview');
+        document.body.appendChild(this._overviewHost);
+      }
+      this._buildOverviewContent();
+      // Force reflow so the opacity transition runs from 0 → 1.
+      void this._overviewHost.offsetWidth;
+      this._overviewHost.setAttribute('data-open', '');
+      this._overviewOpen = true;
+      // Hide the bottom navigation overlay while overview is up.
+      if (this._overlay) this._overlay.removeAttribute('data-visible');
+      if (this._hideTimer) clearTimeout(this._hideTimer);
+    }
+
+    _closeOverview() {
+      if (!this._overviewHost || !this._overviewOpen) return;
+      this._overviewHost.removeAttribute('data-open');
+      this._overviewOpen = false;
+      // Clear cloned thumbnails after fade-out so we don't keep stale DOM,
+      // and so the next open re-clones from the current slide state.
+      const host = this._overviewHost;
+      setTimeout(() => {
+        if (!this._overviewOpen && host) host.innerHTML = '';
+      }, 240);
+    }
+
+    _buildOverviewContent() {
+      if (!this._overviewHost) return;
+      this._overviewHost.innerHTML = '';
+
+      const designW = this.designWidth;
+      const designH = this.designHeight;
+      const scale = OVERVIEW_THUMB_W / designW;
+      const thumbH = designH * scale;
+
+      const title = document.createElement('div');
+      title.className = 'deck-overview-title';
+      title.innerHTML = `
+        <span class="label">Overview</span>
+        <span class="hint">
+          <span>點選跳轉</span>
+          <span class="kbd">Esc</span><span>或</span><span class="kbd">o</span><span>關閉</span>
+        </span>
+      `;
+
+      const grid = document.createElement('div');
+      grid.className = 'deck-overview-grid';
+
+      this._slides.forEach((slide, i) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'deck-thumb';
+        thumb.setAttribute('data-thumb-index', String(i));
+        if (i === this._index) thumb.setAttribute('data-active', '');
+
+        const frame = document.createElement('div');
+        frame.className = 'deck-thumb-frame';
+        frame.style.height = thumbH + 'px';
+
+        const inner = document.createElement('div');
+        inner.className = 'deck-thumb-inner';
+        inner.style.width = designW + 'px';
+        inner.style.height = designH + 'px';
+        inner.style.transform = `scale(${scale})`;
+
+        // Deep-clone the slide DOM. Strip ids on the clone tree so the
+        // original (which React mounted into via getElementById) stays the
+        // canonical target — clones are display-only.
+        const clone = slide.cloneNode(true);
+        clone.removeAttribute('data-deck-active');
+        clone.removeAttribute('data-deck-slide');
+        clone.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+
+        inner.appendChild(clone);
+        frame.appendChild(inner);
+        thumb.appendChild(frame);
+
+        const label = document.createElement('div');
+        label.className = 'deck-thumb-label';
+        const screenLabel = slide.getAttribute('data-screen-label') || `Slide ${i + 1}`;
+        const labelText = screenLabel.replace(/^\s*\d+\s*/, '').trim() || `Slide ${i + 1}`;
+        label.innerHTML = `<span class="deck-thumb-num">${pad2(i + 1)}</span><span>${labelText}</span>`;
+        thumb.appendChild(label);
+
+        thumb.addEventListener('click', () => {
+          this._closeOverview();
+          this._go(i, 'click');
+        });
+
+        grid.appendChild(thumb);
+      });
+
+      this._overviewHost.append(title, grid);
+    }
+
+    _refreshOverviewActive() {
+      if (!this._overviewOpen || !this._overviewHost) return;
+      const thumbs = this._overviewHost.querySelectorAll('.deck-thumb');
+      thumbs.forEach((t, i) => {
+        if (i === this._index) t.setAttribute('data-active', '');
+        else t.removeAttribute('data-active');
+      });
     }
 
     _fit() {
@@ -565,17 +826,29 @@
       const key = e.key;
       let handled = true;
 
-      if (key === 'ArrowRight' || key === 'PageDown' || key === ' ' || key === 'Spacebar') {
+      // Overview: 'o' toggles, Escape closes. Other keys close overview AND
+      // perform their normal action so the user can quickly skim and resume.
+      if (key === 'o' || key === 'O') {
+        this._toggleOverview();
+      } else if (key === 'Escape' && this._overviewOpen) {
+        this._closeOverview();
+      } else if (key === 'ArrowRight' || key === 'PageDown' || key === ' ' || key === 'Spacebar') {
+        if (this._overviewOpen) this._closeOverview();
         this._go(this._index + 1, 'keyboard');
       } else if (key === 'ArrowLeft' || key === 'PageUp') {
+        if (this._overviewOpen) this._closeOverview();
         this._go(this._index - 1, 'keyboard');
       } else if (key === 'Home') {
+        if (this._overviewOpen) this._closeOverview();
         this._go(0, 'keyboard');
       } else if (key === 'End') {
+        if (this._overviewOpen) this._closeOverview();
         this._go(this._slides.length - 1, 'keyboard');
       } else if (key === 'r' || key === 'R') {
+        if (this._overviewOpen) this._closeOverview();
         this._go(0, 'keyboard');
       } else if (/^[0-9]$/.test(key)) {
+        if (this._overviewOpen) this._closeOverview();
         // 1..9 jump to that slide; 0 jumps to 10.
         const n = key === '0' ? 9 : parseInt(key, 10) - 1;
         if (n < this._slides.length) this._go(n, 'keyboard');
@@ -585,7 +858,7 @@
 
       if (handled) {
         e.preventDefault();
-        this._flashOverlay();
+        if (!this._overviewOpen) this._flashOverlay();
       }
     }
 
@@ -611,6 +884,10 @@
     next() { this._go(this._index + 1, 'api'); }
     prev() { this._go(this._index - 1, 'api'); }
     reset() { this._go(0, 'api'); }
+    /** Open / close / toggle the overview grid. */
+    openOverview() { this._openOverview(); }
+    closeOverview() { this._closeOverview(); }
+    toggleOverview() { this._toggleOverview(); }
   }
 
   if (!customElements.get('deck-stage')) {

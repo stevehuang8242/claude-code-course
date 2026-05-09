@@ -12,6 +12,10 @@
  *     dividers and the closing slide — never as content cards.
  */
 
+import React from 'react'
+import { motion } from 'framer-motion'
+import { useSlideActive } from './useSlideActive.js'
+
 const TYPE_SCALE = {
   hero: 108,
   display: 88,
@@ -41,6 +45,30 @@ const SPACING = {
   paddingX: 120,
   titleGap: 36,
   itemGap: 28,
+};
+
+/* Framer Motion variants — restrained spring entrance.
+ * y: 24 keeps movement subtle; spring (stiffness 240 / damping 26) lands
+ * snappy without overshoot. STAGGER is the parent variant; nest it for
+ * cascading entrances and put delayChildren only on the outermost layer
+ * so deeper levels don't accumulate extra waits. */
+const FADE_UP = {
+  hidden: { opacity: 0, y: 24 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring', stiffness: 240, damping: 26 },
+  },
+};
+
+const STAGGER = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+
+const STAGGER_INNER = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
 };
 
 /* Framer dark palette. Legacy alias names (pine, cedar, basalt, ...)
@@ -289,55 +317,83 @@ const AGENDA = [
   { n: '06', title: 'Skill', sub: '可重用的專業知識模組', tag: '實作框架' },
 ];
 
-const Agenda = ({ n, total }) => (
-  <Frame bg={C.earth}>
-    <Eyebrow>Agenda</Eyebrow>
-    <h1 style={{
-      fontSize: TYPE_SCALE.title,
-      fontWeight: 600,
-      margin: `${SPACING.titleGap}px 0 0 0`,
-      lineHeight: 1.15,
-    }}>今天會講的 6 個概念</h1>
+const Agenda = ({ n, total }) => {
+  const [ref, active] = useSlideActive();
+  const state = active ? 'show' : 'hidden';
 
-    <div style={{
-      marginTop: 72,
-      display: 'grid',
-      gridAutoFlow: 'column',
-      gridTemplateColumns: '1fr 1fr',
-      gridTemplateRows: 'repeat(3, auto)',
-      columnGap: 64,
-      rowGap: 24,
-    }}>
-      {AGENDA.map((item, i) => (
-        <div key={i} style={{
-          display: 'grid',
-          gridTemplateColumns: '80px 1fr auto',
-          alignItems: 'center',
-          gap: 24,
-          padding: '20px 0',
-          borderBottom: `1px solid ${C.borderSoft}`,
-        }}>
-          <div style={{
-            fontSize: TYPE_SCALE.small,
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
-            color: C.cedar,
-            letterSpacing: '0.04em',
-          }}>{item.n}</div>
-          <div>
-            <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.ink, marginBottom: 6 }}>{item.title}</div>
-            <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary }}>{item.sub}</div>
-          </div>
-          <Tag
-            bg={item.tag === '基礎認知' ? C.tagGreen : C.tagBlue}
-            fg={item.tag === '基礎認知' ? C.tagGreenText : C.tagBlueText}
-          >{item.tag}</Tag>
-        </div>
-      ))}
-    </div>
-    <Footmark />
-    <SlideNumber n={n} total={total} />
-  </Frame>
-);
+  return (
+    <Frame bg={C.earth}>
+      <motion.div
+        ref={ref}
+        initial="hidden"
+        animate={state}
+        variants={STAGGER}
+        style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}
+      >
+        <motion.div variants={FADE_UP}>
+          <Eyebrow>Agenda</Eyebrow>
+        </motion.div>
+
+        <motion.h1
+          variants={FADE_UP}
+          style={{
+            fontSize: TYPE_SCALE.title,
+            fontWeight: 600,
+            margin: `${SPACING.titleGap}px 0 0 0`,
+            lineHeight: 1.15,
+          }}
+        >
+          今天會講的 6 個概念
+        </motion.h1>
+
+        <motion.div
+          variants={STAGGER_INNER}
+          style={{
+            marginTop: 72,
+            display: 'grid',
+            gridAutoFlow: 'column',
+            gridTemplateColumns: '1fr 1fr',
+            gridTemplateRows: 'repeat(3, auto)',
+            columnGap: 64,
+            rowGap: 24,
+          }}
+        >
+          {AGENDA.map((item, i) => (
+            <motion.div
+              key={i}
+              variants={FADE_UP}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '80px 1fr auto',
+                alignItems: 'center',
+                gap: 24,
+                padding: '20px 0',
+                borderBottom: `1px solid ${C.borderSoft}`,
+              }}
+            >
+              <div style={{
+                fontSize: TYPE_SCALE.small,
+                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                color: C.cedar,
+                letterSpacing: '0.04em',
+              }}>{item.n}</div>
+              <div>
+                <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.ink, marginBottom: 6 }}>{item.title}</div>
+                <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary }}>{item.sub}</div>
+              </div>
+              <Tag
+                bg={item.tag === '基礎認知' ? C.tagGreen : C.tagBlue}
+                fg={item.tag === '基礎認知' ? C.tagGreenText : C.tagBlueText}
+              >{item.tag}</Tag>
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
+      <Footmark />
+      <SlideNumber n={n} total={total} />
+    </Frame>
+  );
+};
 
 /* ============================================================
    Section Divider
@@ -2156,7 +2212,15 @@ const ClosingNoLogo = ({ n, total }) => (
   </Frame>
 );
 
-Object.assign(window, {
-  TokenCombined, ContextWindowCombined, SessionCombined, CECombined,
+export {
+  Agenda,
+  SectionDivider,
+  TokenCombined,
+  ContextWindowCombined,
+  SessionCombined,
+  CECombined,
+  ClaudeMd,
+  Skill,
+  Overview,
   ClosingNoLogo,
-});
+}
