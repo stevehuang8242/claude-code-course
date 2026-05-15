@@ -2212,6 +2212,81 @@ const ClosingNoLogo = ({ n, total }) => (
   </Frame>
 );
 
+/* ============================================================
+   Slide 12 — Thank You (poster finale)
+   ============================================================ */
+const ThankYou = ({ n, total }) => {
+  const [ref, active] = useSlideActive();
+  const state = active ? 'show' : 'hidden';
+
+  return (
+    <Frame padded={false} bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)" style={{ color: C.ink }}>
+      <div style={{
+        position: 'relative', height: '100%',
+        padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      }}>
+        <motion.div
+          ref={ref}
+          initial="hidden"
+          animate={state}
+          variants={STAGGER}
+        >
+          <motion.div variants={FADE_UP} style={{
+            fontSize: TYPE_SCALE.small,
+            letterSpacing: TRACK.small,
+            color: C.ink, fontWeight: 500,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            opacity: 0.78,
+            marginBottom: 56,
+          }}>感謝聆聽 · End of deck</motion.div>
+
+          <motion.h1 variants={FADE_UP} style={{
+            fontSize: 200,
+            fontWeight: 500,
+            lineHeight: 0.92,
+            letterSpacing: TRACK.heroLat,
+            color: C.ink,
+            margin: 0,
+          }}>Thank you.</motion.h1>
+
+          <motion.div variants={FADE_UP} style={{
+            marginTop: 56,
+            fontSize: TYPE_SCALE.subtitle,
+            lineHeight: 1.3,
+            color: C.ink,
+            fontWeight: 400,
+            maxWidth: 1300,
+            letterSpacing: TRACK.subtitle,
+            opacity: 0.92,
+          }}>
+            問題、回饋、想一起討論的，現在都歡迎。
+          </motion.div>
+        </motion.div>
+
+        <div style={{
+          position: 'absolute',
+          left: SPACING.paddingX, right: SPACING.paddingX,
+          bottom: SPACING.paddingBottom,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
+        }}>
+          <div style={{
+            fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
+            letterSpacing: TRACK.small,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            opacity: 0.78,
+          }}>Claude Code · 核心概念</div>
+          <div style={{
+            fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 700,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            letterSpacing: TRACK.small,
+          }}>{String(n).padStart(2, '0')} / {String(total).padStart(2, '0')}</div>
+        </div>
+      </div>
+    </Frame>
+  );
+};
+
 export {
   Agenda,
   SectionDivider,
@@ -2223,4 +2298,5 @@ export {
   Skill,
   Overview,
   ClosingNoLogo,
+  ThankYou,
 }

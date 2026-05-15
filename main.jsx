@@ -13,9 +13,10 @@ import {
   Skill,
   Overview,
   ClosingNoLogo,
+  ThankYou,
 } from './slides.jsx'
 
-const TOTAL = 11
+const TOTAL = 12
 
 const mount = (id, el) => {
   const node = document.getElementById(id)
@@ -48,3 +49,4 @@ mount('s8', <ClaudeMd n={8} total={TOTAL} />)
 mount('s9', <Skill n={9} total={TOTAL} />)
 mount('s10', <Overview n={10} total={TOTAL} />)
 mount('s11', <ClosingNoLogo n={11} total={TOTAL} />)
+mount('s12', <ThankYou n={12} total={TOTAL} />)
