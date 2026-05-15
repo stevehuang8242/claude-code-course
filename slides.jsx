@@ -259,7 +259,7 @@ const WhyMatters = ({ n, total }) => (
       margin: `${SPACING.titleGap}px 0 0 0`,
       maxWidth: 1500,
     }}>
-      AI 的輸出品質，<br/>取決於你給它的 Context 品質。
+      AI 的輸出品質，<br/>取決於你給它的 Context 品質。嗨你好Steve
     </h1>
 
     <div style={{
