@@ -279,7 +279,7 @@ const WhyMatters = ({ n, total }) => (
           fontSize: TYPE_SCALE.small, fontWeight: 600,
           color: C.tagRedText, marginBottom: 20,
           letterSpacing: '0.06em', textTransform: 'uppercase',
-        }}>沒在管理 Context 的人</div>
+        }}>沒在管理 Context 的人←想下班</div>
         <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5, color: C.ink }}>
           打開 Claude Code，一路聊到底，什麼檔案都讀進來，然後抱怨「Claude 怎麼越用越笨」。
         </div>
@@ -294,7 +294,7 @@ const WhyMatters = ({ n, total }) => (
           fontSize: TYPE_SCALE.small, fontWeight: 600,
           color: C.clay, opacity: 0.72, marginBottom: 20,
           letterSpacing: '0.06em', textTransform: 'uppercase',
-        }}>做 Context Engineering 的人</div>
+        }}>做 Context Engineering 的人←想下班</div>
         <div style={{ fontSize: TYPE_SCALE.body, lineHeight: 1.5 }}>
           主動管理每個 session 的輸入、狀態與分工，讓 AI 在有限的記憶裡給出最好的回覆。
         </div>
