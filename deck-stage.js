@@ -303,7 +303,8 @@
     .btn:focus-visible { outline: none; }
     .btn::-moz-focus-inner { border: 0; }
     .btn svg { width: 14px; height: 14px; display: block; }
-    .btn.reset {
+    .btn.reset,
+    .btn.agenda {
       font-size: 11px;
       font-weight: 500;
       letter-spacing: 0.02em;
@@ -311,7 +312,8 @@
       gap: 6px;
       color: rgba(255,255,255,0.72);
     }
-    .btn.reset .kbd {
+    .btn.reset .kbd,
+    .btn.agenda .kbd {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -504,11 +506,13 @@
         </button>
         <span class="divider"></span>
         <button class="btn reset" type="button" aria-label="Reset to first slide" title="Reset (R)">Reset<span class="kbd">R</span></button>
+        <button class="btn agenda" type="button" aria-label="Jump to Agenda" title="Agenda (A)">Agenda<span class="kbd">A</span></button>
       `;
 
       overlay.querySelector('.prev').addEventListener('click', () => this._go(this._index - 1, 'click'));
       overlay.querySelector('.next').addEventListener('click', () => this._go(this._index + 1, 'click'));
       overlay.querySelector('.reset').addEventListener('click', () => this._go(0, 'click'));
+      overlay.querySelector('.agenda').addEventListener('click', () => this._jumpToRole('agenda', 'click'));
 
       this._root.append(style, stage, tapzones, overlay);
       this._canvas = canvas;
@@ -847,6 +851,9 @@
       } else if (key === 'r' || key === 'R') {
         if (this._overviewOpen) this._closeOverview();
         this._go(0, 'keyboard');
+      } else if (key === 'a' || key === 'A') {
+        if (this._overviewOpen) this._closeOverview();
+        this._jumpToRole('agenda', 'keyboard');
       } else if (/^[0-9]$/.test(key)) {
         if (this._overviewOpen) this._closeOverview();
         // 1..9 jump to that slide; 0 jumps to 10.
@@ -884,6 +891,14 @@
     next() { this._go(this._index + 1, 'api'); }
     prev() { this._go(this._index - 1, 'api'); }
     reset() { this._go(0, 'api'); }
+
+    /* Find the first slide whose section was tagged `data-deck-role="<role>"`
+     * (set by main.jsx from the manifest entry's `role` field) and navigate
+     * to it. No-op if no slide carries that role. */
+    _jumpToRole(role, reason = 'api') {
+      const idx = this._slides.findIndex((s) => s.getAttribute('data-deck-role') === role);
+      if (idx >= 0) this._go(idx, reason);
+    }
     /** Open / close / toggle the overview grid. */
     openOverview() { this._openOverview(); }
     closeOverview() { this._closeOverview(); }
