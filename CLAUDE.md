@@ -1,17 +1,35 @@
 # Claude Code 核心概念 — Deck
 
-11 張 React 簡報，主題是 Claude Code 教學。
+11 張 React 簡報（Vite + React 18 + Framer Motion），主題是 Claude Code 教學。Slide 元件 mount 到自製 `<deck-stage>` web component 提供的 1920×1080 畫布。
 
-## 指令
+## Project map
 
-```bash
-npm install        # 第一次安裝依賴
-npm run dev        # Vite dev server + 自動開瀏覽器（localhost:5173）
-npm run build      # 打包成 dist/ 靜態 bundle
-npm run preview    # 本地預覽 build 後的結果
-```
+| 檔案 | 用途 |
+|---|---|
+| `index.html` | Vite entry，載入 `/main.jsx` 並提供 `<deck-stage>` 殼、`@font-face` 註冊 |
+| `main.jsx` | 把 11 個 React 元件 mount 到 `<deck-stage>` 的各 section |
+| `slides.jsx` | 全部 11 個 slide 元件 + design tokens（`TYPE_SCALE` / `TRACK` / `C` palette）+ Framer Motion variants（`FADE_UP` / `STAGGER` / `STAGGER_INNER`）|
+| `useSlideActive.js` | React hook：偵測元件所在的 slide 是否為當前頁，用來觸發進場動畫 |
+| `deck-stage.js` | Web component，整套導覽 / 縮放 / overview / print / speaker notes 邏輯 |
+| `vite.config.js` | Vite + React plugin 設定 |
+| `assets/fonts/` | self-hosted variable fonts（Inter / Noto Sans TC / Geist Mono）|
+| `framer-DESIGN.md` | 視覺 source of truth（修改視覺前必讀）|
+| `figma-DESIGN.md` | 早期版本參考，僅供差異比對 |
+| `SLIDEV.md` | Slidev 操作筆記（未採用，留作參考）|
+| `uploads/` | 原始內容素材（Notion export，slide 文字稿來源）|
 
-## 鍵盤操作
+<important if="you need to run commands to install, dev, build, or preview the deck">
+
+| 指令 | 用途 |
+|---|---|
+| `npm install` | 第一次安裝依賴 |
+| `npm run dev` | Vite dev server + 自動開瀏覽器（localhost:5173）|
+| `npm run build` | 打包成 `dist/` 靜態 bundle |
+| `npm run preview` | 本地預覽 build 後的結果 |
+
+</important>
+
+<important if="the user asks about keyboard shortcuts or how to navigate the deck at runtime">
 
 | 動作 | 鍵 |
 |---|---|
@@ -22,73 +40,36 @@ npm run preview    # 本地預覽 build 後的結果
 | Overview 縮圖總覽 | `o`（再按一次或 `Esc` 關閉）|
 | 列印 / 存成 PDF | 瀏覽器 Print → Save as PDF（每頁一張）|
 
-## 技術架構
+</important>
 
-- **Vite** + `@vitejs/plugin-react` — dev server + ES module bundling
-- **React 18** — slide components in `slides.jsx`，by `createRoot` 掛到每個 `<section>` 內的 `<div id="sN">`
-- **Framer Motion**（已安裝，未使用）— 動畫；之後做進場 / stagger / `layoutId` 補間時 import
-- **`<deck-stage>`** — 自製 web component（`deck-stage.js`），處理：
-  - 1920×1080 設計畫布 + 自動縮放 letterbox
-  - 鍵盤導覽 + tap zone（手機左右半邊）
-  - 底部進度浮層
-  - **Overview mode**（按 `o`）
-  - 列印 `@media print` 一頁一張
-  - Speaker notes infrastructure
-  - `slidechange` CustomEvent 廣播
-
-## 檔案結構
-
-| 檔案 | 用途 |
-|---|---|
-| `index.html` | Vite entry，載入 `/main.jsx` 並提供 `<deck-stage>` 殼 |
-| `main.jsx` | 把 11 個 React 元件 mount 到 `<deck-stage>` 的各 section |
-| `slides.jsx` | 全部 11 個 slide 元件 + design tokens（`TYPE_SCALE` / `TRACK` / `C` palette）+ Framer Motion variants（`FADE_UP` / `STAGGER` / `STAGGER_INNER`）|
-| `useSlideActive.js` | React hook：偵測元件所在的 slide 是否為當前頁，用來觸發進場動畫 |
-| `deck-stage.js` | Web component，整套導覽 / 縮放 / overview 邏輯 |
-| `vite.config.js` | Vite + React plugin 設定 |
-| `assets/fonts/` | self-hosted variable fonts（Inter / Noto Sans TC / Geist Mono）|
-| `framer-DESIGN.md` | 視覺 source of truth（必讀）|
-| `figma-DESIGN.md` | 早期版本參考，僅供差異比對 |
-| `SLIDEV.md` | Slidev 操作筆記（之前評估過，目前未採用，留作參考）|
-| `uploads/` | 原始內容素材（Notion export，slide 文字稿來源）|
-
-## 視覺規範（必讀）
+<important if="you are modifying visual style, colours, typography, or design tokens">
 
 視覺 source of truth：
 
-- `framer-DESIGN.md` — 目前實際採用的風格（dark canvas + gradient spotlight）
+- `framer-DESIGN.md` — 目前實際採用的風格（dark canvas + gradient spotlight），修改前必讀
 - `figma-DESIGN.md` — 早期版本，僅供差異參考
 
-修改視覺前先讀 `framer-DESIGN.md`。簡述：
+風格簡述：
 
-- **Canvas**: pure black `#090909`，唯一頁面底色
-- **Hierarchy**: surface lift（`#141414` → `#1c1c1c`）取代灰階
-- **Ink**: 二元 `#ffffff` ink vs `#999999` ink-muted
-- **Typography**: Inter Variable + Noto Sans TC + Geist Mono；CJK+Latin 混排 tracking 上限 `-2.5%`，純拉丁可到 `-4.5%`
+- **Canvas**：pure black `#090909`，唯一頁面底色
+- **Hierarchy**：surface lift（`#141414` → `#1c1c1c`）取代灰階
+- **Ink**：二元 `#ffffff` ink vs `#999999` ink-muted
+- **Typography**：Inter Variable + Noto Sans TC + Geist Mono；CJK+Latin 混排 tracking 上限 `-2.5%`，純拉丁可到 `-4.5%`
 - **Gradient spotlight**（violet `#6a4cf5` / magenta `#d44df0` / orange `#ff7a3d` / coral `#ff5577`）只用在 section divider 與 closing slide
 
-## 動工慣例
+改設計 token 時：先改 `framer-DESIGN.md` → 再改 `slides.jsx` 的 `TYPE_SCALE` / `TRACK` / `C`，保持 doc / code 同步。
 
-- **加新 slide**：在 `slides.jsx` 加新 component → `index.html` 加 `<section data-label="..."><div id="sN" /></section>` → `main.jsx` 加 `mount('sN', <X />)` → `TOTAL` 數字一致
-- **加動畫**：見 `Agenda` 元件作為範本：
-  ```jsx
-  const [ref, active] = useSlideActive()
-  const state = active ? 'show' : 'hidden'
-  return (
-    <Frame>
-      <motion.div ref={ref} initial="hidden" animate={state} variants={STAGGER}>
-        <motion.div variants={FADE_UP}>...</motion.div>
-        <motion.h1 variants={FADE_UP}>...</motion.h1>
-      </motion.div>
-    </Frame>
-  )
-  ```
-  Pattern 重點：父 `motion` 用 `STAGGER` / `STAGGER_INNER`（控節奏）、子用 `FADE_UP`（個別動作）。`useSlideActive` 讓動畫在使用者每次翻回該頁時重播，不只第一次
-- **改設計 token**：先改 `framer-DESIGN.md` → 再改 `slides.jsx` 的 `TYPE_SCALE` / `TRACK` / `C`，保持 doc / code 同步
+</important>
 
-## Slide 版型目錄
+<important if="you are adding a new slide">
 
-新增 slide 前先選版型，再填內容。所有 slide 共用這幾個 primitive：`Frame`（底板，處理 padding / 背景）、`SlideHead`（eyebrow + title + sub）、`Eyebrow`、`SlideNumber`、`Footmark`。
+步驟：
+1. 在 `slides.jsx` 加新 component（先選版型，見下表）
+2. `index.html` 加 `<section data-label="..."><div id="sN" /></section>`
+3. `main.jsx` 加 `mount('sN', <X />)`
+4. 確認 `TOTAL` 數字一致
+
+共用 primitive：`Frame`（底板，處理 padding / 背景）、`SlideHead`（eyebrow + title + sub）、`Eyebrow`、`SlideNumber`、`Footmark`。
 
 | 版型 | 現有範例 | 結構 |
 |---|---|---|
@@ -103,21 +84,38 @@ npm run preview    # 本地預覽 build 後的結果
 | **Hero Banner + Body** | `CEIntro` | `SlideHead` + 全寬 quote 框（`C.pine` 底，display 字級）+ body 說明文字。一句話聚焦時用。 |
 | **Comparison Table** | `ContextWindowCompare` | `SlideHead` + 品牌分組的比較表，每行含 bar chart 視覺化。 |
 
-### 向 Claude 下新 slide 需求的格式
+如果使用者沒指定版型，先確認版型再實作，不要從頭設計。
 
-明確說明版型，Claude 就能直接套 pattern，不需要從頭設計：
+</important>
 
-```
-新增 slide，主題是「Prompt Caching 是什麼」：
-- 版型：Two-Column（圖＋要點）
-- 左欄：流程圖卡片，顯示 cache hit vs miss 的請求路徑
-- 右欄：3 個 KeyPoint（省錢 / 省時 / 限制）
-- kicker：「進階技巧 · Prompt Caching」
-- 動畫：不需要（靜態即可）
-```
+<important if="you are adding or modifying slide entrance animations">
 
-## 字體
+Pattern 範本見 `slides.jsx` 的 `Agenda` 元件：父層 `motion` 用 `STAGGER` / `STAGGER_INNER`（控節奏），子層用 `FADE_UP`（個別動作）。
 
-字體存於 `assets/fonts/`，由 `index.html` 的 `@font-face` 註冊（路徑用 `/assets/fonts/...` 由 Vite 從 root 提供靜態檔）。
+關鍵：用 `useSlideActive()` 取得 `[ref, active]`，把 `animate` 綁定為 `active ? 'show' : 'hidden'` — 動畫會在使用者每次翻回該頁時重播，不只第一次。
 
-如果要新增字體：丟進 `assets/fonts/` → 在 `index.html` 的 `<style>` 加 `@font-face` → slides.jsx 用該 font-family。
+</important>
+
+<important if="you are adding, replacing, or referencing fonts">
+
+字體存於 `assets/fonts/`，由 `index.html` 的 `@font-face` 註冊（路徑用 `/assets/fonts/...`，由 Vite 從 root 提供靜態檔）。
+
+新增字體：丟進 `assets/fonts/` → 在 `index.html` 的 `<style>` 加 `@font-face` → `slides.jsx` 用該 font-family。
+
+</important>
+
+<important if="you are modifying the deck shell — navigation, scaling, overview mode, print, or speaker notes">
+
+`<deck-stage>`（`deck-stage.js`）是自製 web component，負責：
+
+- 1920×1080 設計畫布 + 自動縮放 letterbox
+- 鍵盤導覽 + tap zone（手機左右半邊）
+- 底部進度浮層
+- Overview mode（按 `o`）
+- 列印 `@media print` 一頁一張
+- Speaker notes infrastructure
+- `slidechange` CustomEvent 廣播
+
+修改前先確認改動的是哪一塊，避免動到無關邏輯。
+
+</important>
