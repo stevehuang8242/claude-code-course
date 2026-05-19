@@ -2,88 +2,49 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 
 import './deck-stage.js'
-import {
-  // Part 1 / Part 2 — Claude Code 核心概念（原始 deck）
-  Agenda,
-  SectionDivider,
-  TokenCombined,
-  ContextWindowCombined,
-  SessionCombined,
-  CECombined,
-  ClaudeMd,
-  Skill,
-  Overview,
-  ClosingNoLogo,
-} from './slides_archived.jsx'
-import {
-  // Part 3 — Designer RPI Workshop（獨立模組，含自己的 tokens / primitives）
-  DesignerCourseTitle,
-  DesignerWhyRPI,
-  DesignerThreeStepsOverview,
-  DesignerKeyTakeaway,
-  DesignerCaseIntro,
-  DesignerStep1Research,
-  DesignerStep2Plan,
-  DesignerPlanReviewGuide,
-  DesignerStep3Implement,
-  DesignerWrapUp,
-  DesignerInstallAppendix,
-} from './slides_part4.jsx'
 
-const TOTAL = 23
+/* Deck order is explicit:
+ *   1. slides-cover.jsx      — opening cover
+ *   2. slides-agenda.jsx     — auto-generated agenda (reads chapters from parts)
+ *   3. slides-part*.jsx      — content parts in natural filename order
+ * Each module's `export default` is an array of { label, render({ n, total }) }.
+ * `slides-shared.jsx` is excluded because it holds primitives, not slides. */
+const cover  = import.meta.glob('./slides-cover.jsx', { eager: true })
+const agenda = import.meta.glob('./slides-agenda.jsx', { eager: true })
+const parts  = import.meta.glob('./slides-part*.jsx', { eager: true })
 
-const mount = (id, el) => {
-  const node = document.getElementById(id)
-  if (!node) return
-  createRoot(node).render(el)
+const flat = (mods) => Object.keys(mods)
+  .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+  .flatMap((k) => mods[k].default || [])
+
+const slides = [...flat(cover), ...flat(agenda), ...flat(parts)]
+
+const total = slides.length
+const stage = document.querySelector('deck-stage')
+
+slides.forEach((slide, i) => {
+  const n = i + 1
+  const section = document.createElement('section')
+  /* Prepend the position number so part files don't hard-code it. */
+  section.setAttribute('data-label', `${String(n).padStart(2, '0')} ${slide.label}`)
+  /* Optional `role` flag (e.g. 'agenda') — deck-stage shortcut buttons
+   * look this up to jump to a known slide regardless of position. */
+  if (slide.role) section.setAttribute('data-deck-role', slide.role)
+  const host = document.createElement('div')
+  host.id = `s${n}`
+  host.style.cssText = 'width:100%;height:100%;'
+  section.appendChild(host)
+  stage.appendChild(section)
+  createRoot(host).render(slide.render({ n, total }))
+})
+
+/* The section list is built imperatively at startup, so HMR can hot-replace
+ * a slide's internals but cannot rebuild the deck when the manifest changes
+ * (slides added, removed, reordered, or labels edited). When a part file's
+ * default export changes, react-refresh invalidates and bubbles the update
+ * up to here — we reload to rebuild from scratch. Pure component edits are
+ * still hot-replaced by react-refresh inside the part file and never reach
+ * this handler, so day-to-day editing remains instant. */
+if (import.meta.hot) {
+  import.meta.hot.accept(() => location.reload())
 }
-
-// ── Part 1 / Part 2 — Claude Code 核心概念（既有 10 張 + Closing 移到最後）
-mount('s1', <Agenda n={1} total={TOTAL} />)
-mount('s2', <SectionDivider
-  kicker="Part 1 of 3"
-  title="基礎認知"
-  subtitle="Token · Context Window · Session——先搞懂 AI 怎麼「看」世界。"
-  range="Chapters 01–03"
-  n={2} total={TOTAL}
-  bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)"
-/>)
-mount('s3', <TokenCombined n={3} total={TOTAL} />)
-mount('s4', <ContextWindowCombined n={4} total={TOTAL} />)
-mount('s5', <SessionCombined n={5} total={TOTAL} />)
-mount('s6', <SectionDivider
-  kicker="Part 2 of 3"
-  title="實作框架"
-  subtitle="Context Engineering 方法論，加上 CLAUDE.md、Skill 兩把實作工具。"
-  range="Chapters 04–06"
-  n={6} total={TOTAL}
-  bg="linear-gradient(135deg, #d44df0 0%, #ff7a3d 100%)"
-/>)
-mount('s7', <CECombined n={7} total={TOTAL} />)
-mount('s8', <ClaudeMd n={8} total={TOTAL} />)
-mount('s9', <Skill n={9} total={TOTAL} />)
-mount('s10', <Overview n={10} total={TOTAL} />)
-
-// ── Part 3 — Designer RPI Workshop（情境 3 · 10 分鐘設計師內訓）
-mount('s11', <SectionDivider
-  kicker="Part 3 of 3"
-  title="情境實作：設計師 RPI"
-  subtitle="Research → Plan → Implement — 10 分鐘把 Admin Config 批量新增功能做出來。"
-  range="Designer Workshop · 10 min"
-  n={11} total={TOTAL}
-  bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)"
-/>)
-mount('s12', <DesignerCourseTitle n={12} total={TOTAL} />)
-mount('s13', <DesignerWhyRPI n={13} total={TOTAL} />)
-mount('s14', <DesignerThreeStepsOverview n={14} total={TOTAL} />)
-mount('s15', <DesignerKeyTakeaway n={15} total={TOTAL} />)
-mount('s16', <DesignerCaseIntro n={16} total={TOTAL} />)
-mount('s17', <DesignerStep1Research n={17} total={TOTAL} />)
-mount('s18', <DesignerStep2Plan n={18} total={TOTAL} />)
-mount('s19', <DesignerPlanReviewGuide n={19} total={TOTAL} />)
-mount('s20', <DesignerStep3Implement n={20} total={TOTAL} />)
-mount('s21', <DesignerWrapUp n={21} total={TOTAL} />)
-mount('s22', <DesignerInstallAppendix n={22} total={TOTAL} />)
-
-// ── Closing（移到最後一張）
-mount('s23', <ClosingNoLogo n={23} total={TOTAL} />)

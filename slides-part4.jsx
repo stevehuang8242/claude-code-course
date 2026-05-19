@@ -1,14 +1,16 @@
-/* Part 3 — Designer RPI Workshop (Slides 11–22)
- * 情境 3｜流程優化｜10 分鐘設計師內訓
+/* Part 4 — Designer RPI Workshop
+ * 情境 4｜流程優化｜10 分鐘設計師內訓
  *
- * Self-contained module — design tokens / primitives 都內嵌在此檔，
- * 不依賴 slides_archived.jsx，方便獨立維護。
- * Token / primitive 定義與主檔（slides_archived.jsx）保持一致，視覺風格相同。
- */
+ * Self-contained module — design tokens / primitives 都內嵌在此檔,
+ * 不依賴 slides-shared.jsx,方便獨立維護。
+ * Token / primitive 定義與 slides_archived.jsx 保持一致,視覺風格相同。
+ *
+ * Manifest + chapter metadata live at the bottom of this file. */
 
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useSlideActive } from './useSlideActive.js'
+import { SectionDivider, ClosingNoLogo } from './slides_archived.jsx'
 
 /* ============================================================
    Design tokens — 與 slides_archived.jsx 保持同步
@@ -1066,3 +1068,32 @@ export {
   DesignerWrapUp,
   DesignerInstallAppendix,
 }
+
+/* Chapter metadata — picked up by slides-agenda.jsx. */
+export const title = '情境實作 · 設計師 RPI'
+export const subtitle = 'Research → Plan → Implement,10 分鐘把 Admin Config 批量新增功能做出來。'
+
+export default [
+  { label: 'Section · Designer RPI Workshop', render: (p) => (
+    <SectionDivider
+      {...p}
+      kicker="Part 4"
+      title="情境實作:設計師 RPI"
+      subtitle="Research → Plan → Implement — 10 分鐘把 Admin Config 批量新增功能做出來。"
+      range="Designer Workshop · 10 min"
+      bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)"
+    />
+  )},
+  { label: '課程封面', render: (p) => <DesignerCourseTitle {...p} /> },
+  { label: '為什麼需要 R-P-I', render: (p) => <DesignerWhyRPI {...p} /> },
+  { label: '三步驟總覽', render: (p) => <DesignerThreeStepsOverview {...p} /> },
+  { label: 'Key Takeaway', render: (p) => <DesignerKeyTakeaway {...p} /> },
+  { label: '情境背景 · 批量新增', render: (p) => <DesignerCaseIntro {...p} /> },
+  { label: 'STEP 1 Research', render: (p) => <DesignerStep1Research {...p} /> },
+  { label: 'STEP 2 Plan', render: (p) => <DesignerStep2Plan {...p} /> },
+  { label: 'Plan.md 審稿指南', render: (p) => <DesignerPlanReviewGuide {...p} /> },
+  { label: 'STEP 3 Implement', render: (p) => <DesignerStep3Implement {...p} /> },
+  { label: '收尾 + Q&A', render: (p) => <DesignerWrapUp {...p} /> },
+  { label: 'Appendix · 安裝指南', render: (p) => <DesignerInstallAppendix {...p} /> },
+  { label: 'Closing', render: (p) => <ClosingNoLogo {...p} /> },
+]
