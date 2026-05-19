@@ -11,6 +11,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useSlideActive } from './useSlideActive.js'
 import { SectionDivider, ClosingNoLogo } from './slides_archived.jsx'
+import researchImg from './Slide/Image/Part4/3 research.png'
 
 /* ============================================================
    Design tokens — 與 slides_archived.jsx 保持同步
@@ -336,14 +337,14 @@ const DesignerWhyRPI = ({ n, total }) => (
       </div>
     </div>
     <div style={{
-      marginTop: 32,
-      padding: '24px 32px',
+      marginTop: 28,
+      padding: '20px 28px',
       background: C.surface1,
       border: `1px solid ${C.hairline}`,
       borderRadius: ROUNDED.lg,
       display: 'flex',
       alignItems: 'center',
-      gap: 28,
+      gap: 24,
     }}>
       <div style={{
         fontSize: TYPE_SCALE.tiny,
@@ -357,6 +358,30 @@ const DesignerWhyRPI = ({ n, total }) => (
         提出者 <b style={{ fontWeight: 700 }}>Dex Horthy</b>（HumanLayer 創辦人 / YC F24），核心理念：
         <span style={{ color: C.inkMuted }}>「在 AI 寫一行程式之前，人類必須先看過並同意計畫。」</span>
         因解決 vibe coding 痛點而被廣泛採用，與 <b style={{ fontWeight: 700 }}>Context Engineering</b> 同源。
+      </div>
+    </div>
+    <div style={{
+      marginTop: 16,
+      padding: '20px 28px',
+      background: C.surface1,
+      border: `1px solid ${C.hairline}`,
+      borderRadius: ROUNDED.lg,
+      borderLeft: `4px solid ${C.gradientViolet}`,
+      display: 'flex',
+      alignItems: 'center',
+      gap: 24,
+    }}>
+      <div style={{
+        fontSize: TYPE_SCALE.tiny,
+        color: C.inkMuted,
+        letterSpacing: '0.16em',
+        textTransform: 'uppercase',
+        fontFamily: "'Geist Mono', ui-monospace, monospace",
+        flexShrink: 0,
+      }}>📦 Session 接力</div>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
+        每一步都會產出 <b style={{ fontWeight: 700 }}>research.md / plan.md</b>，這些檔案就是你的「外部記憶」。
+        <span style={{ color: C.inkMuted }}>當前 Session 撞到 token 上限時，下個 Session 直接讀檔接續討論，脈絡不會斷掉。</span>
       </div>
     </div>
     <Footmark />
@@ -623,45 +648,72 @@ const DesignerStep1Research = ({ n, total }) => {
           </div>
         ))}
       </div>
-      <div style={{
-        marginTop: 28,
-        padding: '20px 28px',
-        background: C.surface1,
-        borderRadius: ROUNDED.md,
-        borderLeft: `4px solid ${C.gradientOrange}`,
-        fontSize: TYPE_SCALE.small,
-        lineHeight: 1.55,
-      }}>
-        <b style={{ color: C.ink }}>🟦 AI 產出：</b>
-        <span style={{ color: C.inkMuted }}> Research.md — 含現有元件清單、API 規格、欄位驗證邏輯。</span>
-      </div>
       <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
 };
 
-/* SLIDE 7 — STEP 2 Plan ⭐ */
+/* SLIDE 7 — Research 產出（research.md 範例 + 截圖位置） */
+const DesignerResearchOutput = ({ n, total }) => (
+  <Frame>
+    <SlideHead
+      kicker="Slide 07 · STEP 1 產出"
+      title="🟦 AI 產出：Research.md"
+      sub="含現有元件清單、API 規格、欄位驗證邏輯。"
+    />
+    <div style={{
+      marginTop: 32,
+      flex: 1,
+      minHeight: 0,
+      background: C.surface1,
+      border: `1px solid ${C.hairline}`,
+      borderRadius: ROUNDED.lg,
+      overflow: 'hidden',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <img
+        src={researchImg}
+        alt="research.md 產出畫面"
+        style={{
+          maxWidth: '100%',
+          maxHeight: '100%',
+          width: 'auto',
+          height: 'auto',
+          objectFit: 'contain',
+          display: 'block',
+        }}
+      />
+    </div>
+    <Footmark />
+    <SlideNumber n={n} total={total} />
+  </Frame>
+);
+
+/* SLIDE 8 — STEP 2 Plan ⭐（合併：plan.md 截圖 + 設計師審稿重點）*/
 const DesignerStep2Plan = ({ n, total }) => {
-  const options = [
-    { id: 'A', mode: 'CSV / Excel 上傳', fit: '量大、來源是試算表' },
-    { id: 'B', mode: '表格內多列編輯 (inline)', fit: '量中、需即時驗證' },
-    { id: 'C', mode: 'Modal 多列表單 (form repeater)', fit: '量小、欄位少' },
+  const reviewSections = [
+    { tag: '1. 選定方案', review: '⭐ 互動模式選對了嗎？' },
+    { tag: '2. 影響範圍', review: '🎨 命名符合既有規範？可重用元件？' },
+    { tag: '3. 使用者流程', review: '🎯 流程順序符合 UX 預期？' },
+    { tag: '4. 錯誤處理', review: '⚠️ 訊息夠友善？Rollback 還是部分成功？' },
+    { tag: '5. 風險評估', review: '💡 上限合理？loading 夠清楚？' },
   ];
-  const reviewPoints = ['⭐ 互動模式', '⚠️ 錯誤處理', '👁 預覽機制', '⏳ 進度回饋', '📥 欄位範本', '♿ 邊界情況'];
   return (
     <Frame>
       <SlideHead
-        kicker="Slide 07 · STEP 2 Plan ⭐ 本案最關鍵"
+        kicker="Slide 08 · STEP 2 Plan ⭐ 本案最關鍵"
         title="選對互動模式 — 設計師的審稿戰場"
-        sub="AI 提方案、設計師審 UX。錯誤處理怎麼設計？這 AI 給不出最佳解。"
+        sub="AI 提方案、設計師審 UX。plan.md 是你跟工程師的「契約書」。"
       />
       <div style={{
-        marginTop: 24,
+        marginTop: 20,
         background: C.surface2,
         borderRadius: ROUNDED.lg,
         border: `1px solid ${C.hairline}`,
-        padding: '16px 24px',
+        padding: '14px 24px',
         display: 'flex', alignItems: 'center', gap: 16,
       }}>
         <div style={{
@@ -677,154 +729,77 @@ const DesignerStep2Plan = ({ n, total }) => {
           /create_plan &lt;research.md 路徑&gt; — 需求是新增「批量新增」功能
         </div>
       </div>
-      <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 24 }}>
-        <div>
+      <div style={{
+        marginTop: 20,
+        flex: 1,
+        minHeight: 0,
+        display: 'grid',
+        gridTemplateColumns: '1.1fr 1fr',
+        gap: 20,
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 0 }}>
           <div style={{
-            fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginBottom: 12,
+            fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
             letterSpacing: '0.16em', textTransform: 'uppercase',
             fontFamily: "'Geist Mono', ui-monospace, monospace",
-          }}>AI 提的方案</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {options.map((o, i) => (
-              <div key={i} style={{
-                background: C.surface1, border: `1px solid ${C.hairline}`,
-                borderRadius: ROUNDED.md, padding: '16px 20px',
-                display: 'flex', alignItems: 'center', gap: 16,
-              }}>
-                <div style={{
-                  width: 36, height: 36, borderRadius: ROUNDED.sm,
-                  background: C.ink, color: C.inverseInk,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontWeight: 700, fontSize: 20, flexShrink: 0,
-                  fontFamily: "'Geist Mono', ui-monospace, monospace",
-                }}>{o.id}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.ink, letterSpacing: '-0.005em' }}>{o.mode}</div>
-                  <div style={{ fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginTop: 4 }}>{o.fit}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div>
+          }}>🟦 AI 產出：plan.md</div>
           <div style={{
-            fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginBottom: 12,
-            letterSpacing: '0.16em', textTransform: 'uppercase',
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
-          }}>設計師審稿 6 點</div>
-          <div style={{
-            background: C.ink, color: C.inverseInk,
-            borderRadius: ROUNDED.lg, padding: 24,
-            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12,
+            flex: 1,
+            minHeight: 0,
+            background: C.surface1,
+            border: `2px dashed ${C.hairline}`,
+            borderRadius: ROUNDED.lg,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            color: C.inkMuted,
           }}>
-            {reviewPoints.map((p, i) => (
-              <div key={i} style={{
-                fontSize: TYPE_SCALE.small, fontWeight: 500, letterSpacing: '-0.005em',
-              }}>{p}</div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div style={{
-        marginTop: 24,
-        padding: '16px 28px',
-        background: C.surface1,
-        borderRadius: ROUNDED.md,
-        borderLeft: `4px solid ${C.gradientMagenta}`,
-        fontSize: TYPE_SCALE.small, lineHeight: 1.5,
-      }}>
-        <b style={{ color: C.ink }}>🟦 AI 產出 Plan.md：</b>
-        <span style={{ color: C.inkMuted }}> 含選定方案、修改檔案清單、影響範圍、風險評估。確認後才能進 STEP 03。</span>
-      </div>
-      <Footmark />
-      <SlideNumber n={n} total={total} />
-    </Frame>
-  );
-};
-
-/* SLIDE 8 — Plan.md 設計師審稿指南 */
-const DesignerPlanReviewGuide = ({ n, total }) => {
-  const sections = [
-    { md: '## 1. 選定方案', review: '⭐ 互動模式選對了嗎？' },
-    { md: '## 2. 影響範圍', review: '🎨 命名符合既有規範？可重用元件？' },
-    { md: '## 3. 使用者流程', review: '🎯 流程順序符合 UX 預期？' },
-    { md: '## 4. 錯誤處理', review: '⚠️ 訊息夠友善？Rollback 還是部分成功？' },
-    { md: '## 5. 風險評估', review: '💡 上限合理？loading 夠清楚？' },
-  ];
-  return (
-    <Frame>
-      <SlideHead
-        kicker="Slide 08 · 穿插於 STEP 02"
-        title="plan.md 不是程式碼，是你跟工程師的「契約書」"
-        sub="左：AI 給你的計畫｜右：你該檢查的事"
-      />
-      <div style={{
-        marginTop: 32, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24,
-      }}>
-        <div style={{
-          background: C.surface2, border: `1px solid ${C.hairline}`,
-          borderRadius: ROUNDED.lg, overflow: 'hidden', display: 'flex', flexDirection: 'column',
-        }}>
-          <div style={{
-            padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 10,
-            borderBottom: `1px solid ${C.hairline}`,
-          }}>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <div style={{ width: 10, height: 10, borderRadius: 5, background: '#ed6a5e' }} />
-              <div style={{ width: 10, height: 10, borderRadius: 5, background: '#f5bf4f' }} />
-              <div style={{ width: 10, height: 10, borderRadius: 5, background: '#62c554' }} />
-            </div>
+            <div style={{ fontSize: 40, lineHeight: 1 }}>🖼</div>
             <div style={{
-              marginLeft: 14,
-              fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
+              fontSize: TYPE_SCALE.tiny,
               fontFamily: "'Geist Mono', ui-monospace, monospace",
-            }}>plan.md</div>
-          </div>
-          <div style={{
-            padding: '20px 24px',
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
-            fontSize: 18, lineHeight: 1.65, flex: 1,
-          }}>
-            <div style={{ color: C.ink, fontWeight: 700 }}># 批量新增 - 實作計畫</div>
-            <div style={{ height: 10 }} />
-            {sections.map((s, i) => (
-              <div key={i}>
-                <div style={{ color: C.ink, fontWeight: 700 }}>{s.md}</div>
-                <div style={{ color: C.inkMuted, marginBottom: 8 }}>　…</div>
-              </div>
-            ))}
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+            }}>plan.md 截圖位置</div>
           </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 0 }}>
           <div style={{
             fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
             letterSpacing: '0.16em', textTransform: 'uppercase',
             fontFamily: "'Geist Mono', ui-monospace, monospace",
           }}>設計師審稿重點</div>
-          {sections.map((s, i) => (
-            <div key={i} style={{
-              background: C.surface1, border: `1px solid ${C.hairline}`,
-              borderRadius: ROUNDED.md, padding: '16px 20px',
-              display: 'flex', alignItems: 'center', gap: 14,
-            }}>
-              <div style={{
-                fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
-                width: 80, flexShrink: 0,
-              }}>{s.md.replace('## ', '')}</div>
-              <div style={{ flex: 1, fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.4 }}>
-                {s.review}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+            {reviewSections.map((s, i) => (
+              <div key={i} style={{
+                background: C.surface1, border: `1px solid ${C.hairline}`,
+                borderRadius: ROUNDED.md, padding: '14px 18px',
+                display: 'flex', alignItems: 'center', gap: 14,
+              }}>
+                <div style={{
+                  fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
+                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  width: 160, flexShrink: 0, whiteSpace: 'nowrap',
+                }}>{s.tag}</div>
+                <div style={{ flex: 1, fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.4 }}>
+                  {s.review}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div style={{
+            padding: '12px 18px',
+            background: C.surface2,
+            borderRadius: ROUNDED.md,
+            borderLeft: `4px solid ${C.gradientMagenta}`,
+            fontSize: TYPE_SCALE.tiny, color: C.inkMuted, lineHeight: 1.5,
+            fontStyle: 'italic',
+          }}>
+            你不用看懂程式碼，但你要看懂 — 流程、互動、錯誤、邊界。
+          </div>
         </div>
-      </div>
-      <div style={{
-        marginTop: 20,
-        fontSize: TYPE_SCALE.small, color: C.inkMuted, textAlign: 'center',
-        fontStyle: 'italic',
-      }}>
-        你不用看懂程式碼，但你要看懂 — 流程、互動、錯誤、邊界。
       </div>
       <Footmark />
       <SlideNumber n={n} total={total} />
@@ -904,7 +879,83 @@ const DesignerStep3Implement = ({ n, total }) => {
   );
 };
 
-/* SLIDE 10 — 收尾 + Q&A */
+/* SLIDE 11 — Before & After 系統畫面對照 */
+const DesignerBeforeAfter = ({ n, total }) => {
+  const cells = [
+    { tag: 'BEFORE', label: '一筆一筆新增', accent: C.inkMuted },
+    { tag: 'AFTER',  label: '批量匯入完成',  accent: C.gradientCoral },
+  ];
+  return (
+    <Frame>
+      <SlideHead
+        kicker="Slide 10 · 驗收成果"
+        title="Before → After"
+        sub="把計畫變成可操作的功能，畫面說話。"
+      />
+      <div style={{
+        marginTop: 32,
+        flex: 1,
+        minHeight: 0,
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 24,
+      }}>
+        {cells.map((c, i) => (
+          <div key={i} style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 14,
+            minHeight: 0,
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+            }}>
+              <div style={{
+                fontSize: TYPE_SCALE.tiny,
+                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                letterSpacing: '0.16em',
+                color: c.accent,
+                fontWeight: 700,
+              }}>{c.tag}</div>
+              <div style={{
+                fontSize: TYPE_SCALE.small,
+                color: C.ink,
+                fontWeight: 500,
+              }}>{c.label}</div>
+            </div>
+            <div style={{
+              flex: 1,
+              minHeight: 0,
+              background: C.surface1,
+              border: `2px dashed ${C.hairline}`,
+              borderRadius: ROUNDED.lg,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 10,
+              color: C.inkMuted,
+            }}>
+              <div style={{ fontSize: 48, lineHeight: 1 }}>🖼</div>
+              <div style={{
+                fontSize: TYPE_SCALE.tiny,
+                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+              }}>{c.tag} 截圖位置</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <Footmark />
+      <SlideNumber n={n} total={total} />
+    </Frame>
+  );
+};
+
+/* SLIDE 12 — 收尾 + Q&A */
 const DesignerWrapUp = ({ n, total }) => (
   <Frame padded={false} bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 50%, #ff7a3d 100%)">
     <div style={{
@@ -919,7 +970,7 @@ const DesignerWrapUp = ({ n, total }) => (
         color: C.ink, fontWeight: 500,
         fontFamily: "'Geist Mono', ui-monospace, monospace",
         opacity: 0.78,
-      }}>Slide 10 · 收尾與 Q&amp;A</div>
+      }}>Slide 11 · 收尾與 Q&amp;A</div>
 
       <div>
         <div style={{
@@ -1062,9 +1113,10 @@ export {
   DesignerKeyTakeaway,
   DesignerCaseIntro,
   DesignerStep1Research,
+  DesignerResearchOutput,
   DesignerStep2Plan,
-  DesignerPlanReviewGuide,
   DesignerStep3Implement,
+  DesignerBeforeAfter,
   DesignerWrapUp,
   DesignerInstallAppendix,
 }
@@ -1090,9 +1142,10 @@ export default [
   { label: 'Key Takeaway', render: (p) => <DesignerKeyTakeaway {...p} /> },
   { label: '情境背景 · 批量新增', render: (p) => <DesignerCaseIntro {...p} /> },
   { label: 'STEP 1 Research', render: (p) => <DesignerStep1Research {...p} /> },
+  { label: 'Research 產出', render: (p) => <DesignerResearchOutput {...p} /> },
   { label: 'STEP 2 Plan', render: (p) => <DesignerStep2Plan {...p} /> },
-  { label: 'Plan.md 審稿指南', render: (p) => <DesignerPlanReviewGuide {...p} /> },
   { label: 'STEP 3 Implement', render: (p) => <DesignerStep3Implement {...p} /> },
+  { label: 'Before & After', render: (p) => <DesignerBeforeAfter {...p} /> },
   { label: '收尾 + Q&A', render: (p) => <DesignerWrapUp {...p} /> },
   { label: 'Appendix · 安裝指南', render: (p) => <DesignerInstallAppendix {...p} /> },
   { label: 'Closing', render: (p) => <ClosingNoLogo {...p} /> },
