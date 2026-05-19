@@ -12,6 +12,7 @@ import { motion } from 'framer-motion'
 import { useSlideActive } from './useSlideActive.js'
 import { SectionDivider, ClosingNoLogo } from './slides_archived.jsx'
 import researchImg from './Slide/Image/Part4/3 research.png'
+import createPlanImg from './Slide/Image/Part4/5 create plan.png'
 
 /* ============================================================
    Design tokens — 與 slides_archived.jsx 保持同步
@@ -747,22 +748,25 @@ const DesignerStep2Plan = ({ n, total }) => {
             flex: 1,
             minHeight: 0,
             background: C.surface1,
-            border: `2px dashed ${C.hairline}`,
+            border: `1px solid ${C.hairline}`,
             borderRadius: ROUNDED.lg,
+            overflow: 'hidden',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 8,
-            color: C.inkMuted,
           }}>
-            <div style={{ fontSize: 40, lineHeight: 1 }}>🖼</div>
-            <div style={{
-              fontSize: TYPE_SCALE.tiny,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}>plan.md 截圖位置</div>
+            <img
+              src={createPlanImg}
+              alt="plan.md 產出畫面"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                width: 'auto',
+                height: 'auto',
+                objectFit: 'contain',
+                display: 'block',
+              }}
+            />
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 0 }}>
