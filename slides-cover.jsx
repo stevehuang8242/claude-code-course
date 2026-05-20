@@ -33,7 +33,7 @@ const Cover = ({ n, total }) => {
         <motion.div
           variants={FADE_UP}
           style={{
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             fontSize: TYPE_SCALE.small,
             color: C.inkMuted,
             letterSpacing: '0.16em',

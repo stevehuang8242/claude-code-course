@@ -304,6 +304,7 @@
     .btn::-moz-focus-inner { border: 0; }
     .btn svg { width: 14px; height: 14px; display: block; }
     .btn.reset,
+    .btn.overview,
     .btn.agenda {
       font-size: 11px;
       font-weight: 500;
@@ -313,6 +314,7 @@
       color: rgba(255,255,255,0.72);
     }
     .btn.reset .kbd,
+    .btn.overview .kbd,
     .btn.agenda .kbd {
       display: inline-flex;
       align-items: center;
@@ -505,13 +507,15 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
         </button>
         <span class="divider"></span>
-        <button class="btn reset" type="button" aria-label="Reset to first slide" title="Reset (R)">Reset<span class="kbd">R</span></button>
+        <button class="btn reset" type="button" aria-label="Return to first slide" title="Return (R)">Return<span class="kbd">R</span></button>
+        <button class="btn overview" type="button" aria-label="Toggle overview" title="Overview (O)">Overview<span class="kbd">O</span></button>
         <button class="btn agenda" type="button" aria-label="Jump to Agenda" title="Agenda (A)">Agenda<span class="kbd">A</span></button>
       `;
 
       overlay.querySelector('.prev').addEventListener('click', () => this._step(-1, 'click'));
       overlay.querySelector('.next').addEventListener('click', () => this._step(1, 'click'));
       overlay.querySelector('.reset').addEventListener('click', () => this._go(0, 'click'));
+      overlay.querySelector('.overview').addEventListener('click', () => this._toggleOverview());
       overlay.querySelector('.agenda').addEventListener('click', () => this._jumpToRole('agenda', 'click'));
 
       this._root.append(style, stage, tapzones, overlay);

@@ -113,7 +113,7 @@ const Eyebrow = ({ children, color = C.inkMuted }) => (
     fontWeight: 500,
     letterSpacing: TRACK.small,
     color,
-    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
   }}>{children}</div>
 );
 
@@ -124,29 +124,10 @@ const SlideNumber = ({ n, total, color = C.textDescription }) => (
     right: SPACING.paddingX,
     fontSize: TYPE_SCALE.tiny,
     color,
-    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     letterSpacing: '0.08em',
   }}>
     {String(n).padStart(2, '0')} / {String(total).padStart(2, '0')}
-  </div>
-);
-
-const Footmark = ({ color = C.textDescription }) => (
-  <div style={{
-    position: 'absolute',
-    bottom: 44,
-    left: SPACING.paddingX,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 16,
-  }}>
-    <div style={{
-      fontSize: TYPE_SCALE.tiny,
-      color,
-      letterSpacing: '0.16em',
-      textTransform: 'uppercase',
-      fontWeight: 500,
-    }}>Claude Code · Designer's Value</div>
   </div>
 );
 
@@ -181,26 +162,26 @@ const Part5ThreeTakeaways = ({ n, total }) => {
   const state = active ? 'show' : 'hidden';
   const cards = [
     {
-      tag: 'Boundary',
       accent: C.gradientViolet,
+      main: 'We are empowered.',
       lines: ['Closer to the material.', 'More becomes possible.'],
     },
     {
-      tag: 'Bar',
       accent: C.gradientMagenta,
+      main: 'The bar is raised.',
       lines: ['When 7/10 is free,', 'good enough is not enough.'],
     },
     {
-      tag: 'Signature',
       accent: C.gradientOrange,
-      lines: ['Craft and taste', 'are your signature.'],
+      main: 'Craft and taste win.',
+      lines: ['AI delivers 70.', 'You bring the 30.'],
     },
   ];
   return (
     <Frame>
       <SlideHead
-        kicker="Slide 01 · Three Takeaways"
-        title="Get closer. Raise the bar. Sign your work."
+        kicker="AI 時代設計師的價值"
+        title="重新定義設計師價值的三個轉變"
         sub="The three shifts that redefine a designer's value."
       />
       <motion.div
@@ -212,6 +193,7 @@ const Part5ThreeTakeaways = ({ n, total }) => {
           flex: 1,
           minHeight: 0,
           marginTop: 56,
+          marginBottom: 32,
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 24,
@@ -228,7 +210,8 @@ const Part5ThreeTakeaways = ({ n, total }) => {
               padding: '48px 40px 56px',
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
+              gap: 24,
               position: 'relative',
               overflow: 'hidden',
               minHeight: 0,
@@ -241,18 +224,7 @@ const Part5ThreeTakeaways = ({ n, total }) => {
               height: 4,
               background: card.accent,
             }} />
-            {/* Card tag */}
-            <div style={{
-              fontSize: TYPE_SCALE.tiny,
-              color: card.accent,
-              letterSpacing: '0.24em',
-              textTransform: 'uppercase',
-              fontWeight: 600,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
-            }}>
-              {String(i + 1).padStart(2, '0')} · {card.tag}
-            </div>
-            {/* Headline */}
+            {/* Main headline */}
             <div style={{
               fontSize: 44,
               fontWeight: 600,
@@ -261,16 +233,24 @@ const Part5ThreeTakeaways = ({ n, total }) => {
               color: C.ink,
               fontFamily: "Inter, system-ui, sans-serif",
             }}>
+              {card.main}
+            </div>
+            {/* Sub headline */}
+            <div style={{
+              fontSize: 28,
+              fontWeight: 400,
+              lineHeight: 1.3,
+              letterSpacing: TRACK.subtitle,
+              color: C.inkMuted,
+              fontFamily: "Inter, system-ui, sans-serif",
+            }}>
               {card.lines.map((line, j) => (
                 <div key={j}>{line}</div>
               ))}
             </div>
-            {/* Bottom spacer (intentional empty slot for future supporting line / bullets) */}
-            <div style={{ height: 4 }} />
           </motion.div>
         ))}
       </motion.div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -296,20 +276,7 @@ const Part5ClosingQuote = ({ n, total }) => {
           initial="hidden"
           animate={state}
           variants={STAGGER}
-        >
-          <motion.div variants={FADE_UP} style={{
-            fontSize: TYPE_SCALE.small,
-            letterSpacing: TRACK.small,
-            color: C.ink, fontWeight: 500,
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
-            opacity: 0.78,
-          }}>Part 5 · Closing</motion.div>
-        </motion.div>
-
-        <motion.div
-          initial="hidden"
-          animate={state}
-          variants={STAGGER}
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
         >
           <motion.div
             variants={FADE_UP}
@@ -322,7 +289,7 @@ const Part5ClosingQuote = ({ n, total }) => {
               marginBottom: 48,
             }}
           >
-            We are not designers anymore.<br/>
+            We are not just designers anymore.<br/>
             We are&nbsp;
             <span style={{
               background: C.ink,
@@ -331,7 +298,7 @@ const Part5ClosingQuote = ({ n, total }) => {
               fontWeight: 700,
               borderRadius: '0.06em',
             }}>builders</span>
-            &nbsp;now.
+            &nbsp;too.
           </motion.div>
           <motion.div
             variants={FADE_UP}
@@ -345,28 +312,24 @@ const Part5ClosingQuote = ({ n, total }) => {
               fontStyle: 'italic',
             }}
           >
-            Start anywhere, <br/>compound everywhere.
+            “Start anywhere, <br/>compound everywhere.”
+          </motion.div>
+          <motion.div
+            variants={FADE_UP}
+            style={{
+              fontSize: TYPE_SCALE.body,
+              fontWeight: 500,
+              lineHeight: 1.3,
+              letterSpacing: TRACK.body,
+              color: C.ink,
+              opacity: 0.7,
+              marginTop: 32,
+            }}
+          >
+            — Ryo Lu, Head of Design at Cursor
           </motion.div>
         </motion.div>
 
-        <motion.div
-          initial="hidden"
-          animate={state}
-          variants={STAGGER}
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}
-        >
-          <motion.div variants={FADE_UP} style={{
-            fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
-            letterSpacing: TRACK.small,
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
-            opacity: 0.78,
-          }}>Thank you</motion.div>
-          <motion.div variants={FADE_UP} style={{
-            fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 700,
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
-            letterSpacing: TRACK.small,
-          }}>Q &amp; A</motion.div>
-        </motion.div>
       </div>
       <SlideNumber n={n} total={total} color={C.ink} />
     </Frame>
@@ -379,7 +342,7 @@ export {
 }
 
 /* Chapter metadata — picked up by slides-agenda.jsx. */
-export const title = "A Designer's Value in the AI Era"
+export const title = 'AI 時代設計師的價值'
 export const subtitle = 'Get closer. Raise the bar. Sign your work.'
 
 export default [
@@ -387,9 +350,8 @@ export default [
     <SectionDivider
       {...p}
       kicker="Part 5"
-      title="A Designer's Value in the AI Era"
-      subtitle="Get closer. Raise the bar. Sign your work."
-      range="Closing · Manifesto"
+      title="AI 時代設計師的價值"
+      subtitle="A Designer's Value in the AI Era"
       bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)"
     />
   )},

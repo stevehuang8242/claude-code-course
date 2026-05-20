@@ -16,7 +16,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useSlideActive } from './useSlideActive.js'
 
-const TYPE_SCALE = {
+export const TYPE_SCALE = {
   hero: 108,
   display: 88,
   title: 56,
@@ -28,7 +28,7 @@ const TYPE_SCALE = {
 
 /* Tracking baked per size. Mixed CJK+Latin caps at -2.5% so Chinese
  * characters don't overlap; Latin-only contexts can push to -4.5%. */
-const TRACK = {
+export const TRACK = {
   hero:     '-0.025em',
   heroLat:  '-0.045em',
   display:  '-0.025em',
@@ -39,7 +39,7 @@ const TRACK = {
   tiny:     '0em',
 };
 
-const SPACING = {
+export const SPACING = {
   paddingTop: 72,
   paddingBottom: 56,
   paddingX: 120,
@@ -52,7 +52,7 @@ const SPACING = {
  * snappy without overshoot. STAGGER is the parent variant; nest it for
  * cascading entrances and put delayChildren only on the outermost layer
  * so deeper levels don't accumulate extra waits. */
-const FADE_UP = {
+export const FADE_UP = {
   hidden: { opacity: 0, y: 24 },
   show: {
     opacity: 1,
@@ -61,12 +61,12 @@ const FADE_UP = {
   },
 };
 
-const STAGGER = {
+export const STAGGER = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 };
 
-const STAGGER_INNER = {
+export const STAGGER_INNER = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06 } },
 };
@@ -74,7 +74,7 @@ const STAGGER_INNER = {
 /* Framer dark palette. Legacy alias names (pine, cedar, basalt, ...)
  * remap to the new dark tokens so non-mounted legacy slides still resolve.
  */
-const C = {
+export const C = {
   // Framer canon
   canvas:        '#090909',
   surface1:      '#141414',
@@ -138,7 +138,7 @@ const C = {
   semanticSuccess: '#ffffff',
 };
 
-const ROUNDED = {
+export const ROUNDED = {
   xs: 4,    // utility chip
   sm: 6,    // inline tag
   md: 10,   // form input, list item
@@ -153,7 +153,7 @@ const ROUNDED = {
    Shared primitives
    ============================================================ */
 
-const Frame = ({ bg = C.canvas, children, style = {}, padded = true }) => (
+export const Frame = ({ bg = C.canvas, children, style = {}, padded = true }) => (
   <div style={{
     boxSizing: 'border-box',
     width: '100%',
@@ -175,31 +175,31 @@ const Frame = ({ bg = C.canvas, children, style = {}, padded = true }) => (
 /* Framer caption-style eyebrow — non-caps, ink-muted, monospace numerics.
  * The aggressive small-caps tracked-out kicker style reads "editorial" and
  * conflicts with Framer's poster register, so we drop it. */
-const Eyebrow = ({ children, color = C.inkMuted }) => (
+export const Eyebrow = ({ children, color = C.inkMuted }) => (
   <div style={{
     fontSize: TYPE_SCALE.small,
     fontWeight: 500,
     letterSpacing: TRACK.small,
     color,
-    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
   }}>{children}</div>
 );
 
-const SlideNumber = ({ n, total, color = C.textDescription }) => (
+export const SlideNumber = ({ n, total, color = C.textDescription }) => (
   <div style={{
     position: 'absolute',
     bottom: 44,
     right: SPACING.paddingX,
     fontSize: TYPE_SCALE.tiny,
     color,
-    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     letterSpacing: '0.08em',
   }}>
     {String(n).padStart(2, '0')} / {String(total).padStart(2, '0')}
   </div>
 );
 
-const Footmark = ({ color = C.textDescription }) => (
+export const Footmark = ({ color = C.textDescription, label = 'Claude Code 核心概念' }) => (
   <div style={{
     position: 'absolute',
     bottom: 44,
@@ -214,11 +214,11 @@ const Footmark = ({ color = C.textDescription }) => (
       letterSpacing: '0.16em',
       textTransform: 'uppercase',
       fontWeight: 500,
-    }}>Claude Code 核心概念</div>
+    }}>{label}</div>
   </div>
 );
 
-const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
+export const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
   <span style={{
     display: 'inline-block',
     background: bg,
@@ -233,9 +233,9 @@ const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
 
 /* Always lifts above its parent surface — surface-2 chip works on canvas
  * (#090909) and on surface-1 cards (#141414). The `dark` prop is vestigial. */
-const Code = ({ children, size = TYPE_SCALE.body }) => (
+export const Code = ({ children, size = TYPE_SCALE.body }) => (
   <span style={{
-    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     fontSize: size,
     background: C.surface2,
     color: C.ink,
@@ -373,7 +373,7 @@ const Agenda = ({ n, total }) => {
             >
               <div style={{
                 fontSize: TYPE_SCALE.small,
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                 color: C.cedar,
                 letterSpacing: '0.04em',
               }}>{item.n}</div>
@@ -401,7 +401,7 @@ const Agenda = ({ n, total }) => {
 /* Section dividers are the deck's gradient spotlight moments — the bg is
  * passed in by the mount call as a literal hex (e.g. "#6a4cf5" violet,
  * "#d44df0" magenta). All gradient grounds use white type. */
-const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.gradientViolet }) => {
+export const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.gradientViolet }) => {
   return (
     <Frame padded={false} bg={bg} style={{ color: C.ink }}>
       <div style={{
@@ -415,7 +415,7 @@ const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.gradi
             letterSpacing: TRACK.small,
             color: C.ink,
             fontWeight: 500,
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             opacity: 0.78,
           }}>{kicker}</div>
           <h1 style={{
@@ -437,13 +437,6 @@ const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.gradi
             opacity: 0.92,
           }}>{subtitle}</div>
         </div>
-        <div style={{
-          fontSize: TYPE_SCALE.tiny,
-          color: C.ink,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
-          letterSpacing: TRACK.small,
-          opacity: 0.7,
-        }}>{range}</div>
       </div>
       <SlideNumber n={n} total={total} color={C.ink} />
     </Frame>
@@ -453,7 +446,7 @@ const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.gradi
 /* ============================================================
    Reusable section header for content slides
    ============================================================ */
-const SlideHead = ({ kicker, title, sub }) => (
+export const SlideHead = ({ kicker, title, sub }) => (
   <div>
     {kicker && <Eyebrow>{kicker}</Eyebrow>}
     <h1 style={{
@@ -526,7 +519,7 @@ const TokenIntro = ({ n, total }) => (
               borderRadius: ROUNDED.xs,
               fontSize: TYPE_SCALE.small,
               fontWeight: 500,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             }}>{t}</div>
           ))}
         </div>
@@ -569,7 +562,7 @@ const KeyPoint = ({ num, title, desc }) => (
       background: C.pine, color: C.clay,
       fontSize: TYPE_SCALE.small, fontWeight: 600,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: "'Geist Mono', ui-monospace, monospace",
+      fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     }}>{num}</div>
     <div>
       <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, marginBottom: 8 }}>{title}</div>
@@ -622,7 +615,7 @@ const TokenScale = ({ n, total }) => (
             <div style={{
               fontSize: TYPE_SCALE.small,
               color: C.textSecondary,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             }}>{item.unit}</div>
           </div>
         </div>
@@ -719,7 +712,7 @@ const PriceRow = ({ label, value, muted }) => (
     <div style={{
       fontSize: TYPE_SCALE.body, fontWeight: 600,
       color: muted ? C.cedar : C.pine,
-      fontFamily: "'Geist Mono', ui-monospace, monospace",
+      fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     }}>{value}</div>
   </div>
 );
@@ -751,7 +744,7 @@ const ContextWindowIntro = ({ n, total }) => (
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
             <div style={{ fontSize: TYPE_SCALE.small, color: C.textSecondary, fontWeight: 500 }}>Context Window</div>
-            <div style={{ fontSize: TYPE_SCALE.small, color: C.pine, fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 600 }}>187 / 200K tokens</div>
+            <div style={{ fontSize: TYPE_SCALE.small, color: C.pine, fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif", fontWeight: 600 }}>187 / 200K tokens</div>
           </div>
           {/* progress bar */}
           <div style={{
@@ -805,7 +798,7 @@ const BreakdownRow = ({ label, value, color, pct }) => (
     <div style={{ height: 10, background: C.hairline, borderRadius: ROUNDED.xs, overflow: 'hidden' }}>
       <div style={{ width: `${pct}%`, height: '100%', background: color }} />
     </div>
-    <div style={{ fontSize: TYPE_SCALE.small, fontFamily: "'Geist Mono', ui-monospace, monospace", color: C.ink, textAlign: 'right' }}>{value}</div>
+    <div style={{ fontSize: TYPE_SCALE.small, fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif", color: C.ink, textAlign: 'right' }}>{value}</div>
   </div>
 );
 
@@ -874,7 +867,7 @@ const ContextWindowCompare = ({ n, total }) => {
                     textAlign: 'right',
                     fontSize: TYPE_SCALE.small,
                     fontWeight: 600,
-                    fontFamily: "'Geist Mono', ui-monospace, monospace",
+                    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                     color: C.ink,
                   }}>{m.size}</div>
                 </div>
@@ -887,7 +880,7 @@ const ContextWindowCompare = ({ n, total }) => {
         marginTop: 36,
         fontSize: TYPE_SCALE.small,
         color: C.textDescription,
-        fontFamily: "'Geist Mono', ui-monospace, monospace",
+        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
       }}>
         在 Claude Code 中用 <Code size={TYPE_SCALE.small}>/context</Code> 查看目前用量
       </div>
@@ -931,7 +924,7 @@ const SessionIntro = ({ n, total }) => (
                 color: i === 4 ? C.tagRedText : C.clay,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: TYPE_SCALE.small, fontWeight: 600,
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               }}>{String(i + 1).padStart(2, '0')}</div>
               <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.ink }}>{step.label}</div>
               <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription, lineHeight: 1.4 }}>{step.desc}</div>
@@ -1148,7 +1141,7 @@ const CEThreePillars = ({ n, total }) => {
                 background: C.pine, color: C.clay,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: TYPE_SCALE.body, fontWeight: 700,
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               }}>{String(i + 1).padStart(2, '0')}</div>
               <Tag>{p.tag}</Tag>
             </div>
@@ -1161,7 +1154,7 @@ const CEThreePillars = ({ n, total }) => {
                 <div key={j} style={{
                   fontSize: TYPE_SCALE.tiny,
                   color: C.textSecondary,
-                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                   display: 'flex', alignItems: 'center', gap: 10,
                 }}>
                   <span style={{ color: C.cedar }}>▸</span>{ex}
@@ -1233,7 +1226,7 @@ const CEWorkflow = ({ n, total }) => (
               color: C.clay,
               opacity: 0.9,
               marginBottom: 16,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             }}>{s.num}</div>
             <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 600, marginBottom: 16 }}>{s.title}</div>
             <div style={{ fontSize: TYPE_SCALE.small, lineHeight: 1.5, opacity: 0.82 }}>{s.desc}</div>
@@ -1296,14 +1289,14 @@ const ClaudeMd = ({ n, total }) => (
           <div style={{
             marginLeft: 16,
             fontSize: TYPE_SCALE.tiny, color: C.inkMuted, fontWeight: 400,
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             letterSpacing: TRACK.tiny,
           }}>CLAUDE.md</div>
         </div>
         <div style={{
           padding: '24px 32px',
           color: C.ink,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           fontSize: 18,
           lineHeight: 1.7,
           flex: 1,
@@ -1336,7 +1329,7 @@ const ClaudeMd = ({ n, total }) => (
           <div style={{
             fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 400,
             letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14,
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           }}>設計師類比</div>
           <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 330, lineHeight: 1.5, color: C.ink }}>
             <b style={{ fontWeight: 700 }}>Design System 的 Principles 頁</b>——不是具體元件規格，<br/>是所有人都要遵守的基本規則。
@@ -1355,7 +1348,7 @@ const ClaudeMd = ({ n, total }) => (
         <div style={{
           fontSize: TYPE_SCALE.small,
           color: C.textSecondary,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         }}>
           拿到既有專案 → 跑 <Code size={TYPE_SCALE.small}>/init</Code> 自動建立。
         </div>
@@ -1432,7 +1425,7 @@ const Skill = ({ n, total }) => (
           <div style={{
             fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 400,
             letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14,
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           }}>設計師類比</div>
           <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 330, lineHeight: 1.5, color: C.ink }}>
             Figma 裡的 <b style={{ fontWeight: 700 }}>Component Documentation</b>——<br/>
@@ -1444,7 +1437,7 @@ const Skill = ({ n, total }) => (
           <div style={{
             fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 400,
             letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16,
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           }}>為什麼強大</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <WhyItem title="品質一致性" desc="不管誰用，產出都遵循同一套規範。" />
@@ -1464,7 +1457,7 @@ const Skill = ({ n, total }) => (
         <div style={{
           fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 400,
           letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 20,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         }}>Skill 怎麼運作</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <FlowStep icon="💬" text="使用者：「幫我建一個 Avatar component」" />
@@ -1554,7 +1547,7 @@ const Git = ({ n, total }) => (
               fontWeight: 700,
               color: C.cedar,
               lineHeight: 1,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             }}>{s.num}</div>
             <div>
               <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 600, color: C.ink }}>{s.title}</div>
@@ -1567,7 +1560,7 @@ const Git = ({ n, total }) => (
             color: C.clay,
             padding: '14px 18px',
             borderRadius: ROUNDED.sm,
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             fontSize: 22,
           }}>
             <span style={{ color: C.cedar }}>$</span> {s.cmd}
@@ -1621,7 +1614,7 @@ const Overview = ({ n, total }) => (
         <div style={{
           fontSize: TYPE_SCALE.small, color: C.ink,
           letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8,
-          fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 400,
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif", fontWeight: 400,
         }}>基礎認知</div>
         <MapNode label="Token" sub="最小單位" indent={0} />
         <MapConn />
@@ -1635,7 +1628,7 @@ const Overview = ({ n, total }) => (
         <div style={{
           fontSize: TYPE_SCALE.small, color: C.ink,
           letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8,
-          fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 400,
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif", fontWeight: 400,
         }}>實作框架</div>
         <MapNode label="Context Engineering" sub="Research → Plan → Implement" indent={0} accent />
         <MapConn />
@@ -1742,7 +1735,7 @@ const TokenCombined = ({ n, total }) => (
                 background: C.tagGreen, color: C.tagGreenText,
                 padding: '8px 14px', borderRadius: ROUNDED.xs,
                 fontSize: TYPE_SCALE.small, fontWeight: 500,
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               }}>{t}</div>
             ))}
           </div>
@@ -1766,7 +1759,7 @@ const TokenCombined = ({ n, total }) => (
               <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription, marginBottom: 6 }}>{item.label}</div>
               <div style={{
                 fontSize: 40, fontWeight: 700, color: C.pine,
-                lineHeight: 1, fontFamily: "'Geist Mono', ui-monospace, monospace",
+                lineHeight: 1, fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               }}>{item.qty}</div>
             </div>
           ))}
@@ -1809,11 +1802,11 @@ const TokenCombined = ({ n, total }) => (
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription, marginBottom: 4 }}>讀 100K</div>
-                <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.pine, fontFamily: "'Geist Mono', ui-monospace, monospace" }}>{m.read}</div>
+                <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.pine, fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif" }}>{m.read}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: TYPE_SCALE.tiny, color: C.textDescription, marginBottom: 4 }}>寫 100K</div>
-                <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.cedar, fontFamily: "'Geist Mono', ui-monospace, monospace" }}>{m.write}</div>
+                <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.cedar, fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif" }}>{m.write}</div>
               </div>
             </div>
           ))}
@@ -1876,7 +1869,7 @@ const ContextWindowCombined = ({ n, total }) => {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
               <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, fontWeight: 500 }}>Context Window</div>
-              <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, fontFamily: "'Geist Mono', ui-monospace, monospace", fontWeight: 600 }}>187 / 200K</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif", fontWeight: 600 }}>187 / 200K</div>
             </div>
             <div style={{ height: 14, background: C.surface2, borderRadius: ROUNDED.sm, overflow: 'hidden', marginBottom: 24 }}>
               <div style={{ width: '93%', height: '100%', background: C.ink }} />
@@ -1896,7 +1889,7 @@ const ContextWindowCombined = ({ n, total }) => {
             <div style={{
               fontSize: TYPE_SCALE.tiny, fontWeight: 400,
               letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             }}>Watch Out</div>
             快滿時 AI 回應品質會下降，所以要主動管理 context。<br/>
             指令：<Code size={TYPE_SCALE.small}>/context</Code>
@@ -1908,7 +1901,7 @@ const ContextWindowCombined = ({ n, total }) => {
           <div style={{
             fontSize: TYPE_SCALE.small, fontWeight: 400,
             color: C.ink, letterSpacing: '0.16em', textTransform: 'uppercase',
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           }}>各家模型的記憶容量</div>
           {rows.map((row, i) => (
             <div key={i} style={{
@@ -1932,7 +1925,7 @@ const ContextWindowCombined = ({ n, total }) => {
                     </div>
                     <div style={{
                       textAlign: 'right', fontSize: TYPE_SCALE.small, fontWeight: 600,
-                      fontFamily: "'Geist Mono', ui-monospace, monospace", color: C.ink,
+                      fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif", color: C.ink,
                     }}>{m.size}</div>
                   </div>
                 ))}
@@ -1979,7 +1972,7 @@ const SessionCombined = ({ n, total }) => (
               border: i === 4 ? 'none' : `1.5px solid ${C.ink}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: TYPE_SCALE.tiny, fontWeight: 700,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             }}>{String(i + 1).padStart(2, '0')}</div>
             <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 700, color: C.ink, letterSpacing: TRACK.small }}>{step.label}</div>
             <div style={{ fontSize: TYPE_SCALE.tiny, color: C.inkMuted, fontWeight: 400 }}>{step.desc}</div>
@@ -2002,7 +1995,7 @@ const SessionCombined = ({ n, total }) => (
         <div style={{
           fontSize: TYPE_SCALE.small, fontWeight: 500, color: C.inkMuted,
           letterSpacing: TRACK.small, marginBottom: 12,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         }}>Figma 習慣</div>
         <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 400, lineHeight: 1.5, color: C.ink }}>
           自動儲存所有修改，下次打開檔案一切都在。
@@ -2015,7 +2008,7 @@ const SessionCombined = ({ n, total }) => (
         <div style={{
           fontSize: TYPE_SCALE.small, fontWeight: 500, color: C.inkMuted,
           letterSpacing: TRACK.small, marginBottom: 12,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         }}>AI 不是這樣</div>
         <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 400, lineHeight: 1.5 }}>
           Session 內：AI 記得所有事 · Session 結束：<b style={{ fontWeight: 700 }}>完全忘光</b>。
@@ -2074,7 +2067,7 @@ const CECombined = ({ n, total }) => {
         <div style={{
           fontSize: TYPE_SCALE.small, fontWeight: 400,
           letterSpacing: '0.18em', textTransform: 'uppercase',
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         }}>核心命題</div>
         <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 540, letterSpacing: '-0.01em' }}>
           Context 的品質，直接決定輸出的品質。
@@ -2086,7 +2079,7 @@ const CECombined = ({ n, total }) => {
         <div style={{
           fontSize: TYPE_SCALE.small, fontWeight: 400,
           letterSpacing: '0.16em', textTransform: 'uppercase',
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         }}>主動管理三件事</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {pillars.map((p, i) => (
@@ -2100,7 +2093,7 @@ const CECombined = ({ n, total }) => {
                   padding: '4px 10px', borderRadius: ROUNDED.sm,
                   background: C.surface2, color: C.inkMuted,
                   fontSize: TYPE_SCALE.tiny, fontWeight: 500,
-                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                   letterSpacing: TRACK.tiny,
                 }}>{String(i + 1).padStart(2, '0')}</div>
                 <Tag>{p.tag}</Tag>
@@ -2117,7 +2110,7 @@ const CECombined = ({ n, total }) => {
         <div style={{
           fontSize: TYPE_SCALE.small, fontWeight: 400,
           letterSpacing: '0.16em', textTransform: 'uppercase',
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         }}>馬上能用的工作流</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {flow.map((s, i) => {
@@ -2132,13 +2125,13 @@ const CECombined = ({ n, total }) => {
                 <div style={{
                   fontSize: 44, fontWeight: 540, lineHeight: 1,
                   color: C.ink, letterSpacing: '-0.04em',
-                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                 }}>{s.num}</div>
                 <div>
                   <div style={{
                     fontSize: TYPE_SCALE.tiny, color: C.ink, fontWeight: 400,
                     letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 6,
-                    fontFamily: "'Geist Mono', ui-monospace, monospace",
+                    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                   }}>{s.phase}</div>
                   <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, marginBottom: 4, letterSpacing: '-0.01em' }}>{s.title}</div>
                   <div style={{ fontSize: TYPE_SCALE.tiny, fontWeight: 330, lineHeight: 1.4 }}>{s.desc}</div>
@@ -2167,7 +2160,7 @@ const ClosingNoLogo = ({ n, total }) => (
         fontSize: TYPE_SCALE.small,
         letterSpacing: TRACK.small,
         color: C.ink, fontWeight: 500,
-        fontFamily: "'Geist Mono', ui-monospace, monospace",
+        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         opacity: 0.78,
       }}>一句話帶走 · One takeaway</div>
       <div>
@@ -2199,12 +2192,12 @@ const ClosingNoLogo = ({ n, total }) => (
         <div style={{
           fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
           letterSpacing: TRACK.small,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           opacity: 0.78,
         }}>Thank you</div>
         <div style={{
           fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 700,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           letterSpacing: TRACK.small,
         }}>Q & A</div>
       </div>
@@ -2214,7 +2207,6 @@ const ClosingNoLogo = ({ n, total }) => (
 
 export {
   Agenda,
-  SectionDivider,
   TokenCombined,
   ContextWindowCombined,
   SessionCombined,
