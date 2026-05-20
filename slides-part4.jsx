@@ -10,7 +10,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useSlideActive } from './useSlideActive.js'
-import { SectionDivider, ClosingNoLogo } from './slides_archived.jsx'
+import { SectionDivider } from './slides_archived.jsx'
 import researchImg from './Slide/Image/Part4/3 research.png'
 import createPlanImg from './Slide/Image/Part4/5 create plan.png'
 
@@ -141,25 +141,6 @@ const SlideNumber = ({ n, total, color = C.textDescription }) => (
   </div>
 );
 
-const Footmark = ({ color = C.textDescription }) => (
-  <div style={{
-    position: 'absolute',
-    bottom: 44,
-    left: SPACING.paddingX,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 16,
-  }}>
-    <div style={{
-      fontSize: TYPE_SCALE.tiny,
-      color,
-      letterSpacing: '0.16em',
-      textTransform: 'uppercase',
-      fontWeight: 500,
-    }}>Claude Code · Designer RPI</div>
-  </div>
-);
-
 const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
   <span style={{
     display: 'inline-block',
@@ -191,7 +172,6 @@ const SlideHead = ({ kicker, title, sub }) => (
         marginTop: 20,
         lineHeight: 1.3,
         fontWeight: 400,
-        maxWidth: 1400,
         letterSpacing: TRACK.subtitle,
       }}>{sub}</div>
     )}
@@ -217,7 +197,7 @@ const DesignerCourseTitle = ({ n, total }) => {
         style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'center' }}
       >
         <motion.div variants={FADE_UP}>
-          <Eyebrow>10 分鐘內訓 · 情境 3 / 流程優化</Eyebrow>
+          <Eyebrow>04 情境實作 · 設計師 RPI</Eyebrow>
         </motion.div>
         <motion.h1
           variants={FADE_UP}
@@ -277,7 +257,6 @@ const DesignerCourseTitle = ({ n, total }) => {
           ))}
         </motion.div>
       </motion.div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -287,9 +266,9 @@ const DesignerCourseTitle = ({ n, total }) => {
 const DesignerWhyRPI = ({ n, total }) => (
   <Frame>
     <SlideHead
-      kicker="Slide 02 · 為什麼需要 R-P-I"
-      title="先想清楚 → 再規劃方案 → 最後才動手"
-      sub="每一步都有設計師可以介入的 checkpoint，避免 AI 失控亂寫。"
+      kicker="04 情境實作 · 設計師 RPI"
+      title="為什麼需要 R-P-I"
+      sub="先想清楚 → 再規劃方案 → 最後才動手｜每一步都有設計師介入的 checkpoint，避免 AI 失控亂寫"
     />
     <div style={{
       marginTop: 48,
@@ -385,7 +364,6 @@ const DesignerWhyRPI = ({ n, total }) => (
         <span style={{ color: C.inkMuted }}>當前 Session 撞到 token 上限時，下個 Session 直接讀檔接續討論，脈絡不會斷掉。</span>
       </div>
     </div>
-    <Footmark />
     <SlideNumber n={n} total={total} />
   </Frame>
 );
@@ -418,7 +396,7 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Slide 03 · 三步驟總覽"
+        kicker="04 情境實作 · 設計師 RPI"
         title="一個指令一步路，每步都有設計師的角色"
       />
       <div style={{
@@ -485,7 +463,6 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
           </div>
         ))}
       </div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -506,7 +483,7 @@ const DesignerKeyTakeaway = ({ n, total }) => (
         fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         opacity: 0.78,
         marginBottom: 56,
-      }}>Key Takeaway · 一句話帶走</div>
+      }}>04 情境實作 · 設計師 RPI</div>
       <div style={{
         fontSize: TYPE_SCALE.hero, fontWeight: 600, lineHeight: 0.95,
         letterSpacing: TRACK.hero, color: C.ink,
@@ -537,9 +514,9 @@ const DesignerCaseIntro = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Slide 05 · 情境實作"
-        title="Admin Config 新增「批量新增」功能"
-        sub="從一筆一筆新增 → 一次匯入 50 筆。設計師如何用三步驟落地？"
+        kicker="04 情境實作 · 設計師 RPI"
+        title="情境實作 : Admin Config 新增「批量新增」功能"
+        sub="設計師如何用三步驟落地"
       />
       <div style={{
         marginTop: 40,
@@ -591,7 +568,6 @@ const DesignerCaseIntro = ({ n, total }) => {
           ))}
         </div>
       </div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -607,9 +583,9 @@ const DesignerStep1Research = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Slide 06 · STEP 1 Research"
-        title="先看懂地基，再決定怎麼蓋"
-        sub="設計師角色：指路 — 指定範圍與來源，確認需求。"
+        kicker="04 情境實作 · 設計師 RPI"
+        title="Research｜先看懂地基，再決定怎麼蓋"
+        sub="設計師指路 : 指定範圍與來源，確認需求"
       />
       <div style={{
         marginTop: 32,
@@ -649,7 +625,6 @@ const DesignerStep1Research = ({ n, total }) => {
           </div>
         ))}
       </div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -659,7 +634,7 @@ const DesignerStep1Research = ({ n, total }) => {
 const DesignerResearchOutput = ({ n, total }) => (
   <Frame>
     <SlideHead
-      kicker="Slide 07 · STEP 1 產出"
+      kicker="04 情境實作 · 設計師 RPI"
       title="🟦 AI 產出：Research.md"
       sub="含現有元件清單、API 規格、欄位驗證邏輯。"
     />
@@ -688,7 +663,6 @@ const DesignerResearchOutput = ({ n, total }) => (
         }}
       />
     </div>
-    <Footmark />
     <SlideNumber n={n} total={total} />
   </Frame>
 );
@@ -705,9 +679,9 @@ const DesignerStep2Plan = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Slide 08 · STEP 2 Plan ⭐ 本案最關鍵"
-        title="選對互動模式 — 設計師的審稿戰場"
-        sub="AI 提方案、設計師審 UX。plan.md 是你跟工程師的「契約書」。"
+        kicker="04 情境實作 · 設計師 RPI"
+        title="Plan｜選對互動模式 — 設計師的審稿戰場"
+        sub="AI 提方案、設計師審 UX"
       />
       <div style={{
         marginTop: 20,
@@ -805,7 +779,6 @@ const DesignerStep2Plan = ({ n, total }) => {
           </div>
         </div>
       </div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -822,9 +795,9 @@ const DesignerStep3Implement = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Slide 09 · STEP 3 Implement"
-        title="驗收體驗，不是驗收程式碼"
-        sub="設計師角色：驗收 — 對照目標檢查成果，並做 UI 微調。"
+        kicker="04 情境實作 · 設計師 RPI"
+        title="Implement｜驗收體驗，而非程式碼"
+        sub="設計師驗收：對照目標檢查成果，並做 UI 微調"
       />
       <div style={{
         marginTop: 32,
@@ -877,7 +850,6 @@ const DesignerStep3Implement = ({ n, total }) => {
         <b style={{ color: C.ink }}>💡 微調範例：</b>
         <span style={{ color: C.inkMuted }}>「批量上傳成功後請改用 Toast 顯示在右上角，停留 3 秒」</span>
       </div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -892,9 +864,9 @@ const DesignerBeforeAfter = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Slide 10 · 驗收成果"
-        title="Before → After"
-        sub="把計畫變成可操作的功能，畫面說話。"
+        kicker="04 情境實作 · 設計師 RPI"
+        title="驗收成果"
+        sub="Before → After"
       />
       <div style={{
         marginTop: 32,
@@ -953,7 +925,6 @@ const DesignerBeforeAfter = ({ n, total }) => {
           </div>
         ))}
       </div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -974,7 +945,7 @@ const DesignerWrapUp = ({ n, total }) => (
         color: C.ink, fontWeight: 500,
         fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         opacity: 0.78,
-      }}>Slide 11 · 收尾與 Q&amp;A</div>
+      }}>04 情境實作 · 設計師 RPI</div>
 
       <div>
         <div style={{
@@ -1047,7 +1018,7 @@ const DesignerInstallAppendix = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="📎 附錄 · 課堂不講，課後參考"
+        kicker="04 情境實作 · 設計師 RPI"
         title="把 RPI Workflow 裝進你的 Claude Code"
         sub="前置需求：Claude Code CLI + Git 環境"
       />
@@ -1104,7 +1075,6 @@ const DesignerInstallAppendix = ({ n, total }) => {
           </div>
         ))}
       </div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -1133,10 +1103,9 @@ export default [
   { label: 'Section · Designer RPI Workshop', render: (p) => (
     <SectionDivider
       {...p}
-      kicker="Part 4"
+      kicker="04 情境實作 · 設計師 RPI"
       title="情境實作:設計師 RPI"
       subtitle="Research → Plan → Implement — 10 分鐘把 Admin Config 批量新增功能做出來。"
-      range="Designer Workshop · 10 min"
       bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)"
     />
   )},
@@ -1152,5 +1121,4 @@ export default [
   { label: 'Before & After', render: (p) => <DesignerBeforeAfter {...p} /> },
   { label: '收尾 + Q&A', render: (p) => <DesignerWrapUp {...p} /> },
   { label: 'Appendix · 安裝指南', render: (p) => <DesignerInstallAppendix {...p} /> },
-  { label: 'Closing', render: (p) => <ClosingNoLogo {...p} /> },
 ]
