@@ -12,7 +12,7 @@
 | `useSlideActive.js` | React hook：偵測元件所在的 slide 是否為當前頁，用來觸發進場動畫 |
 | `deck-stage.js` | Web component，整套導覽 / 縮放 / overview / print / speaker notes 邏輯 |
 | `vite.config.js` | Vite + React plugin 設定 |
-| `assets/fonts/` | self-hosted variable fonts（Inter / Noto Sans TC / Geist Mono）|
+| `assets/fonts/` | self-hosted variable fonts（Inter / Noto Sans TC）|
 | `framer-DESIGN.md` | 視覺 source of truth（修改視覺前必讀）|
 | `figma-DESIGN.md` | 早期版本參考，僅供差異比對 |
 | `SLIDEV.md` | Slidev 操作筆記（未採用，留作參考）|
@@ -54,7 +54,7 @@
 - **Canvas**：pure black `#090909`，唯一頁面底色
 - **Hierarchy**：surface lift（`#141414` → `#1c1c1c`）取代灰階
 - **Ink**：二元 `#ffffff` ink vs `#999999` ink-muted
-- **Typography**：Inter Variable + Noto Sans TC + Geist Mono；CJK+Latin 混排 tracking 上限 `-2.5%`，純拉丁可到 `-4.5%`
+- **Typography**：Inter Variable + Noto Sans TC；CJK+Latin 混排 tracking 上限 `-2.5%`，純拉丁可到 `-4.5%`
 - **Gradient spotlight**（violet `#6a4cf5` / magenta `#d44df0` / orange `#ff7a3d` / coral `#ff5577`）只用在 section divider 與 closing slide
 
 改設計 token 時：先改 `framer-DESIGN.md` → 再改 `slides.jsx` 的 `TYPE_SCALE` / `TRACK` / `C`，保持 doc / code 同步。

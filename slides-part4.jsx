@@ -123,7 +123,7 @@ const Eyebrow = ({ children, color = C.inkMuted }) => (
     fontWeight: 500,
     letterSpacing: TRACK.small,
     color,
-    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
   }}>{children}</div>
 );
 
@@ -134,7 +134,7 @@ const SlideNumber = ({ n, total, color = C.textDescription }) => (
     right: SPACING.paddingX,
     fontSize: TYPE_SCALE.tiny,
     color,
-    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     letterSpacing: '0.08em',
   }}>
     {String(n).padStart(2, '0')} / {String(total).padStart(2, '0')}
@@ -307,7 +307,7 @@ const DesignerWhyRPI = ({ n, total }) => (
           fontSize: TYPE_SCALE.small, fontWeight: 500,
           color: C.inkMuted, letterSpacing: '0.16em', textTransform: 'uppercase',
           marginBottom: 16,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         }}>❌ 傳統作法</div>
         <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.ink, marginBottom: 12, letterSpacing: '-0.01em' }}>
           需求 → 直接寫程式 → 不符預期
@@ -327,7 +327,7 @@ const DesignerWhyRPI = ({ n, total }) => (
           color: C.inverseInk, opacity: 0.55,
           letterSpacing: '0.16em', textTransform: 'uppercase',
           marginBottom: 16,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         }}>✅ 三步驟作法</div>
         <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, marginBottom: 12, letterSpacing: '-0.01em' }}>
           Research → Plan → Implement
@@ -352,7 +352,7 @@ const DesignerWhyRPI = ({ n, total }) => (
         color: C.inkMuted,
         letterSpacing: '0.16em',
         textTransform: 'uppercase',
-        fontFamily: "'Geist Mono', ui-monospace, monospace",
+        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         flexShrink: 0,
       }}>📚 方法來歷</div>
       <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
@@ -377,7 +377,7 @@ const DesignerWhyRPI = ({ n, total }) => (
         color: C.inkMuted,
         letterSpacing: '0.16em',
         textTransform: 'uppercase',
-        fontFamily: "'Geist Mono', ui-monospace, monospace",
+        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         flexShrink: 0,
       }}>📦 Session 接力</div>
       <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
@@ -441,19 +441,19 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
               <div style={{
                 fontSize: 40, fontWeight: 540, lineHeight: 1,
                 color: C.ink, letterSpacing: '-0.04em',
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               }}>{c.num}</div>
               <div style={{
                 fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
                 letterSpacing: '0.16em', textTransform: 'uppercase',
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               }}>{c.phase}</div>
             </div>
             <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>
               {c.title}
             </div>
             <div style={{
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               fontSize: TYPE_SCALE.tiny,
               background: C.surface2,
               color: C.ink,
@@ -466,7 +466,7 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
                 <div style={{
                   fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginBottom: 6,
                   letterSpacing: '0.12em', textTransform: 'uppercase',
-                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                 }}>AI 做什麼</div>
                 <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.45 }}>{c.ai}</div>
               </div>
@@ -474,7 +474,7 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
                 <div style={{
                   fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginBottom: 6,
                   letterSpacing: '0.12em', textTransform: 'uppercase',
-                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                 }}>設計師角色</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <Tag>{c.role}</Tag>
@@ -503,7 +503,7 @@ const DesignerKeyTakeaway = ({ n, total }) => (
         fontSize: TYPE_SCALE.small,
         letterSpacing: TRACK.small,
         color: C.ink, fontWeight: 500,
-        fontFamily: "'Geist Mono', ui-monospace, monospace",
+        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         opacity: 0.78,
         marginBottom: 56,
       }}>Key Takeaway · 一句話帶走</div>
@@ -550,7 +550,7 @@ const DesignerCaseIntro = ({ n, total }) => {
         <div style={{
           fontSize: TYPE_SCALE.small, fontWeight: 500,
           letterSpacing: '0.16em', textTransform: 'uppercase',
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           opacity: 0.55, marginBottom: 12,
         }}>📌 真實痛點</div>
         <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 540, lineHeight: 1.4, letterSpacing: '-0.01em' }}>
@@ -562,7 +562,7 @@ const DesignerCaseIntro = ({ n, total }) => {
           fontSize: TYPE_SCALE.small, fontWeight: 500,
           color: C.inkMuted,
           letterSpacing: '0.16em', textTransform: 'uppercase',
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           marginBottom: 16,
         }}>設計師面對的三個未知</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
@@ -577,14 +577,14 @@ const DesignerCaseIntro = ({ n, total }) => {
               <div style={{
                 fontSize: 32, fontWeight: 540, lineHeight: 1,
                 color: C.inkMuted, letterSpacing: '-0.04em',
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               }}>{u.num}</div>
               <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.ink, lineHeight: 1.35, letterSpacing: '-0.01em' }}>
                 {u.q}
               </div>
               <div style={{
                 fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                 letterSpacing: '0.08em',
               }}>→ {u.solver}</div>
             </div>
@@ -622,11 +622,11 @@ const DesignerStep1Research = ({ n, total }) => {
         <div style={{
           fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
           letterSpacing: '0.16em', textTransform: 'uppercase',
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           flexShrink: 0,
         }}>🟧 指令</div>
         <div style={{
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           fontSize: TYPE_SCALE.body, color: C.ink, letterSpacing: '-0.005em',
         }}>
           /research_codebase 請研讀 Admin Config 目前「新增單筆資料」的完整流程
@@ -641,7 +641,7 @@ const DesignerStep1Research = ({ n, total }) => {
           }}>
             <div style={{
               fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               letterSpacing: '0.08em',
             }}>{p.num}</div>
             <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>{p.title}</div>
@@ -720,11 +720,11 @@ const DesignerStep2Plan = ({ n, total }) => {
         <div style={{
           fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
           letterSpacing: '0.16em', textTransform: 'uppercase',
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           flexShrink: 0,
         }}>🟧 指令</div>
         <div style={{
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           fontSize: TYPE_SCALE.small, color: C.ink,
         }}>
           /create_plan &lt;research.md 路徑&gt; — 需求是新增「批量新增」功能
@@ -742,7 +742,7 @@ const DesignerStep2Plan = ({ n, total }) => {
           <div style={{
             fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
             letterSpacing: '0.16em', textTransform: 'uppercase',
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           }}>🟦 AI 產出：plan.md</div>
           <div style={{
             flex: 1,
@@ -773,7 +773,7 @@ const DesignerStep2Plan = ({ n, total }) => {
           <div style={{
             fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
             letterSpacing: '0.16em', textTransform: 'uppercase',
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           }}>設計師審稿重點</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
             {reviewSections.map((s, i) => (
@@ -784,7 +784,7 @@ const DesignerStep2Plan = ({ n, total }) => {
               }}>
                 <div style={{
                   fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
-                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                   width: 160, flexShrink: 0, whiteSpace: 'nowrap',
                 }}>{s.tag}</div>
                 <div style={{ flex: 1, fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.4 }}>
@@ -837,11 +837,11 @@ const DesignerStep3Implement = ({ n, total }) => {
         <div style={{
           fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
           letterSpacing: '0.16em', textTransform: 'uppercase',
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           flexShrink: 0,
         }}>🟧 指令</div>
         <div style={{
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           fontSize: TYPE_SCALE.body, color: C.ink, letterSpacing: '-0.005em',
         }}>
           /implement_plan &lt;plan.md 路徑&gt;
@@ -918,7 +918,7 @@ const DesignerBeforeAfter = ({ n, total }) => {
             }}>
               <div style={{
                 fontSize: TYPE_SCALE.tiny,
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                 letterSpacing: '0.16em',
                 color: c.accent,
                 fontWeight: 700,
@@ -945,7 +945,7 @@ const DesignerBeforeAfter = ({ n, total }) => {
               <div style={{ fontSize: 48, lineHeight: 1 }}>🖼</div>
               <div style={{
                 fontSize: TYPE_SCALE.tiny,
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
               }}>{c.tag} 截圖位置</div>
@@ -972,7 +972,7 @@ const DesignerWrapUp = ({ n, total }) => (
         fontSize: TYPE_SCALE.small,
         letterSpacing: TRACK.small,
         color: C.ink, fontWeight: 500,
-        fontFamily: "'Geist Mono', ui-monospace, monospace",
+        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         opacity: 0.78,
       }}>Slide 11 · 收尾與 Q&amp;A</div>
 
@@ -1006,14 +1006,14 @@ const DesignerWrapUp = ({ n, total }) => (
               padding: '10px 18px',
               borderRadius: ROUNDED.pill,
               fontSize: TYPE_SCALE.small, fontWeight: 500,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               color: C.ink,
             }}>{s}</div>
           ))}
         </div>
         <div style={{
           fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 700,
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           letterSpacing: TRACK.small,
         }}>Q &amp; A</div>
       </div>
@@ -1061,12 +1061,12 @@ const DesignerInstallAppendix = ({ n, total }) => {
             <div style={{
               fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
               letterSpacing: '0.12em', textTransform: 'uppercase',
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             }}>方法 {m.tag}</div>
             <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>{m.desc}</div>
             <div style={{
               background: C.surface2, color: C.ink,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
               fontSize: 15, padding: '14px 18px',
               borderRadius: ROUNDED.sm, lineHeight: 1.6,
               whiteSpace: 'pre-wrap', wordBreak: 'break-all',
@@ -1078,7 +1078,7 @@ const DesignerInstallAppendix = ({ n, total }) => {
         marginTop: 24,
         fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
         letterSpacing: '0.16em', textTransform: 'uppercase',
-        fontFamily: "'Geist Mono', ui-monospace, monospace",
+        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         marginBottom: 10,
       }}>安裝後你會得到的 slash commands（節錄）</div>
       <div style={{
@@ -1092,14 +1092,14 @@ const DesignerInstallAppendix = ({ n, total }) => {
           }}>
             <div>
               <div style={{
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                 fontSize: TYPE_SCALE.tiny, color: C.ink, fontWeight: 600,
               }}>{c.cmd}</div>
               <div style={{ fontSize: 14, color: C.inkMuted, marginTop: 2 }}>{c.use}</div>
             </div>
             <div style={{
               fontSize: 14, color: c.covered === '進階' ? C.inkMuted : C.ink, fontWeight: 600,
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             }}>{c.covered}</div>
           </div>
         ))}
