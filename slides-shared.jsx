@@ -157,7 +157,7 @@ export const Eyebrow = ({ children, color = C.inkMuted }) => (
     fontWeight: 500,
     letterSpacing: TRACK.small,
     color,
-    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
   }}>{children}</div>
 );
 
@@ -168,31 +168,14 @@ export const SlideNumber = ({ n, total, color = C.textDescription }) => (
     right: SPACING.paddingX,
     fontSize: TYPE_SCALE.tiny,
     color,
-    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     letterSpacing: '0.08em',
   }}>
     {String(n).padStart(2, '0')} / {String(total).padStart(2, '0')}
   </div>
 );
 
-export const Footmark = ({ color = C.textDescription }) => (
-  <div style={{
-    position: 'absolute',
-    bottom: 44,
-    left: SPACING.paddingX,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 16,
-  }}>
-    <div style={{
-      fontSize: TYPE_SCALE.tiny,
-      color,
-      letterSpacing: '0.16em',
-      textTransform: 'uppercase',
-      fontWeight: 500,
-    }}>Claude Code 核心概念</div>
-  </div>
-);
+export const Footmark = () => null;
 
 export const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
   <span style={{
@@ -209,7 +192,7 @@ export const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
 
 export const Code = ({ children, size = TYPE_SCALE.body }) => (
   <span style={{
-    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     fontSize: size,
     background: C.surface2,
     color: C.ink,

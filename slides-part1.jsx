@@ -7,7 +7,6 @@
 
 import React from 'react'
 import {
-  Agenda,
   SectionDivider,
   TokenCombined,
   ContextWindowCombined,
@@ -24,7 +23,6 @@ export const title = 'Claude Code 核心概念'
 export const subtitle = 'Token、Context Window、Session 三件套,加上 Context Engineering / CLAUDE.md / Skill 的實作框架。'
 
 export default [
-  { label: 'Agenda', render: (p) => <Agenda {...p} /> },
   { label: 'Section · Foundations', render: (p) => (
     <SectionDivider
       {...p}

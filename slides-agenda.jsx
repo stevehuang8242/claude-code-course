@@ -39,7 +39,7 @@ for (const k of partKeys) {
     chapters.push({
       title: mod.title,
       subtitle: mod.subtitle || '',
-      range: `Part ${chapters.length + 1}`,
+      range: `p.${String(cursor + 1).padStart(2, '0')}`,
       firstSlideIndex: cursor,
     })
   }
@@ -71,7 +71,7 @@ const Agenda = ({ n, total }) => {
         style={{
           listStyle: 'none',
           padding: 0,
-          margin: '72px 0 0 0',
+          margin: '40px 0 0 0',
           display: 'flex',
           flexDirection: 'column',
           gap: 0,
@@ -96,10 +96,10 @@ const Agenda = ({ n, total }) => {
               onMouseLeave={() => setHovered(-1)}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '120px 1fr auto',
+                gridTemplateColumns: '100px 1fr auto',
                 alignItems: 'baseline',
                 gap: 40,
-                padding: '32px 24px',
+                padding: '28px 24px',
                 marginLeft: -24,
                 marginRight: -24,
                 borderBottom: `1px solid ${C.hairlineSoft}`,
@@ -111,41 +111,28 @@ const Agenda = ({ n, total }) => {
               }}
             >
               <span style={{
-                fontFamily: "'Geist Mono', ui-monospace, monospace",
-                fontSize: TYPE_SCALE.title,
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+                fontSize: 44,
                 fontWeight: 500,
                 color: C.inkMuted,
                 letterSpacing: TRACK.title,
               }}>{String(i + 1).padStart(2, '0')}</span>
 
-              <div>
-                <div style={{
-                  fontSize: TYPE_SCALE.title,
-                  fontWeight: 600,
-                  lineHeight: 1.15,
-                  color: C.ink,
-                  letterSpacing: TRACK.title,
-                  textDecoration: isHover ? 'underline' : 'none',
-                  textDecorationThickness: 2,
-                  textUnderlineOffset: 8,
-                  transition: 'text-decoration 160ms ease',
-                }}>{c.title}</div>
-                {c.subtitle && (
-                  <div style={{
-                    fontSize: TYPE_SCALE.body,
-                    color: C.inkMuted,
-                    marginTop: 12,
-                    lineHeight: 1.4,
-                    letterSpacing: TRACK.body,
-                    maxWidth: 1200,
-                    fontWeight: 400,
-                  }}>{c.subtitle}</div>
-                )}
-              </div>
+              <div style={{
+                fontSize: 44,
+                fontWeight: 600,
+                lineHeight: 1.15,
+                color: C.ink,
+                letterSpacing: TRACK.title,
+                textDecoration: isHover ? 'underline' : 'none',
+                textDecorationThickness: 2,
+                textUnderlineOffset: 8,
+                transition: 'text-decoration 160ms ease',
+              }}>{c.title}</div>
 
               {c.range && (
                 <span style={{
-                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                   fontSize: TYPE_SCALE.small,
                   color: C.inkMuted,
                   letterSpacing: '0.04em',
