@@ -16,7 +16,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useSlideActive } from './useSlideActive.js'
 
-const TYPE_SCALE = {
+export const TYPE_SCALE = {
   hero: 108,
   display: 88,
   title: 56,
@@ -28,7 +28,7 @@ const TYPE_SCALE = {
 
 /* Tracking baked per size. Mixed CJK+Latin caps at -2.5% so Chinese
  * characters don't overlap; Latin-only contexts can push to -4.5%. */
-const TRACK = {
+export const TRACK = {
   hero:     '-0.025em',
   heroLat:  '-0.045em',
   display:  '-0.025em',
@@ -39,7 +39,7 @@ const TRACK = {
   tiny:     '0em',
 };
 
-const SPACING = {
+export const SPACING = {
   paddingTop: 72,
   paddingBottom: 56,
   paddingX: 120,
@@ -52,7 +52,7 @@ const SPACING = {
  * snappy without overshoot. STAGGER is the parent variant; nest it for
  * cascading entrances and put delayChildren only on the outermost layer
  * so deeper levels don't accumulate extra waits. */
-const FADE_UP = {
+export const FADE_UP = {
   hidden: { opacity: 0, y: 24 },
   show: {
     opacity: 1,
@@ -61,12 +61,12 @@ const FADE_UP = {
   },
 };
 
-const STAGGER = {
+export const STAGGER = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 };
 
-const STAGGER_INNER = {
+export const STAGGER_INNER = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06 } },
 };
@@ -74,7 +74,7 @@ const STAGGER_INNER = {
 /* Framer dark palette. Legacy alias names (pine, cedar, basalt, ...)
  * remap to the new dark tokens so non-mounted legacy slides still resolve.
  */
-const C = {
+export const C = {
   // Framer canon
   canvas:        '#090909',
   surface1:      '#141414',
@@ -138,7 +138,7 @@ const C = {
   semanticSuccess: '#ffffff',
 };
 
-const ROUNDED = {
+export const ROUNDED = {
   xs: 4,    // utility chip
   sm: 6,    // inline tag
   md: 10,   // form input, list item
@@ -153,7 +153,7 @@ const ROUNDED = {
    Shared primitives
    ============================================================ */
 
-const Frame = ({ bg = C.canvas, children, style = {}, padded = true }) => (
+export const Frame = ({ bg = C.canvas, children, style = {}, padded = true }) => (
   <div style={{
     boxSizing: 'border-box',
     width: '100%',
@@ -175,7 +175,7 @@ const Frame = ({ bg = C.canvas, children, style = {}, padded = true }) => (
 /* Framer caption-style eyebrow — non-caps, ink-muted, monospace numerics.
  * The aggressive small-caps tracked-out kicker style reads "editorial" and
  * conflicts with Framer's poster register, so we drop it. */
-const Eyebrow = ({ children, color = C.inkMuted }) => (
+export const Eyebrow = ({ children, color = C.inkMuted }) => (
   <div style={{
     fontSize: TYPE_SCALE.small,
     fontWeight: 500,
@@ -185,7 +185,7 @@ const Eyebrow = ({ children, color = C.inkMuted }) => (
   }}>{children}</div>
 );
 
-const SlideNumber = ({ n, total, color = C.textDescription }) => (
+export const SlideNumber = ({ n, total, color = C.textDescription }) => (
   <div style={{
     position: 'absolute',
     bottom: 44,
@@ -199,9 +199,26 @@ const SlideNumber = ({ n, total, color = C.textDescription }) => (
   </div>
 );
 
-const Footmark = () => null;
+export const Footmark = ({ color = C.textDescription, label = 'Claude Code 核心概念' }) => (
+  <div style={{
+    position: 'absolute',
+    bottom: 44,
+    left: SPACING.paddingX,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 16,
+  }}>
+    <div style={{
+      fontSize: TYPE_SCALE.tiny,
+      color,
+      letterSpacing: '0.16em',
+      textTransform: 'uppercase',
+      fontWeight: 500,
+    }}>{label}</div>
+  </div>
+);
 
-const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
+export const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
   <span style={{
     display: 'inline-block',
     background: bg,
@@ -216,7 +233,7 @@ const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
 
 /* Always lifts above its parent surface — surface-2 chip works on canvas
  * (#090909) and on surface-1 cards (#141414). The `dark` prop is vestigial. */
-const Code = ({ children, size = TYPE_SCALE.body }) => (
+export const Code = ({ children, size = TYPE_SCALE.body }) => (
   <span style={{
     fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     fontSize: size,
@@ -384,7 +401,7 @@ const Agenda = ({ n, total }) => {
 /* Section dividers are the deck's gradient spotlight moments — the bg is
  * passed in by the mount call as a literal hex (e.g. "#6a4cf5" violet,
  * "#d44df0" magenta). All gradient grounds use white type. */
-const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.gradientViolet }) => {
+export const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.gradientViolet }) => {
   return (
     <Frame padded={false} bg={bg} style={{ color: C.ink }}>
       <div style={{
@@ -429,7 +446,7 @@ const SectionDivider = ({ kicker, title, subtitle, range, n, total, bg = C.gradi
 /* ============================================================
    Reusable section header for content slides
    ============================================================ */
-const SlideHead = ({ kicker, title, sub }) => (
+export const SlideHead = ({ kicker, title, sub }) => (
   <div>
     {kicker && <Eyebrow>{kicker}</Eyebrow>}
     <h1 style={{
@@ -2190,7 +2207,6 @@ const ClosingNoLogo = ({ n, total }) => (
 
 export {
   Agenda,
-  SectionDivider,
   TokenCombined,
   ContextWindowCombined,
   SessionCombined,
