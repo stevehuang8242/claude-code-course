@@ -12,10 +12,11 @@ import {
   Example02Reference,
   Example03Screenshot,
   Step3Skill,
+  SkillComparison,
   Foolproof,
 } from './slides-part3.jsx'
 
-const TOTAL = 10
+const TOTAL = 11
 
 const mount = (id, el) => {
   const node = document.getElementById(id)
@@ -32,4 +33,5 @@ mount('s6',  <Example01Figma      n={6}  total={TOTAL} />)
 mount('s7',  <Example02Reference  n={7}  total={TOTAL} />)
 mount('s8',  <Example03Screenshot n={8}  total={TOTAL} />)
 mount('s9',  <Step3Skill          n={9}  total={TOTAL} />)
-mount('s10', <Foolproof           n={10} total={TOTAL} />)
+mount('s10', <SkillComparison     n={10} total={TOTAL} />)
+mount('s11', <Foolproof           n={11} total={TOTAL} />)
