@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --open",
+    "dev:part3": "vite --open /index-part3.html",
     "build": "vite build",
     "preview": "vite preview"
   },
