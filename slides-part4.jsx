@@ -197,7 +197,7 @@ const DesignerCourseTitle = ({ n, total }) => {
         style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'center' }}
       >
         <motion.div variants={FADE_UP}>
-          <Eyebrow>04 情境實作 · 設計師 RPI</Eyebrow>
+          <Eyebrow>04 情境三 · 設計師 RPI</Eyebrow>
         </motion.div>
         <motion.h1
           variants={FADE_UP}
@@ -266,7 +266,7 @@ const DesignerCourseTitle = ({ n, total }) => {
 const DesignerWhyRPI = ({ n, total }) => (
   <Frame>
     <SlideHead
-      kicker="04 情境實作 · 設計師 RPI"
+      kicker="04 情境三 · 設計師 RPI"
       title="為什麼需要 R-P-I"
       sub="先想清楚 → 再規劃方案 → 最後才動手｜每一步都有設計師介入的 checkpoint，避免 AI 失控亂寫"
     />
@@ -396,7 +396,7 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="04 情境實作 · 設計師 RPI"
+        kicker="04 情境三 · 設計師 RPI"
         title="一個指令一步路，每步都有設計師的角色"
       />
       <div style={{
@@ -483,7 +483,7 @@ const DesignerKeyTakeaway = ({ n, total }) => (
         fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         opacity: 0.78,
         marginBottom: 56,
-      }}>04 情境實作 · 設計師 RPI</div>
+      }}>04 情境三 · 設計師 RPI</div>
       <div style={{
         fontSize: TYPE_SCALE.hero, fontWeight: 600, lineHeight: 0.95,
         letterSpacing: TRACK.hero, color: C.ink,
@@ -514,7 +514,7 @@ const DesignerCaseIntro = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="04 情境實作 · 設計師 RPI"
+        kicker="04 情境三 · 設計師 RPI"
         title="情境實作 : Admin Config 新增「批量新增」功能"
         sub="設計師如何用三步驟落地"
       />
@@ -583,7 +583,7 @@ const DesignerStep1Research = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="04 情境實作 · 設計師 RPI"
+        kicker="04 情境三 · 設計師 RPI"
         title="Research｜先看懂地基，再決定怎麼蓋"
         sub="設計師指路 : 指定範圍與來源，確認需求"
       />
@@ -634,7 +634,7 @@ const DesignerStep1Research = ({ n, total }) => {
 const DesignerResearchOutput = ({ n, total }) => (
   <Frame>
     <SlideHead
-      kicker="04 情境實作 · 設計師 RPI"
+      kicker="04 情境三 · 設計師 RPI"
       title="🟦 AI 產出：Research.md"
       sub="含現有元件清單、API 規格、欄位驗證邏輯。"
     />
@@ -679,7 +679,7 @@ const DesignerStep2Plan = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="04 情境實作 · 設計師 RPI"
+        kicker="04 情境三 · 設計師 RPI"
         title="Plan｜選對互動模式 — 設計師的審稿戰場"
         sub="AI 提方案、設計師審 UX"
       />
@@ -795,7 +795,7 @@ const DesignerStep3Implement = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="04 情境實作 · 設計師 RPI"
+        kicker="04 情境三 · 設計師 RPI"
         title="Implement｜驗收體驗，而非程式碼"
         sub="設計師驗收：對照目標檢查成果，並做 UI 微調"
       />
@@ -864,7 +864,7 @@ const DesignerBeforeAfter = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="04 情境實作 · 設計師 RPI"
+        kicker="04 情境三 · 設計師 RPI"
         title="驗收成果"
         sub="Before → After"
       />
@@ -945,7 +945,7 @@ const DesignerWrapUp = ({ n, total }) => (
         color: C.ink, fontWeight: 500,
         fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         opacity: 0.78,
-      }}>04 情境實作 · 設計師 RPI</div>
+      }}>04 情境三 · 設計師 RPI</div>
 
       <div>
         <div style={{
@@ -1018,7 +1018,7 @@ const DesignerInstallAppendix = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="04 情境實作 · 設計師 RPI"
+        kicker="04 情境三 · 設計師 RPI"
         title="把 RPI Workflow 裝進你的 Claude Code"
         sub="前置需求：Claude Code CLI + Git 環境"
       />
@@ -1096,15 +1096,15 @@ export {
 }
 
 /* Chapter metadata — picked up by slides-agenda.jsx. */
-export const title = '情境實作 · 設計師 RPI'
+export const title = '情境三 · 設計師 RPI'
 export const subtitle = 'Research → Plan → Implement,10 分鐘把 Admin Config 批量新增功能做出來。'
 
 export default [
   { label: 'Section · Designer RPI Workshop', render: (p) => (
     <SectionDivider
       {...p}
-      kicker="04 情境實作 · 設計師 RPI"
-      title="情境實作:設計師 RPI"
+      kicker="04 情境三 · 設計師 RPI"
+      title="情境三 · 設計師 RPI"
       subtitle="Research → Plan → Implement — 10 分鐘把 Admin Config 批量新增功能做出來。"
       bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)"
     />
