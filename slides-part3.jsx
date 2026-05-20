@@ -246,7 +246,7 @@ export const ScenarioIntro = ({ n, total }) => (
 
     {/* Bottom: 三步框架 (3 numbered cards) */}
     <motion.div variants={FADE_UP} style={{
-      marginTop: 40,
+      marginTop: 96,
       fontSize: TYPE_SCALE.small,
       color: C.inkMuted,
       letterSpacing: '0.08em', textTransform: 'uppercase',
@@ -312,19 +312,15 @@ export const Step1ClaudeMd = ({ n, total }) => (
       variants={STAGGER_INNER}
       style={{
         flex: 1,
-        marginTop: 48,
+        marginTop: -96,
         display: 'grid',
         gridTemplateColumns: '1.05fr 1fr',
         gap: 56,
         alignItems: 'center',
       }}
     >
-      {/* Left — 一個指令搞定 */}
+      {/* Left — 一個指令搞定 (no outer container) */}
       <motion.div variants={FADE_UP} style={{
-        background: C.surface1,
-        border: `1px solid ${C.hairlineSoft}`,
-        borderRadius: ROUNDED.lg,
-        padding: 48,
         display: 'flex', flexDirection: 'column', gap: 28,
       }}>
         <div style={{
@@ -333,10 +329,21 @@ export const Step1ClaudeMd = ({ n, total }) => (
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
         }}>一個指令搞定</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <Code size={TYPE_SCALE.title}>/init</Code>
-          <span style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted }}>→</span>
-          <span style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 500 }}>CLAUDE.md</span>
+        <div style={{
+          alignSelf: 'flex-start',
+          width: 680,
+          maxWidth: '100%',
+          background: C.surface2,
+          border: `1px solid ${C.hairlineSoft}`,
+          borderRadius: ROUNDED.md,
+          padding: '28px 36px',
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontSize: TYPE_SCALE.title,
+          color: C.gradientOrange,
+          fontWeight: 500,
+          letterSpacing: TRACK.title,
+        }}>
+          /init
         </div>
         <div style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, lineHeight: 1.5 }}>
           它會自動讀過整個專案，產出一份 <span style={{ color: C.ink, fontWeight: 500 }}>CLAUDE.md</span>。
@@ -358,8 +365,8 @@ export const Step1ClaudeMd = ({ n, total }) => (
             display: 'grid', gridTemplateColumns: '180px 1fr', gap: 20, alignItems: 'baseline',
             paddingBottom: 18, borderBottom: `1px solid ${C.hairlineSoft}`,
           }}>
-            <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>{kp.label}</div>
-            <div style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, lineHeight: 1.45 }}>{kp.desc}</div>
+            <div style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, fontWeight: 500 }}>{kp.label}</div>
+            <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600, lineHeight: 1.45 }}>{kp.desc}</div>
           </motion.div>
         ))}
       </motion.div>
@@ -386,7 +393,7 @@ export const Step2Inventory = ({ n, total }) => (
       variants={STAGGER_INNER}
       style={{
         flex: 1,
-        marginTop: 56,
+        marginTop: 0,
         display: 'grid',
         gridTemplateColumns: '1.1fr 1fr',
         gap: 56,
@@ -466,7 +473,7 @@ export const Step2Channels = ({ n, total }) => (
           border: `1px solid ${C.hairlineSoft}`,
           borderRadius: ROUNDED.lg,
           padding: 40,
-          display: 'flex', flexDirection: 'column', gap: 24, minHeight: 380,
+          display: 'flex', flexDirection: 'column', gap: 24,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 600, color: C.ink, letterSpacing: TRACK.subtitle }}>{card.tag}</div>
@@ -481,7 +488,7 @@ export const Step2Channels = ({ n, total }) => (
     </motion.div>
 
     <motion.div variants={FADE_UP} style={{
-      marginTop: 48,
+      marginTop: 96,
       padding: '32px 40px',
       borderLeft: `4px solid ${C.ink}`,
       background: C.canvas,
@@ -580,7 +587,7 @@ export const Example02Reference = ({ n, total }) => (
     </motion.div>
 
     <motion.div variants={FADE_UP} style={{
-      marginTop: 24,
+      marginTop: 64,
       padding: '20px 28px',
       borderLeft: `3px solid ${C.ink}`,
       background: C.surface1,
@@ -656,18 +663,18 @@ export const Step3Skill = ({ n, total }) => (
       />
     </motion.div>
 
-    {/* Skill 是什麼 — quote + tagline (visual hero of this slide) */}
+    {/* Skill 是什麼 — quote + tagline */}
     <motion.div variants={FADE_UP} style={{
-      marginTop: 36,
-      padding: '44px 56px',
-      borderLeft: `6px solid ${C.ink}`,
+      marginTop: 96,
+      padding: '24px 32px',
+      borderLeft: `4px solid ${C.ink}`,
       background: C.canvas,
-      borderRadius: ROUNDED.lg,
+      borderRadius: ROUNDED.md,
     }}>
-      <div style={{ fontSize: TYPE_SCALE.title, color: C.ink, fontWeight: 600, letterSpacing: TRACK.title, lineHeight: 1.25 }}>
+      <div style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600, letterSpacing: TRACK.subtitle, lineHeight: 1.3 }}>
         Skill = 標準作業程序（SOP），把你重複在做的判斷或檢查，存成 AI 也懂的固定流程。
       </div>
-      <div style={{ marginTop: 20, fontSize: TYPE_SCALE.body, color: C.inkMuted, lineHeight: 1.45 }}>
+      <div style={{ marginTop: 12, fontSize: TYPE_SCALE.small, color: C.inkMuted }}>
         建一次，到處套用 — 就像 Figma Component 一樣。
       </div>
     </motion.div>
@@ -676,7 +683,7 @@ export const Step3Skill = ({ n, total }) => (
     <motion.div
       variants={STAGGER_INNER}
       style={{
-        marginTop: 28,
+        marginTop: 96,
         display: 'grid',
         gridTemplateColumns: '1.3fr 1fr',
         gap: 24,
@@ -786,6 +793,7 @@ export const SkillComparison = ({ n, total }) => (
 
     <motion.div variants={FADE_UP} style={{ marginTop: 64 }}>
       <div style={{
+        marginTop: 80,
         display: 'grid',
         gridTemplateColumns: '160px repeat(3, 1fr)',
         background: C.surface1,
@@ -844,11 +852,11 @@ export const Foolproof = ({ n, total }) => (
     <motion.div
       variants={STAGGER_INNER}
       style={{
-        flex: 1,
-        marginTop: 56,
+        marginTop: 96,
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: 28,
+        alignItems: 'start',
       }}
     >
       {[
@@ -876,7 +884,7 @@ export const Foolproof = ({ n, total }) => (
           border: `1px solid ${C.hairlineSoft}`,
           borderRadius: ROUNDED.lg,
           padding: 40,
-          display: 'flex', flexDirection: 'column', gap: 20, minHeight: 380,
+          display: 'flex', flexDirection: 'column', gap: 20,
         }}>
           <div style={{
             fontFamily: "'Geist Mono', ui-monospace, monospace",
@@ -895,7 +903,7 @@ export const Foolproof = ({ n, total }) => (
             fontWeight: 500,
             lineHeight: 1.5,
           }}>{card.quote}</div>
-          <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.55, marginTop: 'auto' }}>
+          <div style={{ marginTop:32, fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.55 }}>
             {card.desc}
           </div>
         </motion.div>
