@@ -342,7 +342,7 @@ export {
 }
 
 /* Chapter metadata — picked up by slides-agenda.jsx. */
-export const title = "A Designer's Value in the AI Era"
+export const title = 'AI 時代設計師的價值'
 export const subtitle = 'Get closer. Raise the bar. Sign your work.'
 
 export default [
