@@ -24,7 +24,7 @@ import {
   TYPE_SCALE, TRACK, SPACING, ROUNDED, C,
   FADE_UP, STAGGER, STAGGER_INNER,
   Frame, SlideNumber, Tag, Code, SlideHead,
-} from './slides.jsx'
+} from './slides_archived.jsx'
 
 import imgInventory from './Slide/CH3/Image/情境二/情境二_專案設計元件位置.png'
 import imgEx01_1 from './Slide/CH3/Image/情境二/範例01-1_Code原圖.png'
@@ -233,7 +233,7 @@ export const ScenarioIntro = ({ n, total }) => (
         <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {[
             '把畫面「整理成具設計樣式的系統」 — 色彩、間距、字級、字型、圓角、狀態、微動態',
-            '調整操作行為（參閱情境三）',
+            '調整操作（參閱情境三）',
           ].map((t, i) => (
             <li key={i} style={{ display: 'flex', gap: 14, alignItems: 'baseline' }}>
               <span style={{ color: C.inkMuted }}>—</span>
