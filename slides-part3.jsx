@@ -1,8 +1,13 @@
-/* Claude Code 設計師課程 · Part 3 of 4 · 情境二：接手既有專案
+/* Part 3 — 情境二：接手既有專案
  *
- * 11 slides:
- *   1. SectionDivider — Part 3 of 4 opener
- *   2. ScenarioIntro — 一、情境二（接手現況 + 設計師接手目標 + 三步框架）
+ * Auto-loaded by main.jsx via the slides-part*.jsx manifest pattern.
+ * Chapter metadata (`title` / `subtitle`) is picked up by slides-agenda.jsx;
+ * the `export default [...]` array at the bottom lists the 11 slides in
+ * deck order with stable labels.
+ *
+ * Slide order:
+ *   1. Section · 情境二開場（gradient opener）
+ *   2. 現況與接手目標
  *   3. Step 1 — CLAUDE.md
  *   4. Step 2-1 — 核心觀念
  *   5. Step 2-2 — 三種輸入管道
@@ -10,11 +15,11 @@
  *   7. 範例 02 — 沒 Figma 但有調好頁
  *   8. 範例 03 — 只有截圖
  *   9. Step 3 — Skill（SOP 定義 + .md 範例 + 怎麼用）
- *   10. SkillComparison — Skill vs CLAUDE.md vs Prompt
+ *   10. Skill vs CLAUDE.md vs Prompt
  *   11. 防呆守則
  *
  * Source content：Slide/claude-code-course-Ch3.md
- * Tokens / primitives：imported from ./slides.jsx
+ * Tokens / primitives：imported from ./slides_archived.jsx
  */
 
 import React, { useState } from 'react'
@@ -913,3 +918,23 @@ export const Foolproof = ({ n, total }) => (
     <SlideNumber n={n} total={total} />
   </Animated>
 )
+
+/* ============================================================
+   Chapter metadata + manifest (auto-loaded by main.jsx)
+   ============================================================ */
+export const title = '情境二 · 接手既有專案'
+export const subtitle = '用 Claude Code 把 AI 模板的雜亂視覺，收成一套有規則的設計系統。'
+
+export default [
+  { label: 'Section · 情境二 接手既有專案', render: (p) => <Ch3Divider {...p} /> },
+  { label: '情境二｜現況與接手目標',         render: (p) => <ScenarioIntro {...p} /> },
+  { label: 'Step 1｜CLAUDE.md',              render: (p) => <Step1ClaudeMd {...p} /> },
+  { label: 'Step 2-1｜核心觀念',              render: (p) => <Step2Inventory {...p} /> },
+  { label: 'Step 2-2｜三種輸入管道',          render: (p) => <Step2Channels {...p} /> },
+  { label: '範例 01｜有 Figma',               render: (p) => <Example01Figma {...p} /> },
+  { label: '範例 02｜沒 Figma 但有調好頁',    render: (p) => <Example02Reference {...p} /> },
+  { label: '範例 03｜只有截圖',               render: (p) => <Example03Screenshot {...p} /> },
+  { label: 'Step 3｜Skill',                  render: (p) => <Step3Skill {...p} /> },
+  { label: 'Skill vs CLAUDE.md vs Prompt',   render: (p) => <SkillComparison {...p} /> },
+  { label: '防呆守則',                       render: (p) => <Foolproof {...p} /> },
+]
