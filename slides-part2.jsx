@@ -1600,7 +1600,7 @@ export {
 }
 
 /* Chapter metadata — picked up by slides-agenda.jsx. */
-export const title = '從想法 / 設計稿到可操作互動介面'
+export const title = '情境一 · Design to Code'
 export const subtitle = '兩條路徑、一個終點——Claude Design 與 Claude Code 的接力。'
 
 export default [
