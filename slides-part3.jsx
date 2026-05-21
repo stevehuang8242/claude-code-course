@@ -1,28 +1,33 @@
-/* Part 3 — 情境二：接手既有專案
+/* Part 3 — 情境二：Design from Code
  *
  * Auto-loaded by main.jsx via the slides-part*.jsx manifest pattern.
  * Chapter metadata (`title` / `subtitle`) is picked up by slides-agenda.jsx;
- * the `export default [...]` array at the bottom lists the 11 slides in
- * deck order with stable labels.
+ * the `export default [...]` array at the bottom lists 15 slides in deck
+ * order with stable labels.
  *
  * Slide order:
- *   1. Section · 情境二開場（gradient opener）
- *   2. 現況與接手目標
+ *   1. SectionDivider · Design from Code
+ *   2. 專案現況與接手目標 (現狀 + 三步框架)
  *   3. Step 1 — CLAUDE.md
- *   4. Step 2-1 — 核心觀念
- *   5. Step 2-2 — 三種輸入管道
- *   6. 範例 01 — 有 Figma
- *   7. 範例 02 — 沒 Figma 但有調好頁
- *   8. 範例 03 — 只有截圖
- *   9. Step 3 — Skill（SOP 定義 + .md 範例 + 怎麼用）
- *   10. Skill vs CLAUDE.md vs Prompt
- *   11. 防呆守則
+ *   4. Step 2-1 — 盤點與收斂共用元件
+ *   5. Step 2-2 — 三種調整方式 (Prompt / 截圖 / Figma MCP)
+ *   6. Step 2 — 如何看到實際畫面 (+ 老闆思維補充)
+ *   7. 範例 01 — Prompt 快速修正
+ *   8. 範例 02 — 截圖 + Prompt 對齊細節
+ *   9. 範例 03 — Figma MCP 開場 + 確認連線
+ *   10. 範例 03 — Figma MCP 把畫面傳到 Figma (三步流程)
+ *   11. 範例 03 — Figma MCP Claude 反向改 Code
+ *   12. Step 3 — Skill.md (定義 + 路徑 + 範本)
+ *   13. Step 3 — Skill.md 使用方式與放置
+ *   14. Prompt vs CLAUDE.md vs Skill 對照
+ *   15. 防呆 · 存檔與回復
  *
- * Source content：Slide/claude-code-course-Ch3.md
+ * Source：Slide/slide-part3.md
  * Tokens / primitives：imported from ./slides_archived.jsx
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { useSlideActive } from './useSlideActive.js'
 import {
@@ -31,21 +36,37 @@ import {
   Frame, SlideNumber, Tag, Code, SlideHead,
 } from './slides_archived.jsx'
 
-import imgInventory from './Slide/Image/Part3/情境二_專案設計元件位置.png'
-import imgEx01_1 from './Slide/Image/Part3/範例01-1_Code原圖.png'
-import imgEx01_2 from './Slide/Image/Part3/範例01-2_Code 畫面傳到 Figma.png'
-import imgEx01_3 from './Slide/Image/Part3/範例01-3_Figma 設計 GUI.png'
-import imgEx01_4 from './Slide/Image/Part3/範例01-4_Claude 執行的最終成果 .png'
-import imgEx02_1 from './Slide/Image/Part3/範例02-1_Code原圖.png'
-import imgEx02_2 from './Slide/Image/Part3/範例02-1_Claude 執行的最終成果.png'
-import imgEx03_1 from './Slide/Image/Part3/範例03-1_Code原圖.png'
-import imgEx03_2 from './Slide/Image/Part3/範例03-2_截圖.png'
-import imgEx03_3 from './Slide/Image/Part3/範例03-3_Claude 執行的最終成果 .png'
+import imgNow1       from './Slide/Image/Part3/情境二_現狀01.png'
+import imgNow2       from './Slide/Image/Part3/情境二_現狀02.png'
+import imgInventory  from './Slide/Image/Part3/情境二_專案設計元件位置.png'
+import imgSee1       from './Slide/Image/Part3/情境二_看畫面過程.jpg'
+import imgSee3       from './Slide/Image/Part3/情境二_看畫面過程03.jpg'
+import imgSee4       from './Slide/Image/Part3/情境二_看畫面過程04.jpg'
+import imgEx01_1     from './Slide/Image/Part3/範例01-1_Code原圖.png'
+import imgEx01_2     from './Slide/Image/Part3/範例01-1_Claude 執行的最終成果.png'
+import imgEx02_1     from './Slide/Image/Part3/範例02-1_Code原圖.png'
+import imgEx02_2     from './Slide/Image/Part3/範例02-2_截圖.png'
+import imgEx02_3     from './Slide/Image/Part3/範例02-3_Claude 執行的最終成果 .png'
+import imgFig01      from './Slide/Image/Part3/情境二_傳到figma_01.jpg'
+import imgFig02      from './Slide/Image/Part3/情境二_傳到figma_02.jpg'
+import imgFig03      from './Slide/Image/Part3/情境二_傳到figma_03.jpg'
+import imgFig04      from './Slide/Image/Part3/情境二_傳到figma_04.jpg'
+import imgFig05      from './Slide/Image/Part3/情境二_傳到figma_05.jpg'
+import imgFig06      from './Slide/Image/Part3/情境二_傳到figma_06.jpg'
+import imgFig07      from './Slide/Image/Part3/情境二_傳到figma_07.jpg'
+import imgEx03_4     from './Slide/Image/Part3/範例03-4_指示Claude.jpg'
+import imgEx03_5     from './Slide/Image/Part3/範例03-5_Claude 執行的最終成果 .png'
+import imgSave1      from './Slide/Image/Part3/情境二_存檔_01.jpg'
+import imgSave2      from './Slide/Image/Part3/情境二_存檔_02.jpg'
+import imgSave3      from './Slide/Image/Part3/情境二_存檔_03.jpg'
 
-/* Unified kicker for every content slide in this chapter */
-const KICKER = '情境二：接手既有專案'
+const KICKER       = '情境二：Design from Code'
+const KICKER_STEP2 = '情境二：Design from Code．Step 2｜重構設計規範'
 
-/* Animated Frame wrapper with stagger entrance */
+/* ============================================================
+   Shared helpers
+   ============================================================ */
+
 const Animated = ({ children, style = {}, bg = C.canvas }) => {
   const [ref, active] = useSlideActive()
   const state = active ? 'show' : 'hidden'
@@ -64,30 +85,112 @@ const Animated = ({ children, style = {}, bg = C.canvas }) => {
   )
 }
 
-/* Caption block under each image */
-const ImgCaption = ({ index, label, desc }) => (
-  <div style={{ marginTop: 14, display: 'flex', alignItems: 'baseline', gap: 12 }}>
-    <span style={{
-      fontFamily: "'Geist Mono', ui-monospace, monospace",
-      fontSize: TYPE_SCALE.small,
-      color: C.inkMuted,
-      letterSpacing: '0.04em',
-    }}>{index}</span>
-    <div>
-      <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500 }}>{label}</div>
-      {desc && <div style={{ fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginTop: 4 }}>{desc}</div>}
-    </div>
-  </div>
-)
-
-/* Photo card — image inside a surface-1 frame.
- * Hover: image scales (default 1.5×) and lifts above siblings with shadow.
- * Wide images (e.g. full-width rows) should pass hoverScale ≈ 1.1–1.2 to
- * avoid getting clipped at slide edges.
- * `align` controls horizontal alignment of the image inside its letterbox
- * (default 'center', valid CSS object-position values: 'left' / 'right' / etc.). */
-const PhotoCard = ({ src, alt, height = 360, padding = 12, hoverScale = 1.5, align = 'center' }) => {
+/* PhotoCard — image with hover-zoom and optional left-alignment.
+ *
+ * Pass `enableModal` to switch to click-to-fullscreen mode (image opens
+ * as a viewport-level overlay via React portal, escaping Frame's
+ * overflow:hidden). Useful for images that would clip badly when zoomed
+ * in-place (e.g. wide screenshots near the slide edge). */
+const PhotoCard = ({
+  src, alt,
+  height = 360, padding = 12,
+  hoverScale = 1.5, align = 'center',
+  enableModal = false,
+  bare = false,
+}) => {
   const [hovered, setHovered] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (!modalOpen) return
+    const onKey = (e) => { if (e.key === 'Escape') setModalOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [modalOpen])
+
+  /* Click-modal mode — used by the two 現狀 images on slide 2 where the
+   * in-place hover-zoom would clip against the Frame boundary.
+   * `bare` mode strips the surface card chrome so the image shows naked. */
+  if (enableModal) {
+    return (
+      <>
+        <div
+          onClick={() => setModalOpen(true)}
+          style={{
+            background: bare ? 'transparent' : C.surface1,
+            border: bare ? 'none' : `1px solid ${C.hairlineSoft}`,
+            borderRadius: bare ? ROUNDED.md : ROUNDED.md,
+            padding: bare ? 0 : padding,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'zoom-in',
+            transition: 'transform 0.2s ease-out, border-color 0.2s',
+            transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+            borderColor: bare ? 'transparent' : (hovered ? C.hairline : C.hairlineSoft),
+            overflow: 'hidden',
+          }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+        >
+          <img
+            src={src}
+            alt={alt}
+            style={{
+              width: '100%',
+              height,
+              objectFit: 'contain',
+              borderRadius: bare ? ROUNDED.md : ROUNDED.xs,
+              display: 'block',
+              pointerEvents: 'none',
+            }}
+          />
+        </div>
+        {modalOpen && createPortal(
+          <div
+            onClick={() => setModalOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(9, 9, 9, 0.94)',
+              zIndex: 99999,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '6vh 5vw',
+              cursor: 'zoom-out',
+            }}
+          >
+            <img
+              src={src}
+              alt={alt}
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
+                borderRadius: 8,
+                boxShadow: '0 32px 80px rgba(0, 0, 0, 0.7)',
+                pointerEvents: 'none',
+              }}
+            />
+            <div style={{
+              position: 'fixed',
+              bottom: '3vh',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              color: 'rgba(255,255,255,0.55)',
+              fontSize: 13,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              fontFamily: "'Geist Mono', ui-monospace, monospace",
+              pointerEvents: 'none',
+            }}>
+              Click anywhere · Esc to close
+            </div>
+          </div>,
+          document.body,
+        )}
+      </>
+    )
+  }
+
+  /* Default hover-zoom mode */
   return (
     <div
       style={{
@@ -127,8 +230,62 @@ const PhotoCard = ({ src, alt, height = 360, padding = 12, hoverScale = 1.5, ali
   )
 }
 
+/* MdWindow — macOS-style preview window.
+ * Single surface bg (C.surface2) matches slides_archived.jsx convention;
+ * everything else (font, sizes, traffic lights, padding, syntax styling)
+ * keeps the original code-editor look. */
+const MdWindow = ({ filename, children, fontSize = TYPE_SCALE.small }) => (
+  <div style={{
+    background: C.surface2,
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: ROUNDED.lg,
+    overflow: 'hidden',
+    fontFamily: "'Geist Mono', ui-monospace, monospace",
+    boxShadow: '0 24px 60px rgba(0, 0, 0, 0.6)',
+  }}>
+    <div style={{
+      padding: '14px 24px',
+      borderBottom: '1px solid rgba(255,255,255,0.04)',
+      display: 'flex', alignItems: 'center', gap: 12,
+    }}>
+      <span style={{ display: 'inline-flex', gap: 8 }}>
+        <span style={{ width: 14, height: 14, borderRadius: '50%', background: '#ff5f57' }} />
+        <span style={{ width: 14, height: 14, borderRadius: '50%', background: '#febc2e' }} />
+        <span style={{ width: 14, height: 14, borderRadius: '50%', background: '#28c840' }} />
+      </span>
+      <span style={{ fontSize: TYPE_SCALE.small, color: C.ink, marginLeft: 10, fontWeight: 500 }}>
+        {filename}
+      </span>
+    </div>
+    <div style={{
+      padding: '32px 40px',
+      fontSize,
+      lineHeight: 1.7,
+      color: C.ink,
+    }}>
+      {children}
+    </div>
+  </div>
+)
+
+/* Headings — entire line in white bold (token + content same brightness). */
+const MdHeading = ({ children }) => (
+  <div style={{ color: C.ink, fontWeight: 700 }}>## {children}</div>
+)
+const MdH1 = ({ children }) => (
+  <div style={{ color: C.ink, fontWeight: 700 }}># {children}</div>
+)
+const MdH3 = ({ children }) => (
+  <div style={{ color: C.ink, fontWeight: 700 }}>### {children}</div>
+)
+/* Bullets — entire line muted (token + content same dimness). */
+const MdBullet = ({ children, color = C.inkMuted }) => (
+  <div style={{ color }}>- {children}</div>
+)
+const MdGap = ({ size = 12 }) => <div style={{ height: size }} />
+
 /* ============================================================
-   Slide 1 — Section Divider · Part 3 of 4
+   Slide 1 — Section Divider · Design from Code
    ============================================================ */
 export const Ch3Divider = ({ n, total }) => (
   <Frame padded={false} bg="linear-gradient(135deg, #d44df0 0%, #ff7a3d 100%)" style={{ color: C.ink }}>
@@ -138,23 +295,29 @@ export const Ch3Divider = ({ n, total }) => (
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
     }}>
       <div>
-        <div style={{
+        {/* Reserve kicker slot (no content) — keeps title baseline aligned with other slides. */}
+        <div aria-hidden style={{
           fontSize: TYPE_SCALE.small,
           letterSpacing: TRACK.small,
-          color: C.ink,
-          fontWeight: 500,
           fontFamily: "'Geist Mono', ui-monospace, monospace",
-          opacity: 0.78,
-        }}>Part 3 of 4</div>
+          lineHeight: 1.4,
+          visibility: 'hidden',
+        }}>&nbsp;</div>
+        {/* Two-part title with | separator. */}
         <h1 style={{
           fontSize: TYPE_SCALE.display,
           fontWeight: 500,
-          lineHeight: 0.95,
+          lineHeight: 1.05,
           letterSpacing: TRACK.display,
-          margin: '56px 0 36px 0',
+          margin: `${SPACING.titleGap}px 0 0 0`,
           color: C.ink,
           maxWidth: 1500,
-        }}>情境二：接手既有專案</h1>
+        }}>
+          情境二：Design from Code
+          
+          <br/>
+          如何從 Code 重構 UI 系統
+        </h1>
         <div style={{
           fontSize: TYPE_SCALE.subtitle,
           lineHeight: 1.3,
@@ -163,9 +326,10 @@ export const Ch3Divider = ({ n, total }) => (
           maxWidth: 1500,
           letterSpacing: TRACK.subtitle,
           opacity: 0.92,
+          marginTop: 48,
         }}>
-          用 Claude Code 把 AI 模板的雜亂視覺，<br/>
-          收成一套有規則的設計系統。
+          透過 Claude Code，將 AI 生成的雜亂介面<br/>
+          重構為具一致性的設計系統。
         </div>
       </div>
     </div>
@@ -174,124 +338,173 @@ export const Ch3Divider = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 2 — 一、情境二：接手既有專案
+   Slide 2 — 專案現況與接手目標
    ============================================================ */
 export const ScenarioIntro = ({ n, total }) => (
   <Animated>
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="既有專案現況與接手目標"
-        sub="設計師接手 AI 寫好的模板 — 把畫面整理成具設計樣式的系統。"
+        title="專案現況與接手目標"
       />
     </motion.div>
 
-    {/* Top: 接手現況 vs 設計師接手目標 (two-col) */}
+    {/* Flat 2-col：左現況、右目標。齊頂對齊，圖片 bare 顯示放大。 */}
     <motion.div
       variants={STAGGER_INNER}
       style={{
-        marginTop: 48,
+        marginTop: 128,
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
-        gap: 32,
+        gap: 72,
+        alignItems: 'start',
       }}
     >
-      {/* 接手現況 */}
-      <motion.div variants={FADE_UP} style={{
-        background: C.surface1,
-        border: `1px solid ${C.hairlineSoft}`,
-        borderRadius: ROUNDED.lg,
-        padding: 32,
-        display: 'flex', flexDirection: 'column', gap: 16,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Tag bg={C.tagRed} fg={C.tagRedText}>接手現況</Tag>
-        </div>
-        <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* 專案現況 — 平鋪、灰調 */}
+      <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small,
+          color: C.inkMuted,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          fontWeight: 500,
+        }}>專案現況</div>
+        <ul style={{
+          margin: 0, padding: 0, listStyle: 'none',
+          display: 'flex', flexDirection: 'column', gap: 14,
+        }}>
           {[
-            ['AI 模板',     '以畫面結果為導向，缺乏結構'],
-            ['沒有一致的設計邏輯', null],
-            ['偏工程思維',   '不一定符合使用體驗'],
-          ].map(([t, d], i) => (
-            <li key={i} style={{ display: 'flex', gap: 14, alignItems: 'baseline' }}>
-              <span style={{ color: C.inkMuted }}>—</span>
-              <div>
-                <span style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>{t}</span>
-                {d && <span style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, marginLeft: 8 }}>{d}</span>}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </motion.div>
-
-      {/* 設計師接手目標 */}
-      <motion.div variants={FADE_UP} style={{
-        background: C.surface1,
-        border: `1px solid ${C.hairlineSoft}`,
-        borderRadius: ROUNDED.lg,
-        padding: 32,
-        display: 'flex', flexDirection: 'column', gap: 16,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Tag bg={C.tagGreen} fg={C.tagGreenText}>設計師接手目標</Tag>
-        </div>
-        <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {[
-            '把畫面「整理成具設計樣式的系統」 — 色彩、間距、字級、字型、圓角、狀態、微動態',
-            '調整操作（參閱情境三）',
+            '只有 Code、沒有設計稿',
+            '視覺缺乏一致性',
+            '元件未標準化，重複且難以維護',
           ].map((t, i) => (
             <li key={i} style={{ display: 'flex', gap: 14, alignItems: 'baseline' }}>
               <span style={{ color: C.inkMuted }}>—</span>
-              <span style={{ fontSize: TYPE_SCALE.body, color: C.ink, lineHeight: 1.45 }}>{t}</span>
+              <span style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, lineHeight: 1.45 }}>{t}</span>
             </li>
           ))}
         </ul>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginTop: 8 }}>
+          <PhotoCard src={imgNow1} alt="現狀 01" height={300} enableModal bare />
+          <PhotoCard src={imgNow2} alt="現狀 02" height={300} enableModal bare />
+        </div>
+      </motion.div>
+
+      {/* 設計師執行目標 — 大字、強調 */}
+      <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small,
+          color: C.gradientOrange,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          fontWeight: 600,
+        }}>設計師執行目標</div>
+        <div style={{
+          fontSize: TYPE_SCALE.title,
+          color: C.ink,
+          fontWeight: 600,
+          letterSpacing: TRACK.title,
+          lineHeight: 1.2,
+        }}>
+          把畫面整理成<br/>
+          <span style={{ color: C.gradientOrange }}>具設計規範</span>的系統
+        </div>
+        <div style={{
+          fontSize: TYPE_SCALE.body,
+          color: C.inkMuted,
+          lineHeight: 1.5,
+        }}>
+          色彩、間距、字級、字型、圓角、狀態、微動態<br/> — 全部回到一致的設計語彙。
+        </div>
       </motion.div>
     </motion.div>
 
-    {/* Bottom: 三步框架 (3 numbered cards) */}
-    <motion.div variants={FADE_UP} style={{
-      marginTop: 96,
-      fontSize: TYPE_SCALE.small,
-      color: C.inkMuted,
-      letterSpacing: '0.08em', textTransform: 'uppercase',
-      marginBottom: 14,
-    }}>三步框架</motion.div>
+    <SlideNumber n={n} total={total} />
+  </Animated>
+)
+
+/* ============================================================
+   Slide 3 — 三步框架（獨立一頁）
+   ============================================================ */
+export const ThreeStepFramework = ({ n, total }) => (
+  <Animated>
+    <motion.div variants={FADE_UP}>
+      <SlideHead
+        kicker={KICKER}
+        title="三步，讓混亂的 Code 重回可控的設計系統"
+        sub="理解 → 規範 → 系統化"
+      />
+    </motion.div>
 
     <motion.div
       variants={STAGGER_INNER}
       style={{
+        marginTop: 56,
+        flex: 1,
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 20,
+        gap: 28,
+        alignItems: 'stretch',
       }}
     >
       {[
-        { n: '①', title: '建立專案認知', sub: '給 Claude 一份專案 Brief' },
-        { n: '②', title: '建立設計規範', sub: '告訴它「對的樣子」' },
-        { n: '③', title: '建立設計習慣', sub: '把常用判斷存起來' },
+        {
+          gradient: 'linear-gradient(90deg, #6a4cf5 0%, #d44df0 100%)',
+          n: '01',
+          title: '建立專案認知',
+          sub: '給 Claude 一份專案 Brief',
+        },
+        {
+          gradient: 'linear-gradient(90deg, #d44df0 0%, #ff7a3d 100%)',
+          n: '02',
+          title: '重構設計規範',
+          sub: '告訴它「對的樣子」',
+        },
+        {
+          gradient: 'linear-gradient(90deg, #ff7a3d 0%, #ff5577 100%)',
+          n: '03',
+          title: '建立設計 SOP',
+          sub: '把常用指令模組化',
+        },
       ].map((step, i) => (
         <motion.div key={i} variants={FADE_UP} style={{
-          background: C.canvas,
+          background: C.surface1,
           border: `1px solid ${C.hairlineSoft}`,
-          borderRadius: ROUNDED.md,
-          padding: '24px 30px',
+          borderRadius: ROUNDED.lg,
           display: 'grid',
-          gridTemplateColumns: '88px 1fr',
-          alignItems: 'center',
-          gap: 28,
+          gridTemplateRows: '4px 1fr auto auto auto 1fr',
+          overflow: 'hidden',
         }}>
+          {/* Row 1 — gradient accent strip (4px, three cards flow violet→magenta→orange→coral) */}
+          <div style={{ background: step.gradient }} />
+          {/* Row 2 — top spacer (flex grow) */}
+          <div />
+          {/* Row 3 — number caption */}
           <div style={{
+            padding: '0 48px',
+            fontSize: TYPE_SCALE.body,
+            color: C.inkMuted,
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            letterSpacing: '0.08em',
+          }}>{step.n}</div>
+          {/* Row 4 — title (consistent baseline across cards) */}
+          <div style={{
+            padding: '20px 48px 0 48px',
             fontSize: TYPE_SCALE.title,
             color: C.ink,
-            fontWeight: 500,
-            lineHeight: 1,
-            textAlign: 'center',
-          }}>{step.n}</div>
-          <div>
-            <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600, marginBottom: 4 }}>{step.title}</div>
-            <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted }}>{step.sub}</div>
-          </div>
+            fontWeight: 600,
+            lineHeight: 1.18,
+            letterSpacing: TRACK.title,
+          }}>{step.title}</div>
+          {/* Row 5 — sub (consistent baseline across cards) */}
+          <div style={{
+            padding: '16px 48px 0 48px',
+            fontSize: TYPE_SCALE.body,
+            color: C.inkMuted,
+            lineHeight: 1.5,
+          }}>{step.sub}</div>
+          {/* Row 6 — bottom spacer (flex grow) */}
+          <div />
         </motion.div>
       ))}
     </motion.div>
@@ -301,14 +514,14 @@ export const ScenarioIntro = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 3 — Step 1 · 建立專案認知：CLAUDE.md
+   Slide 3 — Step 1 · CLAUDE.md
    ============================================================ */
 export const Step1ClaudeMd = ({ n, total }) => (
   <Animated>
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="Step 1｜給 Claude 一份專案 Brief"
+        title="Step 1｜建立專案認知：給 Claude 一份 Brief"
         sub={<span style={{ fontStyle: 'italic' }}>「在這個專案裡，我們是這樣做事的」</span>}
       />
     </motion.div>
@@ -316,32 +529,70 @@ export const Step1ClaudeMd = ({ n, total }) => (
     <motion.div
       variants={STAGGER_INNER}
       style={{
-        flex: 1,
-        marginTop: -96,
+        marginTop: 40,
         display: 'grid',
-        gridTemplateColumns: '1.05fr 1fr',
-        gap: 56,
-        alignItems: 'center',
+        gridTemplateColumns: '1.1fr 1fr',
+        gap: 40,
+        alignItems: 'start',
       }}
     >
-      {/* Left — 一個指令搞定 (no outer container) */}
-      <motion.div variants={FADE_UP} style={{
-        display: 'flex', flexDirection: 'column', gap: 28,
-      }}>
+      {/* Left — CLAUDE.md macOS preview (swapped from right) */}
+      <motion.div variants={FADE_UP}>
         <div style={{
           fontSize: TYPE_SCALE.small,
           color: C.inkMuted,
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
-        }}>一個指令搞定</div>
+          marginBottom: 12,
+        }}>CLAUDE.md 範例</div>
+        <MdWindow filename="CLAUDE.md">
+          <MdHeading>技術棧</MdHeading>
+          <MdBullet>React 18 + TypeScript</MdBullet>
+          <MdBullet>Tailwind v4</MdBullet>
+          <MdBullet>shadcn/ui</MdBullet>
+          <MdGap />
+          <MdHeading>通用規則</MdHeading>
+          <MdBullet>計畫前先讀檔</MdBullet>
+          <MdBullet>執行前要詢問</MdBullet>
+          <MdBullet>有疑問停下執行</MdBullet>
+        </MdWindow>
+      </motion.div>
+
+      {/* Right — CLAUDE.md 是什麼 KeyPoints 在上，/init 指令放最後一塊 */}
+      <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{
+          fontSize: TYPE_SCALE.small, color: C.inkMuted,
+          letterSpacing: '0.08em', textTransform: 'uppercase',
+        }}>CLAUDE.md 是什麼</div>
+        {[
+          { label: '角色', desc: '專案專屬的「開發守則」 — 啟動時 Claude 會自動讀過' },
+          { label: '內容', desc: '通用規則，例如計畫前要先讀檔、執行前要詢問、有疑問停下執行' },
+        ].map((kp, i) => (
+          <div key={i} style={{
+            display: 'grid', gridTemplateColumns: '80px 1fr', gap: 16, alignItems: 'baseline',
+            paddingBottom: 14, borderBottom: `1px solid ${C.hairlineSoft}`,
+          }}>
+            <div style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, fontWeight: 500 }}>{kp.label}</div>
+            <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600, lineHeight: 1.45 }}>{kp.desc}</div>
+          </div>
+        ))}
+
+        {/* /init 指令 — 最後一塊（拉大間距與上方「定義」區塊區隔） */}
+        <div style={{
+          marginTop: 40,
+          fontSize: TYPE_SCALE.small,
+          color: C.gradientOrange,
+          letterSpacing: '0.08em', textTransform: 'uppercase',
+          fontWeight: 600,
+        }}>怎麼產出 CLAUDE.md ↓</div>
         <div style={{
           alignSelf: 'flex-start',
-          width: 680,
+          width: 480,
           maxWidth: '100%',
           background: C.surface2,
           border: `1px solid ${C.hairlineSoft}`,
           borderRadius: ROUNDED.md,
-          padding: '28px 36px',
+          padding: '24px 32px',
           fontFamily: "'Geist Mono', ui-monospace, monospace",
           fontSize: TYPE_SCALE.title,
           color: C.gradientOrange,
@@ -354,27 +605,6 @@ export const Step1ClaudeMd = ({ n, total }) => (
           它會自動讀過整個專案，產出一份 <span style={{ color: C.ink, fontWeight: 500 }}>CLAUDE.md</span>。
         </div>
       </motion.div>
-
-      {/* Right — CLAUDE.md 是什麼 (3 key points) */}
-      <motion.div variants={STAGGER_INNER} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        <motion.div variants={FADE_UP} style={{
-          fontSize: TYPE_SCALE.small, color: C.inkMuted,
-          letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4,
-        }}>CLAUDE.md 是什麼</motion.div>
-        {[
-          { label: '角色', desc: '專案專屬的「工作守則」 — 啟動時 Claude 會自動讀過。' },
-          { label: '內容', desc: '通用規則，例如計畫前要先讀檔，執行前要先詢問。' },
-          { label: '與一般提示詞的差別', desc: '提示詞講「這一次」做什麼；CLAUDE.md 講「這個專案永遠」怎麼做。' },
-        ].map((kp, i) => (
-          <motion.div key={i} variants={FADE_UP} style={{
-            display: 'grid', gridTemplateColumns: '180px 1fr', gap: 20, alignItems: 'baseline',
-            paddingBottom: 18, borderBottom: `1px solid ${C.hairlineSoft}`,
-          }}>
-            <div style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, fontWeight: 500 }}>{kp.label}</div>
-            <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600, lineHeight: 1.45 }}>{kp.desc}</div>
-          </motion.div>
-        ))}
-      </motion.div>
     </motion.div>
 
     <SlideNumber n={n} total={total} />
@@ -382,32 +612,30 @@ export const Step1ClaudeMd = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 4 — Step 2-1 · 核心觀念：別重建，先盤點
+   Slide 4 — Step 2-1 · 盤點與收斂共用元件
    ============================================================ */
 export const Step2Inventory = ({ n, total }) => (
-  <Animated bg={C.canvas}>
+  <Animated>
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="Step 2-1｜別重建，先盤點"
-        sub="先盤點現有元件，找出來、套上去 — 不從零建。"
+        title="Step 2｜重構設計規範：盤點與收斂共用元件"
+        sub="找出現有共用元件、統一樣式"
       />
     </motion.div>
 
     <motion.div
       variants={STAGGER_INNER}
       style={{
-        flex: 1,
-        marginTop: 0,
+        marginTop: 40,
         display: 'grid',
         gridTemplateColumns: '1.1fr 1fr',
-        gap: 56,
+        gap: 48,
         alignItems: 'center',
       }}
     >
-      {/* Left — illustration */}
       <motion.div variants={FADE_UP}>
-        <PhotoCard src={imgInventory} alt="專案設計元件位置示意" height={460} padding={16} />
+        <PhotoCard src={imgInventory} alt="專案設計元件位置示意" height={440} padding={14} />
         <div style={{
           marginTop: 16, fontSize: TYPE_SCALE.small, color: C.inkMuted,
           letterSpacing: TRACK.small,
@@ -416,16 +644,15 @@ export const Step2Inventory = ({ n, total }) => (
         </div>
       </motion.div>
 
-      {/* Right — three sub-steps */}
-      <motion.div variants={STAGGER_INNER} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <motion.div variants={STAGGER_INNER} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {[
-          { n: '2-1', title: '找到「可重用」的設計元件', desc: '用 Claude 掃，或問合作工程師。' },
-          { n: '2-2', title: '定義組件樣式', desc: '把「對的樣子」說清楚 — 用 Prompt / Figma MCP / 截圖。' },
-          { n: '2-3', title: '功能頁引用檢查', desc: '請 Claude 自己檢查。先做到 60 分就好；複雜邏輯交給 RD。' },
+          { n: '01', title: '盤點現有共用元件', desc: 'Prompt：「找出專案中共用的 UI 元件，告訴我路徑」' },
+          { n: '02', title: '重新定義元件樣式', desc: '把「對的樣子」說清楚 — 用 Prompt / 截圖 / Figma MCP（下節展開）' },
+          { n: '03', title: '功能頁引用檢查',   desc: 'Prompt：「檢查頁面元件是否使用既有共用元件」' },
         ].map((step, i) => (
           <motion.div key={i} variants={FADE_UP} style={{
             display: 'grid', gridTemplateColumns: '88px 1fr', gap: 20, alignItems: 'start',
-            padding: '20px 0', borderBottom: `1px solid ${C.hairlineSoft}`,
+            padding: '18px 0', borderBottom: `1px solid ${C.hairlineSoft}`,
           }}>
             <div style={{
               fontFamily: "'Geist Mono', ui-monospace, monospace",
@@ -447,45 +674,45 @@ export const Step2Inventory = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 5 — Step 2-2 · 三種輸入管道
+   Slide 5 — Step 2-2 · 三種調整方式
    ============================================================ */
 export const Step2Channels = ({ n, total }) => (
   <Animated bg={C.surface1}>
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="Step 2-2｜三種輸入管道"
-        sub="Prompt、截圖、MCP — 常常混用，不是三選一。"
+        title="Step 2｜重構設計規範：三種調整方式"
+        sub="依問題類型選擇不同方式：Prompt、截圖、Figma MCP"
       />
     </motion.div>
 
     <motion.div
       variants={STAGGER_INNER}
       style={{
-        marginTop: 56,
+        marginTop: 40,
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 28,
+        gap: 24,
       }}
     >
       {[
-        { tag: 'Prompt', tagSub: '文字',         title: '最快、最便宜',      desc: '純文字描述視覺最不穩，除非連數值都精準給出。', tagBg: C.tagGreen, tagFg: C.tagGreenText },
-        { tag: '截圖',   tagSub: 'Screenshot',  title: '最直觀、門檻最低', desc: '適合給「視覺參考」 — 方向圖或局部範例。',     tagBg: C.tagBlue,  tagFg: C.tagBlueText  },
-        { tag: 'Figma MCP', tagSub: 'Design system', title: '規格最完整',  desc: '含 token、元件結構。需要有 Figma 畫面。',     tagBg: C.tagRed,   tagFg: C.tagRedText   },
+        { tag: 'Prompt',    tagSub: '文字',         title: '結構明確、規則清楚', desc: '元件樣式、間距、尺寸…可描述的規則',           tagBg: C.tagGreen, tagFg: C.tagGreenText },
+        { tag: '截圖',      tagSub: 'Screenshot',  title: '看感覺、視覺對齊',   desc: '局部 UI 或參考頁',                              tagBg: C.tagBlue,  tagFg: C.tagBlueText  },
+        { tag: 'Figma MCP', tagSub: 'Design system', title: '一致性、大範圍',    desc: '透過元件結構或樣式來源同步',                    tagBg: C.tagRed,   tagFg: C.tagRedText   },
       ].map((card, i) => (
         <motion.div key={i} variants={FADE_UP} style={{
           background: C.canvas,
           border: `1px solid ${C.hairlineSoft}`,
           borderRadius: ROUNDED.lg,
-          padding: 40,
-          display: 'flex', flexDirection: 'column', gap: 24,
+          padding: 36,
+          display: 'flex', flexDirection: 'column', gap: 20,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ fontSize: TYPE_SCALE.subtitle, fontWeight: 600, color: C.ink, letterSpacing: TRACK.subtitle }}>{card.tag}</div>
             <Tag bg={card.tagBg} fg={card.tagFg}>{card.tagSub}</Tag>
           </div>
           <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 500, lineHeight: 1.4 }}>{card.title}</div>
-          <div style={{ borderTop: `1px solid ${C.hairlineSoft}`, paddingTop: 20, fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.55 }}>
+          <div style={{ borderTop: `1px solid ${C.hairlineSoft}`, paddingTop: 16, fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.55 }}>
             {card.desc}
           </div>
         </motion.div>
@@ -493,18 +720,17 @@ export const Step2Channels = ({ n, total }) => (
     </motion.div>
 
     <motion.div variants={FADE_UP} style={{
-      marginTop: 96,
-      padding: '32px 40px',
+      marginTop: 40,
+      padding: '24px 32px',
       borderLeft: `4px solid ${C.ink}`,
       background: C.canvas,
       borderRadius: ROUNDED.md,
+      fontSize: TYPE_SCALE.subtitle,
+      color: C.ink,
+      fontWeight: 500,
+      letterSpacing: TRACK.subtitle,
     }}>
-      <div style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 500, letterSpacing: TRACK.subtitle }}>
-        Figma MCP 讀規格　＋　Prompt 設範圍　＋　截圖標重點
-      </div>
-      <div style={{ marginTop: 12, fontSize: TYPE_SCALE.small, color: C.inkMuted }}>
-        最常見的混用組合 — 本質都在做同一件事。
-      </div>
+      幫 Claude 建立「對的樣子」的座標
     </motion.div>
 
     <SlideNumber n={n} total={total} />
@@ -512,58 +738,83 @@ export const Step2Channels = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 6 — 範例 01 · 有 Figma 設計稿
+   Slide 6 — Step 2 · 如何看到實際畫面
    ============================================================ */
-export const Example01Figma = ({ n, total }) => (
+export const Step2SeeScreen = ({ n, total }) => (
   <Animated>
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="範例 01｜有 Figma 設計稿"
-        sub="改之前先把調整清單可視化 — 看清單再執行，別改一半才發現方向錯。"
+        title="Step 2｜重構設計規範：如何看到實際畫面"
       />
     </motion.div>
 
+    {/* 三步流程 */}
     <motion.div
       variants={STAGGER_INNER}
       style={{
-        flex: 1,
-        marginTop: 40,
+        marginTop: 32,
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: 20,
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 24,
       }}
     >
       {[
-        { src: imgEx01_1, idx: '01', label: 'Code 原圖',         desc: '接手時的原始畫面' },
-        { src: imgEx01_2, idx: '02', label: 'Code 畫面傳到 Figma', desc: '把現況搬進 Figma 對齊' },
-        { src: imgEx01_3, idx: '03', label: 'Figma 設計 GUI',     desc: '在 Figma 裡定義「對的樣子」' },
-        { src: imgEx01_4, idx: '04', label: 'Claude 執行的最終成果', desc: '依 Figma 規格回寫到 Code' },
+        { n: '①', label: '打開瀏覽器', sub: '跟 Claude 說「打開瀏覽器看畫面」',                       img: imgSee1 },
+        { n: '②', label: '同意執行',   sub: '跳「要不要繼續」時 — 看不懂沒關係，按 yes 就對了',         img: imgSee3 },
+        { n: '③', label: '打開連結',   sub: 'Claude 印一個 URL，點下去或複製到瀏覽器都可以',            img: imgSee4 },
       ].map((step, i) => (
-        <motion.div key={i} variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column' }}>
-          <PhotoCard src={step.src} alt={step.label} height={300} padding={10} />
-          <ImgCaption index={step.idx} label={step.label} desc={step.desc} />
+        <motion.div key={i} variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <span style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600 }}>{step.n}</span>
+            <span style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>{step.label}</span>
+          </div>
+          <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>{step.sub}</div>
+          <PhotoCard src={step.img} alt={step.label} height={240} padding={10} hoverScale={1.4} />
         </motion.div>
       ))}
     </motion.div>
 
+    {/* 老闆思維補充 */}
+    <motion.div variants={FADE_UP} style={{
+      marginTop: 32,
+      padding: '20px 28px',
+      borderLeft: `3px solid ${C.gradientCoral}`,
+      background: C.surface1,
+      borderRadius: ROUNDED.sm,
+    }}>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 600, marginBottom: 8 }}>
+        補充：Claude 只「告訴你怎麼做」時
+      </div>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5, marginBottom: 10 }}>
+        Claude 把步驟印給你看（「請在另一個視窗執行 ...」）但不動手做 — 用老闆思維叫他做：
+      </div>
+      <div style={{
+        fontSize: TYPE_SCALE.small, color: C.gradientOrange, fontWeight: 500,
+        fontFamily: "'Geist Mono', ui-monospace, monospace",
+      }}>
+        「直接幫我做」　·　「幫我解決」
+      </div>
+    </motion.div>
+
     <SlideNumber n={n} total={total} />
   </Animated>
 )
 
 /* ============================================================
-   Slide 7 — 範例 02 · 沒 Figma 但有調好頁
+   Slide 7 — 範例 01 · Prompt 快速修正
    ============================================================ */
-export const Example02Reference = ({ n, total }) => (
+export const Example01Prompt = ({ n, total }) => (
   <Animated>
     <motion.div variants={FADE_UP}>
       <SlideHead
-        kicker={KICKER}
-        title="範例 02｜沒 Figma，但有調好頁"
-        sub="直接告訴 Claude「請參照這頁」就好 — 比逐項列規則更明確。"
+        kicker={KICKER_STEP2}
+        title="範例 01｜Prompt 快速修正設計樣式"
+        sub="適用於：版面穩定、資料單純的頁面 — 快速做設計一致性"
       />
     </motion.div>
 
+    {/* Layout：513738f 範例02 風格 — 左右兩張大圖比對，底下 callout 放 prompt 範例 */}
     <motion.div
       variants={STAGGER_INNER}
       style={{
@@ -578,8 +829,8 @@ export const Example02Reference = ({ n, total }) => (
         <div style={{
           fontSize: TYPE_SCALE.small, color: C.inkMuted,
           letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12,
-        }}>原始畫面</div>
-        <PhotoCard src={imgEx02_1} alt="範例 02 — Code 原圖" height={400} padding={12} />
+        }}>Code 原圖</div>
+        <PhotoCard src={imgEx01_1} alt="範例 01 — Code 原圖" height={400} padding={12} />
       </motion.div>
 
       <motion.div variants={FADE_UP}>
@@ -587,7 +838,7 @@ export const Example02Reference = ({ n, total }) => (
           fontSize: TYPE_SCALE.small, color: C.ink,
           letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12, fontWeight: 600,
         }}>Claude 執行的最終成果</div>
-        <PhotoCard src={imgEx02_2} alt="範例 02 — Claude 執行的最終成果" height={400} padding={12} />
+        <PhotoCard src={imgEx01_2} alt="範例 01 — Claude 執行的最終成果" height={400} padding={12} />
       </motion.div>
     </motion.div>
 
@@ -601,7 +852,7 @@ export const Example02Reference = ({ n, total }) => (
       color: C.ink,
       lineHeight: 1.55,
     }}>
-      「對齊已調整完的頁面，協助其他頁面快速對齊」　·　「移除不是設計樣式的色彩」　·　「對齊已調頁面加入 hover 效果」
+      「移除不在設計規範內的顏色」　·　「套用元件的 hover / active 狀態樣式」　·　「統一按鈕與文字顏色」
     </motion.div>
 
     <SlideNumber n={n} total={total} />
@@ -609,18 +860,19 @@ export const Example02Reference = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 8 — 範例 03 · 只有截圖
+   Slide 8 — 範例 02 · 截圖 + Prompt
    ============================================================ */
-export const Example03Screenshot = ({ n, total }) => (
+export const Example02Screenshot = ({ n, total }) => (
   <Animated>
     <motion.div variants={FADE_UP}>
       <SlideHead
-        kicker={KICKER}
-        title="範例 03｜只有截圖"
-        sub="給 Claude 一張參考圖，結果就會更接近你想要的。"
+        kicker={KICKER_STEP2}
+        title="範例 02｜用截圖 + Prompt 對齊設計細節"
+        sub="提供視覺參考時，Claude 執行上更貼近設計需求。"
       />
     </motion.div>
 
+    {/* Layout：513738f 範例03 風格 — 三 row vertical，每 row 一個 inline caption + 左對齊大圖 */}
     <motion.div
       variants={STAGGER_INNER}
       style={{
@@ -631,12 +883,11 @@ export const Example03Screenshot = ({ n, total }) => (
       }}
     >
       {[
-        { src: imgEx03_1, idx: '01', label: 'Code 原圖',         desc: '接手時的原始畫面' },
-        { src: imgEx03_2, idx: '02', label: '截圖',               desc: '方向參考 ／ Figma 截圖，加上文字描述' },
-        { src: imgEx03_3, idx: '03', label: 'Claude 執行的最終成果', desc: '依截圖 + Prompt 對齊後' },
+        { src: imgEx02_1, idx: '01', label: 'Code 原圖',                desc: '接手時的原始畫面' },
+        { src: imgEx02_2, idx: '02', label: '截圖',                     desc: '方向參考 ／ Figma 截圖，加上文字描述' },
+        { src: imgEx02_3, idx: '03', label: 'Claude 執行的最終成果',     desc: '依截圖 + Prompt 對齊後' },
       ].map((step, i) => (
         <motion.div key={i} variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {/* Inline caption row above image */}
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, flexWrap: 'wrap' }}>
             <span style={{
               fontFamily: "'Geist Mono', ui-monospace, monospace",
@@ -657,126 +908,44 @@ export const Example03Screenshot = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 9 — Step 3 · Skill (SOP 定義 + 範例 + 怎麼用 + 對照表)
+   Slide 9 — 範例 03 · Figma MCP 開場 + 確認連線
    ============================================================ */
-export const Step3Skill = ({ n, total }) => (
-  <Animated bg={C.surface1}>
+export const Example03Intro = ({ n, total }) => (
+  <Animated>
     <motion.div variants={FADE_UP}>
       <SlideHead
-        kicker={KICKER}
-        title="Step 3｜把工作 SOP 存成 Skill"
+        kicker={KICKER_STEP2}
+        title="範例 03｜Figma MCP"
       />
     </motion.div>
 
-    {/* Skill 是什麼 — quote + tagline */}
     <motion.div variants={FADE_UP} style={{
-      marginTop: 96,
+      marginTop: 32,
       padding: '24px 32px',
       borderLeft: `4px solid ${C.ink}`,
-      background: C.canvas,
+      background: C.surface1,
       borderRadius: ROUNDED.md,
+      fontSize: TYPE_SCALE.subtitle,
+      color: C.ink,
+      fontWeight: 500,
+      letterSpacing: TRACK.subtitle,
+      lineHeight: 1.35,
     }}>
-      <div style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600, letterSpacing: TRACK.subtitle, lineHeight: 1.3 }}>
-        Skill = 標準作業程序（SOP），把你重複在做的判斷或檢查，存成 AI 也懂的固定流程。
-      </div>
-      <div style={{ marginTop: 12, fontSize: TYPE_SCALE.small, color: C.inkMuted }}>
-        建一次，到處套用 — 就像 Figma Component 一樣。
-      </div>
+      專案只有 Code 沒有圖稿 — 透過 MCP 反向把 Code 畫面傳到 Figma 做設計調整
     </motion.div>
 
-    {/* Two-col: 範例 (left) + 怎麼用 (right) */}
-    <motion.div
-      variants={STAGGER_INNER}
-      style={{
-        marginTop: 96,
-        display: 'grid',
-        gridTemplateColumns: '1.3fr 1fr',
-        gap: 24,
-      }}
-    >
-      {/* 範例 — markdown source-style preview (macOS window) */}
-      <motion.div variants={FADE_UP} style={{
-        background: '#0a0a0a',
-        border: '1px solid rgba(255,255,255,0.06)',
-        borderRadius: ROUNDED.lg,
-        overflow: 'hidden',
-        fontFamily: "'Geist Mono', ui-monospace, monospace",
-        boxShadow: '0 24px 60px rgba(0, 0, 0, 0.6)',
-      }}>
-        {/* Filename bar */}
-        <div style={{
-          padding: '14px 24px',
-          background: '#1f1f1f',
-          borderBottom: '1px solid rgba(255,255,255,0.04)',
-          display: 'flex', alignItems: 'center', gap: 12,
-        }}>
-          <span style={{ display: 'inline-flex', gap: 8 }}>
-            <span style={{ width: 14, height: 14, borderRadius: '50%', background: '#ff5f57' }} />
-            <span style={{ width: 14, height: 14, borderRadius: '50%', background: '#febc2e' }} />
-            <span style={{ width: 14, height: 14, borderRadius: '50%', background: '#28c840' }} />
-          </span>
-          <span style={{ fontSize: TYPE_SCALE.small, color: C.ink, marginLeft: 10, fontWeight: 500 }}>
-            skill-visual-check.md
-          </span>
-        </div>
+    <motion.div variants={FADE_UP} style={{
+      marginTop: 40,
+      fontSize: TYPE_SCALE.small, color: C.inkMuted,
+      letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16,
+    }}>① 確認 Figma MCP 連線</motion.div>
 
-        {/* Body */}
-        <div style={{
-          padding: '36px 40px',
-          display: 'flex', flexDirection: 'column', gap: 22,
-          fontSize: TYPE_SCALE.small,
-          lineHeight: 1.7,
-        }}>
-          <div>
-            <span style={{ color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>### </span>
-            <span style={{ color: C.ink, fontWeight: 600 }}>Skill 範例：視覺一致性檢查</span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div>
-              <span style={{ color: 'rgba(255,255,255,0.45)' }}>- </span>
-              <span style={{ color: C.ink }}>
-                掃描目標檔案，找出不符設計樣式的項目（color、spacing、radius、字級、icon 尺寸）
-              </span>
-            </div>
-            <div>
-              <span style={{ color: 'rgba(255,255,255,0.45)' }}>- </span>
-              <span style={{ color: C.ink }}>產出結構化計畫 </span>
-              <span style={{ color: C.gradientOrange }}>`.md`</span>
-              <span style={{ color: C.ink }}>，先看清單再動手</span>
-            </div>
-            <div>
-              <span style={{ color: 'rgba(255,255,255,0.45)' }}>- </span>
-              <span style={{ color: C.gradientCoral, fontWeight: 600 }}>**不會碰**</span>
-              <span style={{ color: C.inkMuted }}> 元件結構、互動邏輯、資料流</span>
-            </div>
-          </div>
-        </div>
+    <motion.div variants={STAGGER_INNER} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+      <motion.div variants={FADE_UP}>
+        <PhotoCard src={imgFig01} alt="MCP 連線確認 1/2" height={300} padding={10} hoverScale={1.4} />
       </motion.div>
-
-      {/* 怎麼用 */}
-      <motion.div variants={FADE_UP} style={{
-        background: C.canvas,
-        border: `1px solid ${C.hairlineSoft}`,
-        borderRadius: ROUNDED.lg,
-        padding: 28,
-        display: 'flex', flexDirection: 'column', gap: 12,
-      }}>
-        <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-          怎麼用
-        </div>
-        <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted }}>
-          一行指令：
-        </div>
-        <div style={{
-          padding: '14px 18px',
-          background: C.surface1,
-          borderLeft: `3px solid ${C.ink}`,
-          borderRadius: ROUNDED.sm,
-          fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500, lineHeight: 1.5,
-        }}>
-          「請依照既有 Skill，協助檢查此頁面的視覺一致性。」
-        </div>
+      <motion.div variants={FADE_UP}>
+        <PhotoCard src={imgFig02} alt="MCP 連線確認 2/2" height={300} padding={10} hoverScale={1.4} />
       </motion.div>
     </motion.div>
 
@@ -785,20 +954,307 @@ export const Step3Skill = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 10 — Skill vs CLAUDE.md vs Prompt（對照頁）
+   Slide 10 — 範例 03 · 把畫面傳到 Figma（三步流程）
+   ============================================================ */
+export const Example03Transfer = ({ n, total }) => (
+  <Animated>
+    <motion.div variants={FADE_UP}>
+      <SlideHead
+        kicker={KICKER_STEP2}
+        title="範例 03｜Figma MCP"
+        sub="② 把畫面傳到 Figma：下 prompt → 選範圍 → 選檔案"
+      />
+    </motion.div>
+
+    <motion.div
+      variants={STAGGER_INNER}
+      style={{
+        marginTop: 28,
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 20,
+      }}
+    >
+      {[
+        { n: 'a', label: '下 prompt',     imgs: [imgFig03, imgFig05] },
+        { n: 'b', label: '選取傳送範圍',  imgs: [imgFig06, imgFig07] },
+        { n: 'c', label: '選 Figma 目標檔案', imgs: [imgFig04] },
+      ].map((step, i) => (
+        <motion.div key={i} variants={FADE_UP} style={{
+          background: C.surface1,
+          border: `1px solid ${C.hairlineSoft}`,
+          borderRadius: ROUNDED.lg,
+          padding: 20,
+          display: 'flex', flexDirection: 'column', gap: 12,
+        }}>
+          <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>
+            {step.label}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {step.imgs.map((src, j) => (
+              <PhotoCard key={j} src={src} alt={`${step.label} ${j + 1}`} height={200} padding={6} hoverScale={1.3} />
+            ))}
+          </div>
+        </motion.div>
+      ))}
+    </motion.div>
+
+    <SlideNumber n={n} total={total} />
+  </Animated>
+)
+
+/* ============================================================
+   Slide 11 — 範例 03 · Claude 依 Figma 反向改 Code
+   ============================================================ */
+export const Example03Result = ({ n, total }) => (
+  <Animated>
+    <motion.div variants={FADE_UP}>
+      <SlideHead
+        kicker={KICKER_STEP2}
+        title="範例 03｜Figma MCP"
+        sub="③ Claude 依 Figma 反向改 Code"
+      />
+    </motion.div>
+
+    <motion.div
+      variants={STAGGER_INNER}
+      style={{
+        marginTop: 32,
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 32,
+        alignItems: 'start',
+      }}
+    >
+      <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          指示 Claude
+        </div>
+        <div style={{
+          padding: '16px 22px',
+          background: C.surface1,
+          borderLeft: `3px solid ${C.ink}`,
+          borderRadius: ROUNDED.sm,
+          fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 500, lineHeight: 1.5,
+        }}>
+          「畫面對齊這頁，列出你會調整的內容」
+        </div>
+        <PhotoCard src={imgEx03_4} alt="指示 Claude" height={300} padding={10} hoverScale={1.4} />
+      </motion.div>
+
+      <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>
+          成果
+        </div>
+        <PhotoCard src={imgEx03_5} alt="Claude 執行的最終成果" height={360} padding={10} hoverScale={1.4} />
+      </motion.div>
+    </motion.div>
+
+    <SlideNumber n={n} total={total} />
+  </Animated>
+)
+
+/* ============================================================
+   Slide 12 — Step 3 · Skill.md（定義 + 路徑 + 範本）
+   ============================================================ */
+export const Step3SkillPart1 = ({ n, total }) => (
+  <Animated bg={C.surface1}>
+    <motion.div variants={FADE_UP}>
+      <SlideHead
+        kicker={KICKER}
+        title="Step 3｜建立設計 SOP：Skill.md"
+        sub="將重複出現的設計判斷與檢查流程，變成可反覆使用的規則"
+      />
+    </motion.div>
+
+    {/* SOP 定義 callout */}
+    <motion.div variants={FADE_UP} style={{
+      marginTop: 32,
+      padding: '24px 32px',
+      borderLeft: `4px solid ${C.ink}`,
+      background: C.canvas,
+      borderRadius: ROUNDED.md,
+    }}>
+      <div style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600, letterSpacing: TRACK.subtitle, lineHeight: 1.3 }}>
+        Skill = 標準作業程序（SOP），把你重複在做的判斷或檢查，存成 AI 也懂的固定流程。
+      </div>
+    </motion.div>
+
+    <motion.div
+      variants={STAGGER_INNER}
+      style={{
+        marginTop: 28,
+        display: 'grid',
+        gridTemplateColumns: '0.85fr 1.15fr',
+        gap: 28,
+        alignItems: 'start',
+      }}
+    >
+      {/* Left — 檔案路徑結構 */}
+      <motion.div variants={FADE_UP} style={{
+        background: C.canvas,
+        border: `1px solid ${C.hairlineSoft}`,
+        borderRadius: ROUNDED.lg,
+        padding: 28,
+      }}>
+        <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16 }}>
+          檔案路徑結構
+        </div>
+        <pre style={{
+          margin: 0,
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontSize: TYPE_SCALE.small,
+          color: C.ink,
+          lineHeight: 1.7,
+        }}>{`.claude/
+└── skills/
+    └── visual-check/
+        └── SKILL.md`}</pre>
+      </motion.div>
+
+      {/* Right — SKILL.md 範本 macOS window */}
+      <motion.div variants={FADE_UP}>
+        <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
+          SKILL.md 範本
+        </div>
+        <MdWindow filename="SKILL.md" fontSize={TYPE_SCALE.tiny}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div>
+              <span style={{ color: 'rgba(255,255,255,0.45)' }}>---</span><br/>
+              <span style={{ color: C.gradientOrange }}>name</span>
+              <span style={{ color: 'rgba(255,255,255,0.45)' }}>: </span>
+              <span style={{ color: C.ink }}>visual-check</span><br/>
+              <span style={{ color: C.gradientOrange }}>description</span>
+              <span style={{ color: 'rgba(255,255,255,0.45)' }}>: </span>
+              <span style={{ color: C.ink }}>掃描頁面，找出不符設計樣式的項目並產出 .md 計畫</span><br/>
+              <span style={{ color: 'rgba(255,255,255,0.45)' }}>---</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <MdHeading>任務</MdHeading>
+              <div style={{ color: C.ink }}>
+                掃描指定檔案，列出 color / spacing / radius / 字級 / icon 尺寸 的不一致
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <MdHeading>不會碰</MdHeading>
+              <div style={{ color: C.gradientCoral }}>
+                元件結構、互動邏輯、資料流（留給 RD）
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <MdHeading>產出</MdHeading>
+              <div style={{ color: C.ink }}>一份結構化 .md 清單</div>
+            </div>
+          </div>
+        </MdWindow>
+      </motion.div>
+    </motion.div>
+
+    <SlideNumber n={n} total={total} />
+  </Animated>
+)
+
+/* ============================================================
+   Slide 13 — Step 3 · Skill.md 使用方式與放置
+   ============================================================ */
+export const Step3SkillPart2 = ({ n, total }) => (
+  <Animated bg={C.surface1}>
+    <motion.div variants={FADE_UP}>
+      <SlideHead
+        kicker={KICKER}
+        title="Step 3｜建立設計 SOP：Skill.md"
+        sub="使用方式與儲存位置"
+      />
+    </motion.div>
+
+    {/* Skill 使用方式 */}
+    <motion.div variants={FADE_UP} style={{ marginTop: 32 }}>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>
+        Skill 使用方式
+      </div>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '140px 1fr',
+        background: C.canvas,
+        borderRadius: ROUNDED.md,
+        border: `1px solid ${C.hairlineSoft}`,
+        overflow: 'hidden',
+      }}>
+        {[
+          { mode: '主動呼叫', body: <><Code size={TYPE_SCALE.small}>/skill visual-check</Code> <span style={{ color: C.inkMuted }}>（明確要求執行特定檢查）</span></> },
+          { mode: '被動觸發', body: <>Prompt：<span style={{ color: C.ink }}>「請檢查此頁面的視覺一致性」</span> <span style={{ color: C.inkMuted }}>→ Claude 會依 description 自動比對並套用 Skill</span></> },
+        ].map((row, ri) => [
+          <div key={`m${ri}`} style={{
+            padding: '20px 26px',
+            fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600,
+            borderBottom: ri < 1 ? `1px solid ${C.hairlineSoft}` : 'none',
+          }}>{row.mode}</div>,
+          <div key={`b${ri}`} style={{
+            padding: '20px 26px',
+            fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55,
+            borderBottom: ri < 1 ? `1px solid ${C.hairlineSoft}` : 'none',
+          }}>{row.body}</div>,
+        ])}
+      </div>
+    </motion.div>
+
+    {/* Skill 怎麼建、怎麼放 */}
+    <motion.div variants={FADE_UP} style={{ marginTop: 28 }}>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
+        Skill 怎麼建、怎麼放
+      </div>
+      <div style={{
+        background: C.canvas,
+        border: `1px solid ${C.hairlineSoft}`,
+        borderRadius: ROUNDED.md,
+        padding: '24px 28px',
+        fontSize: TYPE_SCALE.body, color: C.ink, lineHeight: 1.55,
+      }}>
+        <div>
+          從實際修改過程中反推規則，找 Claude 討論建置內容 —
+        </div>
+        <div style={{ marginTop: 10, color: C.gradientOrange, fontFamily: "'Geist Mono', ui-monospace, monospace", fontSize: TYPE_SCALE.small }}>
+          Prompt：「把這幾次改動的過程梳理成 SOP 建議，建立 Skill」
+        </div>
+        <div style={{ marginTop: 16, color: C.inkMuted, fontSize: TYPE_SCALE.small }}>
+          不用自己手動建資料夾或檔案 — <span style={{ color: C.ink, fontWeight: 600 }}>直接請 Claude 建、放</span>就好。
+        </div>
+      </div>
+    </motion.div>
+
+    {/* Punchline */}
+    <motion.div variants={FADE_UP} style={{
+      marginTop: 24,
+      fontSize: TYPE_SCALE.subtitle,
+      color: C.ink,
+      fontWeight: 500,
+      letterSpacing: TRACK.subtitle,
+      lineHeight: 1.35,
+      borderLeft: `4px solid ${C.gradientOrange}`,
+      paddingLeft: 20,
+    }}>
+      把個人設計審核的工作流程，<br/>
+      變成可以被複製的系統能力。
+    </motion.div>
+
+    <SlideNumber n={n} total={total} />
+  </Animated>
+)
+
+/* ============================================================
+   Slide 14 — Prompt vs CLAUDE.md vs Skill 對照
    ============================================================ */
 export const SkillComparison = ({ n, total }) => (
   <Animated bg={C.canvas}>
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="Step 3 對照｜Skill vs CLAUDE.md vs Prompt"
+        title="Prompt vs CLAUDE.md vs Skill.md"
       />
     </motion.div>
 
     <motion.div variants={FADE_UP} style={{ marginTop: 64 }}>
       <div style={{
-        marginTop: 80,
         display: 'grid',
         gridTemplateColumns: '160px repeat(3, 1fr)',
         background: C.surface1,
@@ -806,8 +1262,7 @@ export const SkillComparison = ({ n, total }) => (
         border: `1px solid ${C.hairlineSoft}`,
         overflow: 'hidden',
       }}>
-        {/* Header */}
-        {['', 'Prompt', 'CLAUDE.md', 'Skill'].map((h, i) => (
+        {['', 'Prompt', 'CLAUDE.md', 'Skill.md'].map((h, i) => (
           <div key={`h${i}`} style={{
             padding: '24px 32px',
             fontSize: TYPE_SCALE.body,
@@ -819,10 +1274,9 @@ export const SkillComparison = ({ n, total }) => (
             letterSpacing: i === 0 ? 'normal' : '0.02em',
           }}>{h}</div>
         ))}
-        {/* Rows */}
         {[
           ['角色', '這一次的指令', '專案的工作守則', '特定任務的 SOP'],
-          ['時機', '你每次輸入',   '開機時自動載入', '你呼叫它才執行'],
+          ['時機', '你每次輸入',   '啟動時自動載入', '你呼叫它才執行'],
           ['比喻', '隨口交辦',     '員工手冊',       '個別工序的作業流程'],
         ].map((row, ri) => row.map((cell, ci) => (
           <div key={`r${ri}c${ci}`} style={{
@@ -842,77 +1296,110 @@ export const SkillComparison = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 11 — 防呆守則
+   Slide 15 — 防呆 · 存檔與回復
    ============================================================ */
 export const Foolproof = ({ n, total }) => (
   <Animated>
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="防呆守則｜改錯了怎麼辦"
-        sub="用 Claude 改畫面 = 反覆嘗試 — 沒有存檔，就沒有回頭路。"
+        title="防呆｜怎麼存檔、怎麼回復"
+        sub="用 Claude 改畫面 = 反覆嘗試 — 做好存檔與版本回復，就可以放心讓 Claude 幫你調整"
       />
     </motion.div>
 
+    {/* 觀念 callout */}
+    <motion.div variants={FADE_UP} style={{
+      marginTop: 28,
+      padding: '20px 28px',
+      borderLeft: `4px solid ${C.ink}`,
+      background: C.surface1,
+      borderRadius: ROUNDED.sm,
+      fontSize: TYPE_SCALE.small,
+      color: C.ink,
+      lineHeight: 1.55,
+    }}>
+      你之前裝過 <span style={{ fontFamily: "'Geist Mono', ui-monospace, monospace", color: C.gradientOrange }}>Git</span>，它就是「<span style={{ fontWeight: 600 }}>版本記錄器</span>」。
+      跟 Claude 說「存檔」，它會幫現在的狀態<span style={{ fontWeight: 600 }}>拍一張快照</span>；改錯了就「回到上一張快照」。
+    </motion.div>
+
+    {/* ① 存檔 ② 回復 兩欄 */}
     <motion.div
       variants={STAGGER_INNER}
       style={{
-        marginTop: 96,
+        marginTop: 24,
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 28,
+        gridTemplateColumns: '1fr 1fr',
+        gap: 24,
         alignItems: 'start',
       }}
     >
-      {[
-        {
-          n: '01',
-          title: '說清楚修改範圍',
-          quote: '「只調整樣式，不改結構。」',
-          desc: '修改前一句話框住範圍，能擋掉大半失誤。',
-        },
-        {
-          n: '02',
-          title: '永遠存檔',
-          quote: '每一次修改 = 一個版本',
-          desc: '不滿意就回到前一個版本。Commit 概念 ≈ Figma 的「儲存版本」。',
-        },
-        {
-          n: '03',
-          title: '瀏覽器看結果',
-          quote: '看不到畫面，截圖問 Claude',
-          desc: '畫面結果以瀏覽器為準。出問題時把畫面回貼給 Claude。',
-        },
-      ].map((card, i) => (
-        <motion.div key={i} variants={FADE_UP} style={{
-          background: C.surface1,
-          border: `1px solid ${C.hairlineSoft}`,
-          borderRadius: ROUNDED.lg,
-          padding: 40,
-          display: 'flex', flexDirection: 'column', gap: 20,
+      {/* 存檔 */}
+      <motion.div variants={FADE_UP} style={{
+        background: C.surface1,
+        border: `1px solid ${C.hairlineSoft}`,
+        borderRadius: ROUNDED.lg,
+        padding: 28,
+        display: 'flex', flexDirection: 'column', gap: 14,
+      }}>
+        <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>
+          ① 怎麼存檔（Commit）
+        </div>
+        <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
+          每改完一段，當作一個版本存起來 — 就像 Figma 的「版本歷史」。
+        </div>
+        <div style={{
+          padding: '14px 18px',
+          background: C.canvas,
+          borderLeft: `3px solid ${C.ink}`,
+          borderRadius: ROUNDED.sm,
+          fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
         }}>
-          <div style={{
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
-            fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.04em',
-          }}>{card.n}</div>
-          <div style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600, letterSpacing: TRACK.subtitle, lineHeight: 1.2 }}>
-            {card.title}
+          「請幫我存檔」
+        </div>
+        <PhotoCard src={imgSave1} alt="存檔 prompt 截圖" height={180} padding={8} hoverScale={1.3} />
+      </motion.div>
+
+      {/* 回復 */}
+      <motion.div variants={FADE_UP} style={{
+        background: C.surface1,
+        border: `1px solid ${C.hairlineSoft}`,
+        borderRadius: ROUNDED.lg,
+        padding: 28,
+        display: 'flex', flexDirection: 'column', gap: 14,
+      }}>
+        <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>
+          ② 怎麼回復
+        </div>
+        <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
+          如果改錯，直接回到指定版本（三選一）：
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[
+            '「請幫我回到上一個版本」',
+            '「請幫我回到剛剛加完 hover 效果那個版本」',
+            '「請幫我回到 abc1234 那個版本」（有版號時）',
+          ].map((p, i) => (
+            <div key={i} style={{
+              padding: '10px 14px',
+              background: C.canvas,
+              borderLeft: `3px solid ${C.ink}`,
+              borderRadius: ROUNDED.sm,
+              fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
+            }}>{p}</div>
+          ))}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
+          <div>
+            <div style={{ fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginBottom: 4 }}>存檔資料在哪裡</div>
+            <PhotoCard src={imgSave2} alt="存檔資料位置" height={120} padding={6} hoverScale={1.4} />
           </div>
-          <div style={{
-            padding: '16px 20px',
-            background: C.canvas,
-            borderLeft: `3px solid ${C.ink}`,
-            borderRadius: ROUNDED.sm,
-            fontSize: TYPE_SCALE.small,
-            color: C.ink,
-            fontWeight: 500,
-            lineHeight: 1.5,
-          }}>{card.quote}</div>
-          <div style={{ marginTop:32, fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.55 }}>
-            {card.desc}
+          <div>
+            <div style={{ fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginBottom: 4 }}>版本編號怎麼看</div>
+            <PhotoCard src={imgSave3} alt="版本編號" height={120} padding={6} hoverScale={1.4} />
           </div>
-        </motion.div>
-      ))}
+        </div>
+      </motion.div>
     </motion.div>
 
     <SlideNumber n={n} total={total} />
@@ -922,19 +1409,24 @@ export const Foolproof = ({ n, total }) => (
 /* ============================================================
    Chapter metadata + manifest (auto-loaded by main.jsx)
    ============================================================ */
-export const title = '情境二 · 接手既有專案'
-export const subtitle = '用 Claude Code 把 AI 模板的雜亂視覺，收成一套有規則的設計系統。'
+export const title = '情境二 · Design from Code'
+export const subtitle = '透過 Claude Code，將 AI 生成的雜亂介面重構為具一致性的設計系統。'
 
 export default [
-  { label: 'Section · 情境二 接手既有專案', render: (p) => <Ch3Divider {...p} /> },
-  { label: '情境二｜現況與接手目標',         render: (p) => <ScenarioIntro {...p} /> },
-  { label: 'Step 1｜CLAUDE.md',              render: (p) => <Step1ClaudeMd {...p} /> },
-  { label: 'Step 2-1｜核心觀念',              render: (p) => <Step2Inventory {...p} /> },
-  { label: 'Step 2-2｜三種輸入管道',          render: (p) => <Step2Channels {...p} /> },
-  { label: '範例 01｜有 Figma',               render: (p) => <Example01Figma {...p} /> },
-  { label: '範例 02｜沒 Figma 但有調好頁',    render: (p) => <Example02Reference {...p} /> },
-  { label: '範例 03｜只有截圖',               render: (p) => <Example03Screenshot {...p} /> },
-  { label: 'Step 3｜Skill',                  render: (p) => <Step3Skill {...p} /> },
-  { label: 'Skill vs CLAUDE.md vs Prompt',   render: (p) => <SkillComparison {...p} /> },
-  { label: '防呆守則',                       render: (p) => <Foolproof {...p} /> },
+  { label: 'Section · 情境二 Design from Code',  render: (p) => <Ch3Divider {...p} /> },
+  { label: '情境二｜現況與接手目標',                render: (p) => <ScenarioIntro {...p} /> },
+  { label: '情境二｜三步框架',                      render: (p) => <ThreeStepFramework {...p} /> },
+  { label: 'Step 1｜CLAUDE.md',                    render: (p) => <Step1ClaudeMd {...p} /> },
+  { label: 'Step 2-1｜盤點共用元件',                render: (p) => <Step2Inventory {...p} /> },
+  { label: 'Step 2-2｜三種調整方式',                render: (p) => <Step2Channels {...p} /> },
+  { label: 'Step 2｜如何看到實際畫面',              render: (p) => <Step2SeeScreen {...p} /> },
+  { label: '範例 01｜Prompt 快速修正',              render: (p) => <Example01Prompt {...p} /> },
+  { label: '範例 02｜截圖 + Prompt',                render: (p) => <Example02Screenshot {...p} /> },
+  { label: '範例 03｜Figma MCP 開場 + 確認連線',    render: (p) => <Example03Intro {...p} /> },
+  { label: '範例 03｜把畫面傳到 Figma',             render: (p) => <Example03Transfer {...p} /> },
+  { label: '範例 03｜Claude 反向改 Code',           render: (p) => <Example03Result {...p} /> },
+  { label: 'Step 3｜Skill.md（定義 + 範本）',       render: (p) => <Step3SkillPart1 {...p} /> },
+  { label: 'Step 3｜Skill.md（使用與放置）',         render: (p) => <Step3SkillPart2 {...p} /> },
+  { label: 'Prompt vs CLAUDE.md vs Skill.md',      render: (p) => <SkillComparison {...p} /> },
+  { label: '防呆｜存檔與回復',                       render: (p) => <Foolproof {...p} /> },
 ]

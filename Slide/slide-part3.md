@@ -9,8 +9,8 @@
 
 ## Slide 01 — Section Divider · 情境二：Design from Code
 
-> **Layout**：gradient section divider · no kicker
-> **Title**：如何從 Code 重構 UI 系統
+> **kicker**：（無）
+> **Title**：情境二：Design from Code  如何從 Code 重構 UI 系統
 > **Sub**：透過 Claude Code，將 AI 生成的雜亂介面重構為具一致性的設計系統
 
 ---
@@ -23,8 +23,8 @@
 
 ### 接手現況
 - **只有 Code、沒有設計稿**
-- **視覺凌亂、沒有一致的設計邏輯**
-- **每頁元件都長得不一樣的 code**
+- **視覺缺乏一致性**
+- **元件未標準化，重複且難以維護**
 
 ![圖｜情境二 現狀 01](Image/Part3/情境二_現狀01.png)
 ![圖｜情境二 現狀 02](Image/Part3/情境二_現狀02.png)
@@ -38,7 +38,7 @@
 |---|---|---|
 | ① | **建立專案認知** | 給 Claude 一份專案 Brief |
 | ② | **重構設計規範** | 告訴它「對的樣子」 |
-| ③ | **建立設計 SOP** | 把常用判斷存起來 |
+| ③ | **建立設計 SOP** | 把常用指令模組化 |
 
 ---
 
@@ -50,7 +50,7 @@
 
 ### CLAUDE.md 是什麼
 
-- **角色**：專案專屬的「工作守則」 — 啟動時 Claude 會自動讀過
+- **角色**：專案專屬的「開發守則」 — 啟動時 Claude 會自動讀過
 - **內容**：通用規則，例如計畫前要先讀取檔案、執行前要先詢問、有疑問要停下執行
 
 ### 一個指令搞定
@@ -79,8 +79,8 @@
 
 ## Slide 04 — Step 2-1｜盤點現有共用元件
 
-> **Kicker**：情境二：Design from Code．Step 2｜重構設計規範
-> **Title**：盤點與收斂共用元件
+> **Kicker**：情境二：Design from Code
+> **Title**：Step 2｜重構設計規範：盤點與收斂共用元件
 > **Sub**：找出現有共用元件、統一樣式
 
 | 子步驟 | 重點 |
@@ -95,9 +95,9 @@
 
 ## Slide 05 — Step 2-2｜三種調整方式
 
-> **Kicker**：情境二：Design from Code．Step 2｜重構設計規範
-> **Title**：三種調整方式
-> **Sub**：依問題類型選擇不同介入方式：Prompt、截圖、Figma MCP
+> **Kicker**：情境二：Design from Code
+> **Title**：Step 2｜重構設計規範：三種調整方式
+> **Sub**：依問題類型選擇不同方式：Prompt、截圖、Figma MCP
 
 > **幫 Claude 建立「對的樣子」的座標**
 
@@ -111,14 +111,14 @@
 
 ## Slide 06 — Step 2｜如何看到實際畫面
 
-> **Kicker**：情境二：Design from Code．Step 2｜重構設計規範
-> **Title**：如何看到實際畫面
+> **Kicker**：情境二：Design from Code
+> **Title**：Step 2｜重構設計規範：如何看到實際畫面
 > **Sub**：（無）
 
 ### 三步流程
 
 **① 打開瀏覽器**
-跟 Claude 說「請幫我打開瀏覽器看畫面」
+跟 Claude 說「打開瀏覽器看畫面」
 
 ![圖｜情境二 看畫面過程 01 — Prompt](Image/Part3/情境二_看畫面過程.jpg)
 
@@ -132,6 +132,14 @@ Claude 會印一個 URL，**點下去或複製到瀏覽器**都可以看到結�
 
 ![圖｜情境二 看畫面過程 04 — 開啟連結](Image/Part3/情境二_看畫面過程04.jpg)
 
+### 補充：Claude 只「告訴你怎麼做」時
+
+有時候 Claude 會把步驟印給你看（「請在另一個視窗執行 ...」），但不動手做。
+
+→ **用老闆思維叫他做**：
+> 「直接幫我做」
+> 「幫我解決」
+
 <!-- 備註：Image/Part3/情境二_看畫面過程02.jpg 未被引用，若不用可考慮刪除 -->
 
 ---
@@ -142,7 +150,10 @@ Claude 會印一個 URL，**點下去或複製到瀏覽器**都可以看到結�
 > **Title**：範例 01｜Prompt 快速修正設計樣式
 > **Sub**：（無）
 
-實際指令會像這樣：
+**適用於：版面穩定、資料單純的頁面**
+快速做設計一致性
+
+實際Prompt會像這樣：
 - 移除不在設計規範內的顏色
 - 套用元件的 hover / active 狀態樣式
 - 統一按鈕與文字顏色
@@ -150,8 +161,6 @@ Claude 會印一個 URL，**點下去或複製到瀏覽器**都可以看到結�
 ![圖｜範例 01-1：Code 原圖](Image/Part3/範例02-1_Code原圖.png)
 ![圖｜範例 01-2：Claude 執行的最終成果](Image/Part3/範例02-1_Claude%20執行的最終成果.png)
 
-**適用於：版面穩定、資料單純的頁面**
-快速做設計一致性
 
 ---
 
@@ -169,33 +178,27 @@ Claude 會印一個 URL，**點下去或複製到瀏覽器**都可以看到結�
 
 ---
 
-## Slide 09 — 範例 03｜Figma MCP 開場
+## Slide 09 — 範例 03｜Figma MCP 開場 + 確認連線
+
+> **Kicker**：情境二：Design from Code．Step 2｜重構設計規範
+> **Title**：範例 03｜Figma MCP
+> **Sub**：（無）
+ 
+**專案只有 Code 沒有圖稿 — 透過 MCP 反向把 Code 畫面傳到 Figma 做設計調整**
+
+**確認　Figma MCP 連線**
+![圖｜傳到 Figma 01 — MCP 連線確認 1/2](Image/Part3/情境二_傳到figma_01.jpg)
+![圖｜傳到 Figma 02 — MCP 連線確認 2/2](Image/Part3/情境二_傳到figma_02.jpg)
+
+---
+
+## Slide 10 — Figma MCP｜② 把畫面傳到 Figma
 
 > **Kicker**：情境二：Design from Code．Step 2｜重構設計規範
 > **Title**：範例 03｜Figma MCP
 > **Sub**：（無）
 
-**專案只有 Code 沒有圖稿 — 透過 MCP 反向把 Code 畫面傳到 Figma 做設計調整**
-
----
-
-## Slide 10 — Figma MCP｜① 確認 Figma MCP 連線
-
-> **Kicker**：情境二：Design from Code．Step 2｜重構設計規範
-> **Title**：確認 Figma MCP 連線
-> **Sub**：在 Claude 設定裡，看到 Figma MCP 是綠燈就代表連上了
-
-![圖｜TODO：傳到 Figma 01 — MCP 連線確認 1/2](Image/Part3/情境二_傳到figma_01.jpg)
-![圖｜TODO：傳到 Figma 02 — MCP 連線確認 2/2](Image/Part3/情境二_傳到figma_02.jpg)
-
----
-
-## Slide 11 — Figma MCP｜② 把畫面傳到 Figma
-
-> **Kicker**：情境二：Design from Code．Step 2｜重構設計規範
-> **Title**：把畫面傳到 Figma
-> **Sub**：下 prompt → 選 Code 端範圍 → 選 Figma 端檔案
-
+**把畫面傳到 Figma**
 **① 下 prompt**（待補完整 prompt 文字 — 從截圖讀出後潤飾）
 
 ![圖｜TODO：傳到 Figma 03 — prompt 下達](Image/Part3/情境二_傳到figma_03.jpg)
@@ -212,12 +215,12 @@ Claude 會印一個 URL，**點下去或複製到瀏覽器**都可以看到結�
 
 ---
 
-## Slide 12 — Figma MCP｜③ Claude 依 Figma 反向改 Code
+## Slide 11 — Figma MCP｜③ Claude 依 Figma 反向改 Code
 
 > **Kicker**：情境二：Design from Code．Step 2｜重構設計規範
-> **Title**：Claude 依 Figma 反向改 Code
-> **Sub**：貼畫面連結給 Claude，請它列出會調整的內容
-
+> **Title**：範例 03｜Figma MCP
+> **Sub**：（無）
+**Claude 依 Figma 反向改 Code**
 **指示 Claude**：
 > 「畫面對齊這頁，列出你會調整的內容」
 
@@ -229,19 +232,17 @@ Claude 會印一個 URL，**點下去或複製到瀏覽器**都可以看到結�
 
 ---
 
-## Slide 13 — Step 3｜建立設計 SOP：Skill.md
+## Slide 12 — Step 3｜建立設計 SOP：Skill.md
 
 > **Kicker**：情境二：Design from Code
 > **Title**：Step 3｜建立設計 SOP：Skill.md
-> **Sub**：將重複出現的設計判斷與檢查流程，轉為 Claude 可自動執行的 Skill
+> **Sub**：將重複出現的設計判斷與檢查流程，變成可反覆使用的規則
 
 ### Skill 是什麼
 
 > **Skill = 標準作業程序（SOP），把你重複在做的判斷或檢查，存成 AI 也懂的固定流程。**
 
-建一次，到處套用 — 就像 Figma Component 一樣。
-
-### 官方檔案結構
+### 檔案路徑結構
 
 ```
 .claude/
@@ -268,12 +269,25 @@ description: 掃描頁面，找出不符設計樣式的項目並產出 .md 計�
 一份結構化 .md 清單
 ```
 
+---
+
+## Slide 13 — Step 3｜Skill.md：使用方式與放置
+
+> **Kicker**：情境二：Design from Code
+> **Title**：Step 3｜建立設計 SOP：Skill.md
+> **Sub**：使用方式與儲存位置
+
 ### Skill 使用方式
 
 | 方式 | 怎麼觸發 |
 |---|---|
-| **主動呼叫** | `/skill visual-check` |
-| **被動觸發** | Prompt：「請檢查此頁面的視覺一致性」 — Claude 自己 match 到 Skill 的 description |
+| **主動呼叫** | `/skill visual-check` （明確要求執行特定檢查）|
+| **被動觸發** | Prompt：「請檢查此頁面的視覺一致性」 → Claude 會依 description 自動比對並套用 Skill |
+
+### Skill 怎麽建、怎麽放？
+從實際修改過程中反推規則，並找 Claude 討論建置內容 — Prompt：「把這幾次改動的過程梳理成 SOP 建議，建立 Skill」
+不用自己手動建資料夾或檔案 — **直接請 Claude 建、放**就好。
+
 
 > **把個人設計審核的工作流程，變成可以被複製的系統能力。**
 
@@ -282,10 +296,10 @@ description: 掃描頁面，找出不符設計樣式的項目並產出 .md 計�
 ## Slide 14 — Prompt vs CLAUDE.md vs Skill 對照
 
 > **Kicker**：情境二：Design from Code
-> **Title**：Prompt vs CLAUDE.md vs Skill
+> **Title**：Prompt vs CLAUDE.md vs Skill.md
 > **Sub**：（無）
 
-|  | Prompt | CLAUDE.md | Skill |
+|  | Prompt | CLAUDE.md | Skill.md |
 |---|---|---|---|
 | **角色** | 這一次的指令 | 專案的工作守則 | 特定任務的 SOP |
 | **時機** | 你每次輸入 | 啟動時自動載入 | 你呼叫它才執行 |
@@ -297,7 +311,8 @@ description: 掃描頁面，找出不符設計樣式的項目並產出 .md 計�
 
 > **Kicker**：情境二：Design from Code
 > **Title**：防呆｜怎麼存檔、怎麼回復
-> **Sub**：用 Claude 改畫面，本質上是在「反覆嘗試」 — 做好「存檔」與「版本回復」，就可以放心讓 Claude 幫你調整
+> **Sub**：(無)
+用 Claude 改畫面，本質上是在「反覆嘗試」 — 做好「存檔」與「版本回復」，就可以放心讓 Claude 幫你調整
 
 ### 先建立一個觀念
 
