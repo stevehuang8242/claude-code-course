@@ -31,16 +31,16 @@ import {
   Frame, SlideNumber, Tag, Code, SlideHead,
 } from './slides_archived.jsx'
 
-import imgInventory from './Slide/CH3/Image/情境二/情境二_專案設計元件位置.png'
-import imgEx01_1 from './Slide/CH3/Image/情境二/範例01-1_Code原圖.png'
-import imgEx01_2 from './Slide/CH3/Image/情境二/範例01-2_Code 畫面傳到 Figma.png'
-import imgEx01_3 from './Slide/CH3/Image/情境二/範例01-3_Figma 設計 GUI.png'
-import imgEx01_4 from './Slide/CH3/Image/情境二/範例01-4_Claude 執行的最終成果 .png'
-import imgEx02_1 from './Slide/CH3/Image/情境二/範例02-1_Code原圖.png'
-import imgEx02_2 from './Slide/CH3/Image/情境二/範例02-1_Claude 執行的最終成果.png'
-import imgEx03_1 from './Slide/CH3/Image/情境二/範例03-1_Code原圖.png'
-import imgEx03_2 from './Slide/CH3/Image/情境二/範例03-2_截圖.png'
-import imgEx03_3 from './Slide/CH3/Image/情境二/範例03-3_Claude 執行的最終成果 .png'
+import imgInventory from './Slide/Image/Part3/情境二_專案設計元件位置.png'
+import imgEx01_1 from './Slide/Image/Part3/範例01-1_Code原圖.png'
+import imgEx01_2 from './Slide/Image/Part3/範例01-2_Code 畫面傳到 Figma.png'
+import imgEx01_3 from './Slide/Image/Part3/範例01-3_Figma 設計 GUI.png'
+import imgEx01_4 from './Slide/Image/Part3/範例01-4_Claude 執行的最終成果 .png'
+import imgEx02_1 from './Slide/Image/Part3/範例02-1_Code原圖.png'
+import imgEx02_2 from './Slide/Image/Part3/範例02-1_Claude 執行的最終成果.png'
+import imgEx03_1 from './Slide/Image/Part3/範例03-1_Code原圖.png'
+import imgEx03_2 from './Slide/Image/Part3/範例03-2_截圖.png'
+import imgEx03_3 from './Slide/Image/Part3/範例03-3_Claude 執行的最終成果 .png'
 
 /* Unified kicker for every content slide in this chapter */
 const KICKER = '情境二：接手既有專案'
