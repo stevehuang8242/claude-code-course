@@ -202,16 +202,16 @@ Claude 會印一個 URL，**點下去或複製到瀏覽器**都可以看到結�
 **① 下 prompt**（待補完整 prompt 文字 — 從截圖讀出後潤飾）
 
 ![圖｜TODO：傳到 Figma 03 — prompt 下達](Image/Part3/情境二_傳到figma_03.jpg)
-![圖｜TODO：傳到 Figma 05 — prompt 範例](Image/Part3/情境二_傳到figma_05.jpg)
 
-**② 選取傳送範圍**
+**② 選擇 Figma 目標檔案**
+
+![圖｜TODO：傳到 Figma 04 — 目標檔案 1/2](Image/Part3/情境二_傳到figma_04.jpg)
+![圖｜TODO：傳到 Figma 05 — 目標檔案 2/2](Image/Part3/情境二_傳到figma_05.jpg)
+
+**③ 選取傳送範圍**
 
 ![圖｜TODO：傳到 Figma 06 — 範圍選擇 1/2](Image/Part3/情境二_傳到figma_06.jpg)
 ![圖｜TODO：傳到 Figma 07 — 範圍選擇 2/2](Image/Part3/情境二_傳到figma_07.jpg)
-
-**③ 選擇 Figma 目標檔案**
-
-![圖｜TODO：傳到 Figma 04 — 目標檔案](Image/Part3/情境二_傳到figma_04.jpg)
 
 ---
 
