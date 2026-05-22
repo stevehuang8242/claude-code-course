@@ -512,8 +512,8 @@
         <button class="btn agenda" type="button" aria-label="Jump to Agenda" title="Agenda (A)">Agenda<span class="kbd">A</span></button>
       `;
 
-      overlay.querySelector('.prev').addEventListener('click', () => this._go(this._index - 1, 'click'));
-      overlay.querySelector('.next').addEventListener('click', () => this._go(this._index + 1, 'click'));
+      overlay.querySelector('.prev').addEventListener('click', () => this._step(-1, 'click'));
+      overlay.querySelector('.next').addEventListener('click', () => this._step(1, 'click'));
       overlay.querySelector('.reset').addEventListener('click', () => this._go(0, 'click'));
       overlay.querySelector('.overview').addEventListener('click', () => this._toggleOverview());
       overlay.querySelector('.agenda').addEventListener('click', () => this._jumpToRole('agenda', 'click'));
@@ -817,12 +817,12 @@
 
     _onTapBack(e) {
       e.preventDefault();
-      this._go(this._index - 1, 'tap');
+      this._step(-1, 'tap');
     }
 
     _onTapForward(e) {
       e.preventDefault();
-      this._go(this._index + 1, 'tap');
+      this._step(1, 'tap');
     }
 
     _onKey(e) {
@@ -842,10 +842,10 @@
         this._closeOverview();
       } else if (key === 'ArrowRight' || key === 'PageDown' || key === ' ' || key === 'Spacebar') {
         if (this._overviewOpen) this._closeOverview();
-        this._go(this._index + 1, 'keyboard');
+        this._step(1, 'keyboard');
       } else if (key === 'ArrowLeft' || key === 'PageUp') {
         if (this._overviewOpen) this._closeOverview();
-        this._go(this._index - 1, 'keyboard');
+        this._step(-1, 'keyboard');
       } else if (key === 'Home') {
         if (this._overviewOpen) this._closeOverview();
         this._go(0, 'keyboard');
@@ -873,6 +873,21 @@
       }
     }
 
+    /* Sequential step that skips slides tagged data-deck-skip="true".
+     * Use this for all "next / prev" intents (keyboard, tap, bottom nav,
+     * public next() / prev()); use _go for direct jumps that should land
+     * on the exact target regardless of skip flag. */
+    _step(direction, reason = 'api') {
+      let i = this._index + direction;
+      while (
+        i >= 0 && i < this._slides.length &&
+        this._slides[i].getAttribute('data-deck-skip') === 'true'
+      ) {
+        i += direction;
+      }
+      this._go(i, reason);
+    }
+
     _go(i, reason = 'api') {
       if (!this._slides.length) return;
       const clamped = Math.max(0, Math.min(this._slides.length - 1, i));
@@ -892,8 +907,8 @@
     get length() { return this._slides.length; }
     /** Programmatically navigate. */
     goTo(i) { this._go(i, 'api'); }
-    next() { this._go(this._index + 1, 'api'); }
-    prev() { this._go(this._index - 1, 'api'); }
+    next() { this._step(1, 'api'); }
+    prev() { this._step(-1, 'api'); }
     reset() { this._go(0, 'api'); }
 
     /* Find the first slide whose section was tagged `data-deck-role="<role>"`
