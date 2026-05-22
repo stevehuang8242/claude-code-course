@@ -64,6 +64,231 @@ const KICKER       = '情境二：Design from Code'
 const KICKER_STEP2 = '情境二：Design from Code．Step 2｜重構設計規範'
 
 /* ============================================================
+   Figma MCP cross-slide gallery
+   ============================================================
+   Each entry maps a Figma MCP screenshot to its step / slide so the
+   modal can:
+   1. show the right header (step + sub label) per current image
+   2. silently navigate the underlying deck to the source slide as the
+      user advances past a step boundary
+   `slideLabel` matches the manifest entry below (used to look up the
+   deck's section index via its data-label attribute). */
+const FIGMA_GALLERY = [
+  { src: imgFig01,  stepN: '①', stepLabel: '確認 Figma MCP 連線',          subLabel: 'MCP 連線確認 1/2',     slideLabel: '範例 03｜Figma MCP 開場 + 確認連線' },
+  { src: imgFig02,  stepN: '①', stepLabel: '確認 Figma MCP 連線',          subLabel: 'MCP 連線確認 2/2',     slideLabel: '範例 03｜Figma MCP 開場 + 確認連線' },
+  { src: imgFig03,  stepN: '②', stepLabel: '把畫面傳到 Figma',              subLabel: 'a 下 prompt',           slideLabel: '範例 03｜把畫面傳到 Figma' },
+  { src: imgFig04,  stepN: '②', stepLabel: '把畫面傳到 Figma',              subLabel: 'b 選擇 Figma 目標檔案 1/2', slideLabel: '範例 03｜把畫面傳到 Figma' },
+  { src: imgFig05,  stepN: '②', stepLabel: '把畫面傳到 Figma',              subLabel: 'b 選擇 Figma 目標檔案 2/2', slideLabel: '範例 03｜把畫面傳到 Figma' },
+  { src: imgFig06,  stepN: '②', stepLabel: '把畫面傳到 Figma',              subLabel: 'c 選取傳送範圍 1/2',    slideLabel: '範例 03｜把畫面傳到 Figma' },
+  { src: imgFig07,  stepN: '②', stepLabel: '把畫面傳到 Figma',              subLabel: 'c 選取傳送範圍 2/2',    slideLabel: '範例 03｜把畫面傳到 Figma' },
+  { src: imgEx03_4, stepN: '③', stepLabel: 'Claude 依 Figma 反向改 Code', subLabel: '指示 Claude',           slideLabel: '範例 03｜Claude 反向改 Code' },
+  { src: imgEx03_5, stepN: '③', stepLabel: 'Claude 依 Figma 反向改 Code', subLabel: 'Claude 執行的最終成果', slideLabel: '範例 03｜Claude 反向改 Code' },
+]
+
+/* Module-level singleton store — needed because slides 10/11/12 each
+ * mount their own React root (main.jsx createRoot per section), so a
+ * Context provider in one slide can't reach the others. */
+const figmaGalleryStore = {
+  open: false,
+  index: 0,
+  listeners: new Set(),
+  setState(next) {
+    Object.assign(this, next)
+    this.listeners.forEach((fn) => fn())
+  },
+  subscribe(fn) {
+    this.listeners.add(fn)
+    return () => this.listeners.delete(fn)
+  },
+}
+
+function useFigmaGallery() {
+  const [, force] = useState(0)
+  useEffect(() => figmaGalleryStore.subscribe(() => force((t) => t + 1)), [])
+  return {
+    open: figmaGalleryStore.open,
+    index: figmaGalleryStore.index,
+    openAt: (i) => figmaGalleryStore.setState({ open: true, index: i }),
+    close: () => figmaGalleryStore.setState({ open: false }),
+    setIndex: (i) => figmaGalleryStore.setState({ index: i }),
+  }
+}
+
+/* Silently navigate the deck to the section whose data-label endsWith
+ * the given suffix. Falls back silently if not found. */
+function gotoSlideByLabel(labelSuffix) {
+  if (typeof document === 'undefined') return
+  const stage = document.querySelector('deck-stage')
+  if (!stage || typeof stage.goTo !== 'function') return
+  const sections = Array.from(stage.querySelectorAll(':scope > section'))
+  const idx = sections.findIndex((s) => {
+    const label = s.getAttribute('data-label') || ''
+    return label.endsWith(labelSuffix)
+  })
+  if (idx >= 0 && idx !== stage.index) stage.goTo(idx)
+}
+
+/* Step ① 兩張圖共用寬度組 — modal 開啟時預讀 natural size，
+ * 取較 portrait 的比例反算可用區域內的共同寬度。 */
+const STEP1_PAIR = [imgFig01, imgFig02]
+
+function FigmaGalleryModal() {
+  const { open, index, close, setIndex } = useFigmaGallery()
+  const current = FIGMA_GALLERY[index]
+  const atStart = index === 0
+  const atEnd = index === FIGMA_GALLERY.length - 1
+  const isStep1 = STEP1_PAIR.includes(current.src)
+
+  const [naturalSizes, setNaturalSizes] = useState({})
+  useEffect(() => {
+    let cancelled = false
+    STEP1_PAIR.forEach((src) => {
+      if (naturalSizes[src]) return
+      const img = new window.Image()
+      img.onload = () => {
+        if (cancelled) return
+        setNaturalSizes((prev) => ({ ...prev, [src]: { w: img.naturalWidth, h: img.naturalHeight } }))
+      }
+      img.src = src
+    })
+    return () => { cancelled = true }
+  }, [])
+
+  let step1Width = null
+  if (isStep1 && typeof window !== 'undefined') {
+    const s1 = naturalSizes[imgFig01]
+    const s2 = naturalSizes[imgFig02]
+    if (s1 && s2) {
+      const availW = window.innerWidth * (1 - 0.16)
+      const availH = window.innerHeight * (1 - 0.23)
+      const minRatio = Math.min(s1.w / s1.h, s2.w / s2.h)
+      step1Width = Math.min(availW, availH * minRatio)
+    }
+  }
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault(); e.stopImmediatePropagation()
+        close()
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault(); e.stopImmediatePropagation()
+        if (!atStart) setIndex(index - 1)
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault(); e.stopImmediatePropagation()
+        if (!atEnd) setIndex(index + 1)
+      }
+    }
+    window.addEventListener('keydown', onKey, { capture: true })
+    return () => window.removeEventListener('keydown', onKey, { capture: true })
+  }, [open, index, atStart, atEnd, close, setIndex])
+
+  useEffect(() => {
+    if (!open) return
+    gotoSlideByLabel(current.slideLabel)
+  }, [open, current.slideLabel])
+
+  if (!open) return null
+  return createPortal(
+    <div
+      onClick={close}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(9, 9, 9, 0.94)',
+        zIndex: 99999,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '15vh 8vw 8vh 8vw',
+        cursor: 'zoom-out',
+      }}
+    >
+      <img
+        src={current.src}
+        alt={`${current.stepN} ${current.stepLabel}`}
+        style={{
+          ...(step1Width
+            ? { width: step1Width, height: 'auto', maxHeight: '100%' }
+            : { maxWidth: '100%', maxHeight: '100%' }),
+          objectFit: 'contain',
+          borderRadius: 8,
+          boxShadow: '0 32px 80px rgba(0, 0, 0, 0.7)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {!atStart && (
+        <button
+          onClick={(e) => { e.stopPropagation(); setIndex(index - 1) }}
+          style={{
+            position: 'fixed', left: '3vw', top: '50%', transform: 'translateY(-50%)',
+            width: 56, height: 56, borderRadius: '50%',
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            color: 'rgba(255,255,255,0.85)',
+            fontSize: 24, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >‹</button>
+      )}
+      {!atEnd && (
+        <button
+          onClick={(e) => { e.stopPropagation(); setIndex(index + 1) }}
+          style={{
+            position: 'fixed', right: '3vw', top: '50%', transform: 'translateY(-50%)',
+            width: 56, height: 56, borderRadius: '50%',
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            color: 'rgba(255,255,255,0.85)',
+            fontSize: 24, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >›</button>
+      )}
+
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'fixed', top: '3vh', left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+          cursor: 'default',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <span style={{ fontSize: 22, color: C.ink, fontWeight: 600 }}>{current.stepN}</span>
+          <span style={{ fontSize: 22, color: C.ink, fontWeight: 600 }}>{current.stepLabel}</span>
+        </div>
+        {current.subLabel && (
+          <div style={{ fontSize: 18, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+            {current.subLabel}
+          </div>
+        )}
+      </div>
+
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'fixed', bottom: '3vh', left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: 13,
+          letterSpacing: '0.16em',
+          textTransform: 'uppercase',
+          color: 'rgba(255,255,255,0.45)',
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          cursor: 'default',
+        }}
+      >
+        {index + 1} / {FIGMA_GALLERY.length}
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
+const figmaIndexOf = (src) => FIGMA_GALLERY.findIndex((it) => it.src === src)
+
+/* ============================================================
    Shared helpers
    ============================================================ */
 
@@ -97,6 +322,7 @@ const PhotoCard = ({
   hoverScale = 1.5, align = 'center',
   enableModal = false,
   bare = false,
+  noHover = false,
 }) => {
   const [hovered, setHovered] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
@@ -190,7 +416,8 @@ const PhotoCard = ({
     )
   }
 
-  /* Default hover-zoom mode */
+  /* Default hover-zoom mode (suppressed when noHover) */
+  const isHovered = hovered && !noHover
   return (
     <div
       style={{
@@ -201,10 +428,10 @@ const PhotoCard = ({
         display: 'flex', alignItems: 'center', justifyContent: align === 'left' ? 'flex-start' : 'center',
         overflow: 'visible',
         position: 'relative',
-        zIndex: hovered ? 100 : 'auto',
+        zIndex: isHovered ? 100 : 'auto',
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={noHover ? undefined : () => setHovered(true)}
+      onMouseLeave={noHover ? undefined : () => setHovered(false)}
     >
       <img
         src={src}
@@ -216,14 +443,14 @@ const PhotoCard = ({
           objectPosition: align,
           borderRadius: ROUNDED.xs,
           display: 'block',
-          cursor: 'zoom-in',
+          cursor: noHover ? 'default' : 'zoom-in',
           transformOrigin: align === 'left' ? 'left center' : 'center center',
-          transform: hovered ? `scale(${hoverScale})` : 'scale(1)',
-          boxShadow: hovered ? '0 24px 48px rgba(0, 0, 0, 0.55)' : 'none',
+          transform: isHovered ? `scale(${hoverScale})` : 'scale(1)',
+          boxShadow: isHovered ? '0 24px 48px rgba(0, 0, 0, 0.55)' : 'none',
           transition: 'transform 0.28s ease-out, box-shadow 0.28s ease-out',
           position: 'relative',
-          zIndex: hovered ? 100 : 'auto',
-          background: hovered ? C.canvas : 'transparent',
+          zIndex: isHovered ? 100 : 'auto',
+          background: isHovered ? C.canvas : 'transparent',
         }}
       />
     </div>
@@ -1108,182 +1335,197 @@ export const Example02Screenshot = ({ n, total }) => (
 /* ============================================================
    Slide 9 — 範例 03 · Figma MCP 開場 + 確認連線
    ============================================================ */
-export const Example03Intro = ({ n, total }) => (
-  <Animated>
-    <motion.div variants={FADE_UP}>
-      <SlideHead
-        kicker={KICKER_STEP2}
-        title="範例 03｜Figma MCP"
-      />
-    </motion.div>
-
-    <motion.div variants={FADE_UP} style={{
-      marginTop: 32,
-      padding: '24px 32px',
-      borderLeft: `4px solid ${C.ink}`,
-      background: C.surface1,
-      borderRadius: ROUNDED.md,
-      fontSize: TYPE_SCALE.subtitle,
-      color: C.ink,
-      fontWeight: 500,
-      letterSpacing: TRACK.subtitle,
-      lineHeight: 1.35,
-    }}>
-      專案只有 Code 沒有圖稿 — 透過 MCP 反向把 Code 畫面傳到 Figma 做設計調整
-    </motion.div>
-
-    {/* Step ① indicator — Step2SeeScreen style (subtitle 編號 + body label inline) */}
-    <motion.div variants={FADE_UP} style={{
-      marginTop: 40,
-      display: 'flex', flexDirection: 'column', gap: 12,
-      marginBottom: 16,
-    }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-        <span style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600 }}>①</span>
-        <span style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>確認 Figma MCP 連線</span>
-      </div>
-    </motion.div>
-
-    <motion.div variants={STAGGER_INNER} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+export const Example03Intro = ({ n, total }) => {
+  const { openAt } = useFigmaGallery()
+  return (
+    <Animated>
       <motion.div variants={FADE_UP}>
-        <PhotoCard src={imgFig01} alt="MCP 連線確認 1/2" height={300} padding={10} hoverScale={1.4} />
+        <SlideHead
+          kicker={KICKER_STEP2}
+          title="範例 03｜Figma MCP"
+        />
       </motion.div>
-      <motion.div variants={FADE_UP}>
-        <PhotoCard src={imgFig02} alt="MCP 連線確認 2/2" height={300} padding={10} hoverScale={1.4} />
-      </motion.div>
-    </motion.div>
 
-    <SlideNumber n={n} total={total} />
-  </Animated>
-)
+      <motion.div variants={FADE_UP} style={{
+        marginTop: 32,
+        padding: '24px 32px',
+        borderLeft: `4px solid ${C.ink}`,
+        background: C.surface1,
+        borderRadius: ROUNDED.md,
+        fontSize: TYPE_SCALE.subtitle,
+        color: C.ink,
+        fontWeight: 500,
+        letterSpacing: TRACK.subtitle,
+        lineHeight: 1.35,
+      }}>
+        專案只有 Code 沒有圖稿 — 透過 MCP 反向把 Code 畫面傳到 Figma 做設計調整
+      </motion.div>
+
+      {/* Step ① indicator */}
+      <motion.div variants={FADE_UP} style={{
+        marginTop: 40,
+        display: 'flex', flexDirection: 'column', gap: 12,
+        marginBottom: 16,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <span style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600 }}>①</span>
+          <span style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>確認 Figma MCP 連線</span>
+        </div>
+      </motion.div>
+
+      <motion.div variants={STAGGER_INNER} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <motion.div variants={FADE_UP} onClick={() => openAt(figmaIndexOf(imgFig01))} style={{ cursor: 'zoom-in' }}>
+          <PhotoCard src={imgFig01} alt="MCP 連線確認 1/2" height={300} padding={10} noHover />
+        </motion.div>
+        <motion.div variants={FADE_UP} onClick={() => openAt(figmaIndexOf(imgFig02))} style={{ cursor: 'zoom-in' }}>
+          <PhotoCard src={imgFig02} alt="MCP 連線確認 2/2" height={300} padding={10} noHover />
+        </motion.div>
+      </motion.div>
+
+      <SlideNumber n={n} total={total} />
+
+      {/* Cross-slide modal — mounted here, rendered via portal so it covers
+        * any active slide. Slides 10/11/12 all share the same module store. */}
+      <FigmaGalleryModal />
+    </Animated>
+  )
+}
 
 /* ============================================================
    Slide 10 — 範例 03 · 把畫面傳到 Figma（三步流程）
    ============================================================ */
-export const Example03Transfer = ({ n, total }) => (
-  <Animated>
-    <motion.div variants={FADE_UP}>
-      <SlideHead
-        kicker={KICKER_STEP2}
-        title="範例 03｜Figma MCP"
-        sub={' '}
-      />
-    </motion.div>
+export const Example03Transfer = ({ n, total }) => {
+  const { openAt } = useFigmaGallery()
+  return (
+    <Animated>
+      <motion.div variants={FADE_UP}>
+        <SlideHead
+          kicker={KICKER_STEP2}
+          title="範例 03｜Figma MCP"
+          sub={' '}
+        />
+      </motion.div>
 
-    {/* Step ② indicator — Step2SeeScreen style */}
-    <motion.div variants={FADE_UP} style={{
-      marginTop: 40,
-      display: 'flex', flexDirection: 'column', gap: 8,
-      marginBottom: 16,
-    }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-        <span style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600 }}>②</span>
-        <span style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>把畫面傳到 Figma</span>
-      </div>
-      <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
-        下 prompt → 選檔案 → 選範圍
-      </div>
-    </motion.div>
+      {/* Step ② indicator */}
+      <motion.div variants={FADE_UP} style={{
+        marginTop: 40,
+        display: 'flex', flexDirection: 'column', gap: 8,
+        marginBottom: 16,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <span style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600 }}>②</span>
+          <span style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>把畫面傳到 Figma</span>
+        </div>
+        <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
+          下 prompt → 選檔案 → 選範圍
+        </div>
+      </motion.div>
 
-    <motion.div
-      variants={STAGGER_INNER}
-      style={{
-        marginTop: 0,
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 20,
-      }}
-    >
-      {[
-        { n: 'a', label: '下 prompt',            imgs: [imgFig03] },
-        { n: 'b', label: '選擇 Figma 目標檔案', imgs: [imgFig04, imgFig05] },
-        { n: 'c', label: '選取傳送範圍',         imgs: [imgFig06, imgFig07] },
-      ].map((step, i) => (
-        <motion.div key={i} variants={FADE_UP} style={{
-          background: C.surface1,
-          border: `1px solid ${C.hairlineSoft}`,
-          borderRadius: ROUNDED.lg,
-          padding: 20,
-          display: 'flex', flexDirection: 'column', gap: 12,
-        }}>
-          <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>
-            {step.label}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {step.imgs.map((src, j) => (
-              <PhotoCard key={j} src={src} alt={`${step.label} ${j + 1}`} height={200} padding={6} hoverScale={1.3} />
-            ))}
-          </div>
-        </motion.div>
-      ))}
-    </motion.div>
+      <motion.div
+        variants={STAGGER_INNER}
+        style={{
+          marginTop: 0,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 20,
+        }}
+      >
+        {[
+          { n: 'a', label: '下 prompt',            imgs: [imgFig03] },
+          { n: 'b', label: '選擇 Figma 目標檔案', imgs: [imgFig04, imgFig05] },
+          { n: 'c', label: '選取傳送範圍',         imgs: [imgFig06, imgFig07] },
+        ].map((step, i) => (
+          <motion.div key={i} variants={FADE_UP} style={{
+            background: C.surface1,
+            border: `1px solid ${C.hairlineSoft}`,
+            borderRadius: ROUNDED.lg,
+            padding: 20,
+            display: 'flex', flexDirection: 'column', gap: 12,
+          }}>
+            <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>
+              {step.label}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {step.imgs.map((src, j) => (
+                <div key={j} onClick={() => openAt(figmaIndexOf(src))} style={{ cursor: 'zoom-in' }}>
+                  <PhotoCard src={src} alt={`${step.label} ${j + 1}`} height={200} padding={6} noHover />
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
 
-    <SlideNumber n={n} total={total} />
-  </Animated>
-)
+      <SlideNumber n={n} total={total} />
+    </Animated>
+  )
+}
 
 /* ============================================================
    Slide 11 — 範例 03 · Claude 依 Figma 反向改 Code
    ============================================================ */
-export const Example03Result = ({ n, total }) => (
-  <Animated>
-    <motion.div variants={FADE_UP}>
-      <SlideHead
-        kicker={KICKER_STEP2}
-        title="範例 03｜Figma MCP"
-        sub={' '}
-      />
-    </motion.div>
-
-    {/* Step ③ indicator — Step2SeeScreen style */}
-    <motion.div variants={FADE_UP} style={{
-      marginTop: 40,
-      display: 'flex', flexDirection: 'column', gap: 8,
-      marginBottom: 16,
-    }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-        <span style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600 }}>③</span>
-        <span style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>Claude 依 Figma 反向改 Code</span>
-      </div>
-    </motion.div>
-
-    <motion.div
-      variants={STAGGER_INNER}
-      style={{
-        marginTop: 0,
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 32,
-        alignItems: 'start',
-      }}
-    >
-      <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-          提供 Figma 頁面連結給 Claude ，Prompt
-        </div>
-        <div style={{
-          padding: '16px 22px',
-          background: C.surface1,
-          borderLeft: `3px solid ${C.ink}`,
-          borderRadius: ROUNDED.sm,
-          fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 500, lineHeight: 1.5,
-        }}>
-          「畫面對齊這頁，列出你會調整的內容」
-        </div>
-        <PhotoCard src={imgEx03_4} alt="指示 Claude" height={300} padding={10} hoverScale={1.4} />
+export const Example03Result = ({ n, total }) => {
+  const { openAt } = useFigmaGallery()
+  return (
+    <Animated>
+      <motion.div variants={FADE_UP}>
+        <SlideHead
+          kicker={KICKER_STEP2}
+          title="範例 03｜Figma MCP"
+          sub={' '}
+        />
       </motion.div>
 
-      <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>
-        CLAUDE 執行的最終成果
+      {/* Step ③ indicator */}
+      <motion.div variants={FADE_UP} style={{
+        marginTop: 40,
+        display: 'flex', flexDirection: 'column', gap: 8,
+        marginBottom: 16,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <span style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600 }}>③</span>
+          <span style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>Claude 依 Figma 反向改 Code</span>
         </div>
-        <PhotoCard src={imgEx03_5} alt="Claude 執行的最終成果" height={360} padding={10} hoverScale={1.4} />
       </motion.div>
-    </motion.div>
 
-    <SlideNumber n={n} total={total} />
-  </Animated>
-)
+      <motion.div
+        variants={STAGGER_INNER}
+        style={{
+          marginTop: 0,
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 32,
+          alignItems: 'start',
+        }}
+      >
+        <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            提供 Figma 頁面連結給 Claude ，Prompt
+          </div>
+          <div style={{
+            fontSize: TYPE_SCALE.body, color: C.ink, lineHeight: 1.5,
+          }}>
+            「畫面對齊這頁，列出你會調整的內容」
+          </div>
+          <div onClick={() => openAt(figmaIndexOf(imgEx03_4))} style={{ cursor: 'zoom-in' }}>
+            <PhotoCard src={imgEx03_4} alt="指示 Claude" height={360} padding={10} noHover />
+          </div>
+        </motion.div>
+
+        <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>
+          CLAUDE 執行的最終成果
+          </div>
+          <div onClick={() => openAt(figmaIndexOf(imgEx03_5))} style={{ cursor: 'zoom-in' }}>
+            <PhotoCard src={imgEx03_5} alt="Claude 執行的最終成果" height={360} padding={10} noHover />
+          </div>
+        </motion.div>
+      </motion.div>
+
+      <SlideNumber n={n} total={total} />
+    </Animated>
+  )
+}
 
 /* ============================================================
    Slide 12 — Step 3 · Skill.md（定義 + 路徑 + 範本）
