@@ -405,7 +405,7 @@ function RestoreGalleryModal() {
       padding: '15vh 8vw 8vh 8vw', cursor: 'zoom-out',
     }}>
       <img src={current.src} alt={current.subLabel} style={{
-        maxWidth: '100%', maxHeight: '100%', objectFit: 'contain',
+        maxWidth: '55vw', maxHeight: '100%', objectFit: 'contain',
         borderRadius: 8, boxShadow: '0 32px 80px rgba(0, 0, 0, 0.7)', pointerEvents: 'none',
       }} />
 
