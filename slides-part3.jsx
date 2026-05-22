@@ -364,9 +364,15 @@ function SaveSingleModal() {
       }} />
       <div onClick={(e) => e.stopPropagation()} style={{
         position: 'fixed', top: '3vh', left: '50%', transform: 'translateX(-50%)',
-        fontSize: 22, color: C.ink, fontWeight: 600, cursor: 'default',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+        cursor: 'default',
       }}>
-        ① 怎麼存檔（Commit）
+        <div style={{ fontSize: 22, color: C.ink, fontWeight: 600 }}>
+          ① 怎麼存檔（Commit）
+        </div>
+        <div style={{ fontSize: 16, color: C.inkMuted, fontWeight: 400, letterSpacing: TRACK.subtitle }}>
+          Prompt：「存檔」．「Commit」
+        </div>
       </div>
     </div>,
     document.body,
@@ -1212,7 +1218,7 @@ export const Step2SeeScreen = ({ n, total }) => {
       <motion.div variants={FADE_UP}>
         <SlideHead
           kicker={KICKER}
-          title="Step 2｜重構設計規範：如何看到實際畫面"
+          title="Step 2｜重構設計規範：如何看到 Code 實際畫面"
           sub={' '}
         />
       </motion.div>
@@ -1457,7 +1463,7 @@ export const Example02Screenshot = ({ n, total }) => (
       <SlideHead
         kicker={KICKER_STEP2}
         title="範例 02｜用截圖 + Prompt 對齊設計細節"
-        sub="提供視覺參考時，Claude 執行上更貼近設計需求。"
+        sub="提供視覺參考時，Claude 執行上更貼近設計需求"
       />
     </motion.div>
 
@@ -1507,6 +1513,7 @@ export const Example03Intro = ({ n, total }) => {
         <SlideHead
           kicker={KICKER_STEP2}
           title="範例 03｜Figma MCP"
+          sub={' '}
         />
       </motion.div>
 
@@ -1572,7 +1579,7 @@ export const Example03Transfer = ({ n, total }) => {
 
       {/* Step ② indicator */}
       <motion.div variants={FADE_UP} style={{
-        marginTop: 40,
+        marginTop: 32,
         display: 'flex', flexDirection: 'column', gap: 8,
         marginBottom: 16,
       }}>
@@ -1642,7 +1649,7 @@ export const Example03Result = ({ n, total }) => {
 
       {/* Step ③ indicator */}
       <motion.div variants={FADE_UP} style={{
-        marginTop: 40,
+        marginTop: 32,
         display: 'flex', flexDirection: 'column', gap: 8,
         marginBottom: 16,
       }}>
@@ -1902,6 +1909,7 @@ export const SkillComparison = ({ n, total }) => (
       <SlideHead
         kicker={KICKER}
         title="Prompt vs CLAUDE.md vs Skill.md"
+        sub={' '}
       />
     </motion.div>
 
@@ -1959,7 +1967,7 @@ export const Foolproof = ({ n, total }) => {
         <SlideHead
           kicker={KICKER}
           title="存檔與回復"
-          sub="用 Claude 改畫面 = 反覆嘗試 — 只要有版本紀錄，就可以放心改、隨時回頭。"
+          sub="用 Claude 改畫面 = 反覆嘗試 — 只要有版本紀錄，就可以放心改、隨時回頭"
         />
       </motion.div>
 
@@ -1967,7 +1975,7 @@ export const Foolproof = ({ n, total }) => {
       <motion.div variants={FADE_UP} style={{
         marginTop: 28,
         padding: '20px 28px',
-        borderLeft: `4px solid ${C.ink}`,
+        borderLeft: `4px solid ${C.gradientViolet}`,
         background: C.surface1,
         borderRadius: ROUNDED.sm,
         fontSize: TYPE_SCALE.small,
@@ -1979,7 +1987,7 @@ export const Foolproof = ({ n, total }) => {
         </div>
         <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 4, color: C.inkMuted }}>
           <div><span style={{ color: C.ink, fontWeight: 500 }}>一般存檔</span> = 覆蓋目前檔案</div>
-          <div><span style={{ color: C.ink, fontWeight: 500 }}>Git 的 Commit</span> = 存下一個「帶有紀錄的版本」，會記得：存了什麼／改了什麼／為什麼改</div>
+          <div><span style={{ color: C.ink, fontWeight: 500 }}>Git 的存檔叫做「Commit」</span> = 存下「帶有紀錄的版本」，會記得：改了什麼</div>
         </div>
       </motion.div>
 
@@ -1991,7 +1999,7 @@ export const Foolproof = ({ n, total }) => {
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: 24,
-          alignItems: 'start',
+          alignItems: 'stretch',
         }}
       >
         {/* 存檔 */}
@@ -2010,21 +2018,25 @@ export const Foolproof = ({ n, total }) => {
           <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600 }}>
             ① 怎麼存檔（Commit）
           </div>
-          <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
-            每完成一段修改，就存一個版本。
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
+                每完成一段修改，就存一個版本。
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {['「存檔」', '「Commit」'].map((p, i) => (
+                  <div key={i} style={{
+                    padding: '10px 14px',
+                    background: C.canvas,
+                    borderLeft: `3px solid ${C.ink}`,
+                    borderRadius: ROUNDED.sm,
+                    fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
+                  }}>{p}</div>
+                ))}
+              </div>
+            </div>
+            <PhotoCard src={imgSave1} alt="存檔 prompt 截圖" height={340} padding={8} noHover />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {['「請幫我存檔」', '「Commit」'].map((p, i) => (
-              <div key={i} style={{
-                padding: '10px 14px',
-                background: C.canvas,
-                borderLeft: `3px solid ${C.ink}`,
-                borderRadius: ROUNDED.sm,
-                fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
-              }}>{p}</div>
-            ))}
-          </div>
-          <PhotoCard src={imgSave1} alt="存檔 prompt 截圖" height={180} padding={8} noHover />
         </motion.div>
 
         {/* 回復 */}
@@ -2048,9 +2060,9 @@ export const Foolproof = ({ n, total }) => {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
-              '「請幫我回到上一個版本」',
-              '「請幫我回到剛剛加完 hover 效果那個版本」',
-              '「請幫我回到 abc1234 那個版本」（有版號時）',
+              '「回到上一個版本」',
+              '「回到剛剛加完 hover 效果那個版本」',
+              '「回到 abc1234 那個版本」（有版號時）',
             ].map((p, i) => (
               <div key={i} style={{
                 padding: '10px 14px',
