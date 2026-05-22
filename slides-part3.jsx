@@ -1928,7 +1928,7 @@ export const SkillComparison = ({ n, total }) => (
         ))}
         {[
           ['角色', '這一次的指令', '專案的工作守則', '特定任務的 SOP'],
-          ['時機', '你每次輸入',   '啟動時自動載入', '你呼叫它才執行'],
+          ['時機', '每次輸入',   '啟動時自動載入', '觸發它才執行'],
           ['比喻', '隨口交辦',     '員工手冊',       '個別工序的作業流程'],
         ].map((row, ri) => row.map((cell, ci) => (
           <div key={`r${ri}c${ci}`} style={{
@@ -1958,8 +1958,8 @@ export const Foolproof = ({ n, total }) => {
       <motion.div variants={FADE_UP}>
         <SlideHead
           kicker={KICKER}
-          title="防呆｜怎麼存檔、怎麼回復"
-          sub="用 Claude 改畫面 = 反覆嘗試 — 做好存檔與版本回復，就可以放心讓 Claude 幫你調整"
+          title="存檔與回復"
+          sub="用 Claude 改畫面 = 反覆嘗試 — 只要有版本紀錄，就可以放心改、隨時回頭。"
         />
       </motion.div>
 
@@ -1974,8 +1974,13 @@ export const Foolproof = ({ n, total }) => {
         color: C.ink,
         lineHeight: 1.55,
       }}>
-        你之前裝過 <span style={{ fontFamily: "'Geist Mono', ui-monospace, monospace", color: C.gradientOrange }}>Git</span>，它就是「<span style={{ fontWeight: 600 }}>版本記錄器</span>」。
-        跟 Claude 說「存檔」，它會幫現在的狀態<span style={{ fontWeight: 600 }}>拍一張快照</span>；改錯了就「回到上一張快照」。
+        <div>
+          安裝 Claude 的過程會一起裝 <span style={{ fontFamily: "'Geist Mono', ui-monospace, monospace", color: C.gradientOrange }}>Git</span> — 它就是「<span style={{ fontWeight: 600 }}>版本記錄器</span>」，作用就像 Figma 的版本歷史。
+        </div>
+        <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 4, color: C.inkMuted }}>
+          <div><span style={{ color: C.ink, fontWeight: 500 }}>一般存檔</span> = 覆蓋目前檔案</div>
+          <div><span style={{ color: C.ink, fontWeight: 500 }}>Git 的 Commit</span> = 存下一個「帶有紀錄的版本」，會記得：存了什麼／改了什麼／為什麼改</div>
+        </div>
       </motion.div>
 
       {/* ① 存檔 ② 回復 兩欄 — 整張卡片可點 */}
@@ -2006,16 +2011,18 @@ export const Foolproof = ({ n, total }) => {
             ① 怎麼存檔（Commit）
           </div>
           <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
-            每改完一段，當作一個版本存起來 — 就像 Figma 的「版本歷史」。
+            每完成一段修改，就存一個版本。
           </div>
-          <div style={{
-            padding: '14px 18px',
-            background: C.canvas,
-            borderLeft: `3px solid ${C.ink}`,
-            borderRadius: ROUNDED.sm,
-            fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
-          }}>
-            「請幫我存檔」
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {['「請幫我存檔」', '「Commit」'].map((p, i) => (
+              <div key={i} style={{
+                padding: '10px 14px',
+                background: C.canvas,
+                borderLeft: `3px solid ${C.ink}`,
+                borderRadius: ROUNDED.sm,
+                fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
+              }}>{p}</div>
+            ))}
           </div>
           <PhotoCard src={imgSave1} alt="存檔 prompt 截圖" height={180} padding={8} noHover />
         </motion.div>
