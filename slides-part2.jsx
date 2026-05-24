@@ -122,7 +122,7 @@ const Eyebrow = ({ children, color = C.inkMuted }) => (
     fontWeight: 500,
     letterSpacing: TRACK.small,
     color,
-    fontFamily: MONO,
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
   }}>{children}</div>
 );
 
@@ -133,30 +133,10 @@ const SlideNumber = ({ n, total, color = C.textDescription }) => (
     right: SPACING.paddingX,
     fontSize: TYPE_SCALE.tiny,
     color,
-    fontFamily: MONO,
+    fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
     letterSpacing: '0.08em',
   }}>
     {String(n).padStart(2, '0')} / {String(total).padStart(2, '0')}
-  </div>
-);
-
-const Footmark = ({ color = C.textDescription }) => (
-  <div style={{
-    position: 'absolute',
-    bottom: 44,
-    left: SPACING.paddingX,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 16,
-  }}>
-    <div style={{
-      fontSize: TYPE_SCALE.tiny,
-      color,
-      letterSpacing: '0.16em',
-      textTransform: 'uppercase',
-      fontWeight: 500,
-      fontFamily: MONO,
-    }}>Part 2 · Idea / Figma to UI</div>
   </div>
 );
 
@@ -166,9 +146,9 @@ const SlideHead = ({ kicker, title, sub }) => (
     <h1 style={{
       fontSize: TYPE_SCALE.title,
       fontWeight: 500,
-      lineHeight: 1.1,
+      lineHeight: 1.05,
       margin: `${kicker ? SPACING.titleGap : 0}px 0 0 0`,
-      letterSpacing: TRACK.hero,
+      letterSpacing: TRACK.heroLat,
       color: C.ink,
     }}>{title}</h1>
     {sub && (
@@ -276,7 +256,6 @@ const Part2Agenda = ({ n, total }) => {
           </motion.div>
         ))}
       </motion.div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -468,7 +447,6 @@ const Part2TwoStartingPoints = ({ n, total }) => {
           兩條路徑都會走進 Claude Code 實作——Part 1 學的工作流，這裡全部派上用場。
         </motion.div>
       </motion.div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -602,7 +580,6 @@ const Part2ClaudeDesign = ({ n, total }) => {
           像 brainstorm 階段的快速 wireframe——但多了視覺與互動骨架。
         </motion.div>
       </motion.div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -780,7 +757,6 @@ const Part2ReferenceCuration = ({ n, total }) => {
           </div>
         </motion.div>
       </motion.div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -931,7 +907,6 @@ const Part2GenerateHandoff = ({ n, total }) => {
           handoff 漏掉 hover / loading / error state，Claude Code 就補不齊——畫面跑起來但少一半互動。
         </motion.div>
       </motion.div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -1090,7 +1065,6 @@ const Part2FigmaToCursor = ({ n, total }) => {
           ))}
         </motion.div>
       </motion.div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -1270,7 +1244,6 @@ const Part2ChatbotInAction = ({ n, total }) => {
           </motion.div>
         </motion.div>
       </motion.div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
@@ -1445,7 +1418,6 @@ const Part2Overview = ({ n, total }) => {
           </motion.div>
         </motion.div>
       </motion.div>
-      <Footmark />
       <SlideNumber n={n} total={total} />
     </Frame>
   );
