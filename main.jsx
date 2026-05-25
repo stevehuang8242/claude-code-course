@@ -30,6 +30,10 @@ slides.forEach((slide, i) => {
   /* Optional `role` flag (e.g. 'agenda') — deck-stage shortcut buttons
    * look this up to jump to a known slide regardless of position. */
   if (slide.role) section.setAttribute('data-deck-role', slide.role)
+  /* Optional `skip` flag — deck-stage's next() / prev() skip these slides
+   * during sequential nav. Direct goTo / role-jump still works, so they're
+   * reachable only via explicit navigation (e.g. hub click). */
+  if (slide.skip) section.setAttribute('data-deck-skip', 'true')
   const host = document.createElement('div')
   host.id = `s${n}`
   host.style.cssText = 'width:100%;height:100%;'
