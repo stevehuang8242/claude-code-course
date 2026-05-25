@@ -61,7 +61,7 @@ const Agenda = ({ n, total }) => {
   const state = active ? 'show' : 'hidden'
   return (
     <Frame>
-      <SlideHead kicker="Agenda" title="今天會帶你看的內容" />
+      <SlideHead kicker="Agenda" title="Design to Code for UX Training Course" />
 
       <motion.ol
         ref={ref}
