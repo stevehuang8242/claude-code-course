@@ -493,25 +493,73 @@ const PhotoCard = ({
   enableModal = false,
   bare = false,
   noHover = false,
+  gallery = null,
+  galleryIndex = 0,
 }) => {
   const [hovered, setHovered] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [currentIndex, setCurrentIndex] = useState(galleryIndex)
+
+  const items = gallery && gallery.length > 1 ? gallery : null
+  const total = items ? items.length : 0
+  const activeSrc = items ? items[currentIndex].src : src
+  const activeAlt = items ? items[currentIndex].alt : alt
+
+  const openModal = () => {
+    if (items) setCurrentIndex(galleryIndex)
+    setModalOpen(true)
+  }
+  const next = () => items && setCurrentIndex((i) => Math.min(i + 1, total - 1))
+  const prev = () => items && setCurrentIndex((i) => Math.max(i - 1, 0))
+  const canPrev = items && currentIndex > 0
+  const canNext = items && currentIndex < total - 1
 
   useEffect(() => {
     if (!modalOpen) return
-    const onKey = (e) => { if (e.key === 'Escape') setModalOpen(false) }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [modalOpen])
+    // Capture phase + stopPropagation so deck-stage's window keydown listener
+    // (Arrow/Space/PageUp/PageDown/Home/End/digits) doesn't change slides
+    // while the lightbox owns the keyboard.
+    const onKey = (e) => {
+      e.stopPropagation()
+      if (e.key === 'Escape') setModalOpen(false)
+      else if (items && e.key === 'ArrowRight' && currentIndex < total - 1) next()
+      else if (items && e.key === 'ArrowLeft' && currentIndex > 0) prev()
+    }
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
+  }, [modalOpen, items, total, currentIndex])
 
   /* Click-modal mode — used by the two 現狀 images on slide 2 where the
    * in-place hover-zoom would clip against the Frame boundary.
-   * `bare` mode strips the surface card chrome so the image shows naked. */
+   * `bare` mode strips the surface card chrome so the image shows naked.
+   * Pass `gallery` + `galleryIndex` to wire multiple PhotoCards into one
+   * lightbox with ← → navigation. */
   if (enableModal) {
+    const navBtnStyle = {
+      position: 'fixed',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 56,
+      height: 56,
+      borderRadius: '50%',
+      border: '1px solid rgba(255,255,255,0.18)',
+      background: 'rgba(255,255,255,0.06)',
+      color: 'rgba(255,255,255,0.9)',
+      fontSize: 30,
+      lineHeight: 1,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+      backdropFilter: 'blur(4px)',
+      WebkitBackdropFilter: 'blur(4px)',
+      transition: 'background 0.15s, border-color 0.15s',
+      padding: 0,
+    }
     return (
       <>
         <div
-          onClick={() => setModalOpen(true)}
+          onClick={openModal}
           style={{
             background: bare ? 'transparent' : C.surface1,
             border: bare ? 'none' : `1px solid ${C.hairlineSoft}`,
@@ -549,13 +597,13 @@ const PhotoCard = ({
               background: 'rgba(9, 9, 9, 0.94)',
               zIndex: 99999,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              padding: '6vh 5vw',
+              padding: '10vh 10vw',
               cursor: 'zoom-out',
             }}
           >
             <img
-              src={src}
-              alt={alt}
+              src={activeSrc}
+              alt={activeAlt}
               style={{
                 maxWidth: '100%',
                 maxHeight: '100%',
@@ -565,20 +613,39 @@ const PhotoCard = ({
                 pointerEvents: 'none',
               }}
             />
-            <div style={{
-              position: 'fixed',
-              bottom: '3vh',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              color: 'rgba(255,255,255,0.55)',
-              fontSize: 13,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              fontFamily: "'Geist Mono', ui-monospace, monospace",
-              pointerEvents: 'none',
-            }}>
-              Click anywhere · Esc to close
-            </div>
+            {items && (
+              <>
+                {canPrev && (
+                  <button
+                    type="button"
+                    aria-label="Previous image"
+                    onClick={(e) => { e.stopPropagation(); prev() }}
+                    style={{ ...navBtnStyle, left: '2.5vw' }}
+                  >‹</button>
+                )}
+                {canNext && (
+                  <button
+                    type="button"
+                    aria-label="Next image"
+                    onClick={(e) => { e.stopPropagation(); next() }}
+                    style={{ ...navBtnStyle, right: '2.5vw' }}
+                  >›</button>
+                )}
+                <div style={{
+                  position: 'fixed',
+                  bottom: '3vh',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  color: 'rgba(255,255,255,0.85)',
+                  fontSize: 14,
+                  letterSpacing: '0.16em',
+                  fontFamily: "'Geist Mono', ui-monospace, monospace",
+                  pointerEvents: 'none',
+                }}>
+                  {currentIndex + 1} / {total}
+                </div>
+              </>
+            )}
           </div>,
           document.body,
         )}
@@ -737,6 +804,11 @@ export const Ch3Divider = ({ n, total }) => (
 /* ============================================================
    Slide 2 — 專案現況與接手目標
    ============================================================ */
+const SCENARIO_NOW_GALLERY = [
+  { src: imgNow1, alt: '現狀 01' },
+  { src: imgNow2, alt: '現狀 02' },
+]
+
 export const ScenarioIntro = ({ n, total }) => (
   <Animated>
     <motion.div variants={FADE_UP}>
@@ -782,8 +854,8 @@ export const ScenarioIntro = ({ n, total }) => (
           ))}
         </ul>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginTop: 8 }}>
-          <PhotoCard src={imgNow1} alt="現狀 01" height={300} enableModal bare />
-          <PhotoCard src={imgNow2} alt="現狀 02" height={300} enableModal bare />
+          <PhotoCard src={imgNow1} alt="現狀 01" height={300} enableModal bare gallery={SCENARIO_NOW_GALLERY} galleryIndex={0} />
+          <PhotoCard src={imgNow2} alt="現狀 02" height={300} enableModal bare gallery={SCENARIO_NOW_GALLERY} galleryIndex={1} />
         </div>
       </motion.div>
 
@@ -962,6 +1034,9 @@ export const Step1ClaudeMd = ({ n, total }) => (
           <MdBullet>React 18 + TypeScript</MdBullet>
           <MdBullet>Tailwind v4</MdBullet>
           <MdBullet>shadcn/ui</MdBullet>
+          <MdGap />
+          <MdHeading>視覺風格</MdHeading>
+          <MdBullet>framer-DESIGN.md 修改前必讀</MdBullet>
           <MdGap />
           <MdHeading>通用規則</MdHeading>
           <MdBullet>計畫前先讀檔</MdBullet>
