@@ -495,6 +495,7 @@ const PhotoCard = ({
   noHover = false,
   gallery = null,
   galleryIndex = 0,
+  radius = ROUNDED.lg,
 }) => {
   const [hovered, setHovered] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
@@ -660,7 +661,7 @@ const PhotoCard = ({
       style={{
         background: C.surface1,
         border: `1px solid ${C.hairlineSoft}`,
-        borderRadius: ROUNDED.md,
+        borderRadius: radius,
         padding,
         display: 'flex', alignItems: 'center', justifyContent: align === 'left' ? 'flex-start' : 'center',
         overflow: 'visible',
@@ -1226,14 +1227,14 @@ export const Step2Channels = ({ n, total }) => (
 
     <motion.div variants={FADE_UP} style={{
       marginTop: 40,
-      padding: '24px 32px',
-      borderLeft: `4px solid ${C.gradientViolet}`,
+      padding: '40px 36px',
       background: C.surface2,
-      borderRadius: ROUNDED.md,
+      borderRadius: ROUNDED.lg,
       fontSize: TYPE_SCALE.subtitle,
       color: C.ink,
       fontWeight: 500,
       letterSpacing: TRACK.subtitle,
+      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.10), 0 10px 30px rgba(0,0,0,0.45)',
     }}>
       幫 Claude 建立「對的樣子」的座標
     </motion.div>
@@ -1324,7 +1325,7 @@ export const Step2SeeScreen = ({ n, total }) => {
               marginTop: 'auto',
               background: C.surface1,
               border: `1px solid ${C.hairlineSoft}`,
-              borderRadius: ROUNDED.md,
+              borderRadius: ROUNDED.lg,
               padding: 10,
               overflow: 'hidden',
             }}>
@@ -1515,7 +1516,6 @@ export const Example01Prompt = ({ n, total }) => (
     <motion.div variants={FADE_UP} style={{
       marginTop: 64,
       padding: '20px 28px',
-      borderLeft: `3px solid ${C.ink}`,
       background: C.surface1,
       borderRadius: ROUNDED.sm,
       fontSize: TYPE_SCALE.small,
@@ -1594,22 +1594,60 @@ export const Example03Intro = ({ n, total }) => {
 
       <motion.div variants={FADE_UP} style={{
         marginTop: 32,
-        padding: '24px 32px',
-        borderLeft: `4px solid ${C.ink}`,
+        padding: '28px 36px',
         background: C.surface1,
-        borderRadius: ROUNDED.md,
-        fontSize: TYPE_SCALE.subtitle,
-        color: C.ink,
-        fontWeight: 500,
-        letterSpacing: TRACK.subtitle,
-        lineHeight: 1.35,
+        borderRadius: ROUNDED.lg,
+        display: 'grid',
+        gridTemplateColumns: '1fr auto 2fr',
+        gap: 36,
+        alignItems: 'center',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 24px rgba(0,0,0,0.30)',
       }}>
-        專案只有 Code 沒有圖稿 — 透過 MCP 反向把 Code 畫面傳到 Figma 做設計調整
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{
+            fontSize: TYPE_SCALE.small,
+            color: C.inkMuted,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            fontWeight: 500,
+          }}>情境</div>
+          <div style={{
+            fontSize: TYPE_SCALE.subtitle,
+            color: C.ink,
+            fontWeight: 500,
+            letterSpacing: TRACK.subtitle,
+            lineHeight: 1.35,
+          }}>專案只有 Code 沒有圖稿</div>
+        </div>
+
+        <div style={{
+          fontSize: TYPE_SCALE.title,
+          color: C.inkMuted,
+          fontWeight: 300,
+          lineHeight: 1,
+        }}>→</div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{
+            fontSize: TYPE_SCALE.small,
+            color: C.inkMuted,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            fontWeight: 500,
+          }}>做法</div>
+          <div style={{
+            fontSize: TYPE_SCALE.subtitle,
+            color: C.ink,
+            fontWeight: 500,
+            letterSpacing: TRACK.subtitle,
+            lineHeight: 1.35,
+          }}>透過 MCP 反向把 Code 畫面傳到 Figma 做設計調整</div>
+        </div>
       </motion.div>
 
       {/* Step ① indicator */}
       <motion.div variants={FADE_UP} style={{
-        marginTop: 40,
+        marginTop: 72,
         display: 'flex', flexDirection: 'column', gap: 12,
         marginBottom: 16,
       }}>
@@ -1791,12 +1829,18 @@ export const Step3SkillPart1 = ({ n, total }) => (
     {/* SOP 定義 callout */}
     <motion.div variants={FADE_UP} style={{
       marginTop: 32,
-      padding: '24px 32px',
-      borderLeft: `4px solid ${C.ink}`,
-      background: C.canvas,
-      borderRadius: ROUNDED.md,
+      padding: '32px 36px',
+      background: C.ink,
+      borderRadius: ROUNDED.lg,
     }}>
-      <div style={{ fontSize: TYPE_SCALE.subtitle, color: C.ink, fontWeight: 600, letterSpacing: TRACK.subtitle, lineHeight: 1.3 }}>
+      <div style={{
+        fontSize: TYPE_SCALE.subtitle,
+        color: C.inverseInk,
+        fontWeight: 600,
+        letterSpacing: TRACK.subtitle,
+        lineHeight: 1.3,
+        whiteSpace: 'nowrap',
+      }}>
         Skill = 標準作業程序（SOP），把你重複在做的判斷或檢查，存成 AI 也懂的固定流程。
       </div>
     </motion.div>
@@ -1903,7 +1947,7 @@ export const Step3SkillPart2 = ({ n, total }) => (
         {[
           {
             mode: '主動呼叫',
-            body: <><Code size={TYPE_SCALE.small}>/skill visual-check</Code><br/><span style={{ color: C.inkMuted }}>明確要求執行特定檢查</span></>,
+            body: <><Code size={TYPE_SCALE.small}>/visual-check  (skill 名稱)</Code><br/><span style={{ color: C.inkMuted }}>明確要求執行特定檢查</span></>,
             stripe: `linear-gradient(90deg, ${C.gradientViolet} 0%, ${C.gradientMagenta} 100%)`,
           },
           {
@@ -1915,7 +1959,7 @@ export const Step3SkillPart2 = ({ n, total }) => (
           <div key={ci} style={{
             background: C.canvas,
             border: `1px solid ${C.hairlineSoft}`,
-            borderRadius: ROUNDED.md,
+            borderRadius: ROUNDED.lg,
             overflow: 'hidden',
             display: 'flex', flexDirection: 'column',
           }}>
@@ -1941,7 +1985,7 @@ export const Step3SkillPart2 = ({ n, total }) => (
       <div style={{
         background: C.canvas,
         border: `1px solid ${C.hairlineSoft}`,
-        borderRadius: ROUNDED.md,
+        borderRadius: ROUNDED.lg,
         padding: '24px 28px',
         fontSize: TYPE_SCALE.body, color: C.ink, lineHeight: 1.55,
       }}>
@@ -1993,7 +2037,7 @@ export const SkillComparison = ({ n, total }) => (
         display: 'grid',
         gridTemplateColumns: '160px repeat(3, 1fr)',
         background: C.surface1,
-        borderRadius: ROUNDED.md,
+        borderRadius: ROUNDED.lg,
         border: `1px solid ${C.hairlineSoft}`,
         overflow: 'hidden',
       }}>
@@ -2103,7 +2147,6 @@ export const Foolproof = ({ n, total }) => {
                   <div key={i} style={{
                     padding: '10px 14px',
                     background: C.canvas,
-                    borderLeft: `3px solid ${C.ink}`,
                     borderRadius: ROUNDED.sm,
                     fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
                   }}>{p}</div>
@@ -2142,7 +2185,6 @@ export const Foolproof = ({ n, total }) => {
               <div key={i} style={{
                 padding: '10px 14px',
                 background: C.canvas,
-                borderLeft: `3px solid ${C.ink}`,
                 borderRadius: ROUNDED.sm,
                 fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
               }}>{p}</div>
