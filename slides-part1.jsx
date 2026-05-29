@@ -303,7 +303,7 @@ const SHIFT_PHASES = [
     phase: 'AFTER',
     sub: 'What · AI 帶來的轉變',
     accent: C.gradientCoral,
-    headline: '一致性的產品執行循環',
+    headline: '一致性的產品設計循環',
     bullets: [
       '設計變為可執行結果',
       'UI 與程式碼開始融合',
@@ -948,7 +948,7 @@ const CURSOR_STEPS = [
   { key: 'newOpen', label: '開啟 Cursor' },
   { key: 'init',    label: '開啟專案資料夾' },
   { key: 'plugin',  label: '安裝 Claude Code Plugin' },
-  { key: 'claude',  label: '啟動 Claude' },
+  { key: 'claude',  label: '使用 Claude' },
 ];
 
 const Part1CursorLayout = ({ n, total }) => {
