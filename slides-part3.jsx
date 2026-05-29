@@ -846,7 +846,6 @@ export const ScenarioIntro = ({ n, total }) => (
           {[
             '只有 Code、沒有設計稿',
             '視覺缺乏一致性',
-            '元件未標準化，重複且難以維護',
           ].map((t, i) => (
             <li key={i} style={{ display: 'flex', gap: 14, alignItems: 'baseline' }}>
               <span style={{ color: C.inkMuted }}>—</span>
@@ -1251,7 +1250,7 @@ export const Step2SeeScreen = ({ n, total }) => {
    * `subModal` overrides for the wide gallery modal (一行不換);
    * falls back to `sub` if not provided. */
   const steps = [
-    { n: '①', label: '打開瀏覽器', sub: '跟 Claude 說「打開瀏覽器看畫面」',                                                  img: imgSee1 },
+    { n: '①', label: '打開瀏覽器', sub: '跟 Claude 說「我要在瀏覽器看畫面」',                                                  img: imgSee1 },
     {
       n: '②', label: '同意執行',
       sub:      <>跳「要不要繼續」時<br/>看不懂沒關係，按 yes 就對了</>,
@@ -1934,8 +1933,32 @@ export const Step3SkillPart2 = ({ n, total }) => (
       />
     </motion.div>
 
-    {/* Skill 使用方式 */}
+    {/* Skill 怎麼建、怎麼放 */}
     <motion.div variants={FADE_UP} style={{ marginTop: 32 }}>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16 }}>
+        Skill 怎麼建、怎麼放
+      </div>
+      <div style={{
+        background: C.canvas,
+        border: `1px solid ${C.hairlineSoft}`,
+        borderRadius: ROUNDED.lg,
+        padding: '24px 28px',
+        fontSize: TYPE_SCALE.body, color: C.ink, lineHeight: 1.55,
+      }}>
+        <div>
+          從實際修改過程中反推規則，找 Claude 討論建置內容
+        </div>
+        <div style={{ marginTop: 10, color: C.gradientOrange, fontFamily: "'Geist Mono', ui-monospace, monospace", fontSize: TYPE_SCALE.small }}>
+          Prompt：「把這幾次改動的過程梳理成 SOP 建議，建立 Skill」
+        </div>
+        <div style={{ marginTop: 16, color: C.inkMuted, fontSize: TYPE_SCALE.small }}>
+          不用自己手動建資料夾或檔案 — <span style={{ color: C.ink, fontWeight: 600 }}>直接請 Claude 建、放</span>就好。
+        </div>
+      </div>
+    </motion.div>
+
+    {/* Skill 使用方式 */}
+    <motion.div variants={FADE_UP} style={{ marginTop: 48 }}>
       <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 18 }}>
         Skill 使用方式
       </div>
@@ -1977,30 +2000,6 @@ export const Step3SkillPart2 = ({ n, total }) => (
       </div>
     </motion.div>
 
-    {/* Skill 怎麼建、怎麼放 */}
-    <motion.div variants={FADE_UP} style={{ marginTop: 48 }}>
-      <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16 }}>
-        Skill 怎麼建、怎麼放
-      </div>
-      <div style={{
-        background: C.canvas,
-        border: `1px solid ${C.hairlineSoft}`,
-        borderRadius: ROUNDED.lg,
-        padding: '24px 28px',
-        fontSize: TYPE_SCALE.body, color: C.ink, lineHeight: 1.55,
-      }}>
-        <div>
-          從實際修改過程中反推規則，找 Claude 討論建置內容
-        </div>
-        <div style={{ marginTop: 10, color: C.gradientOrange, fontFamily: "'Geist Mono', ui-monospace, monospace", fontSize: TYPE_SCALE.small }}>
-          Prompt：「把這幾次改動的過程梳理成 SOP 建議，建立 Skill」
-        </div>
-        <div style={{ marginTop: 16, color: C.inkMuted, fontSize: TYPE_SCALE.small }}>
-          不用自己手動建資料夾或檔案 — <span style={{ color: C.ink, fontWeight: 600 }}>直接請 Claude 建、放</span>就好。
-        </div>
-      </div>
-    </motion.div>
-
     {/* Punchline */}
     <motion.div variants={FADE_UP} style={{
       marginTop: 72,
@@ -2020,14 +2019,14 @@ export const Step3SkillPart2 = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 14 — Prompt vs CLAUDE.md vs Skill 對照
+   Slide 14 — CLAUDE.md vs Skill 對照
    ============================================================ */
 export const SkillComparison = ({ n, total }) => (
   <Animated bg={C.canvas}>
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="Prompt vs CLAUDE.md vs Skill.md"
+        title="CLAUDE.md vs Skill.md"
         sub={' '}
       />
     </motion.div>
@@ -2035,13 +2034,13 @@ export const SkillComparison = ({ n, total }) => (
     <motion.div variants={FADE_UP} style={{ marginTop: 64 }}>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '160px repeat(3, 1fr)',
+        gridTemplateColumns: '160px repeat(2, 1fr)',
         background: C.surface1,
         borderRadius: ROUNDED.lg,
         border: `1px solid ${C.hairlineSoft}`,
         overflow: 'hidden',
       }}>
-        {['', 'Prompt', 'CLAUDE.md', 'Skill.md'].map((h, i) => (
+        {['', 'CLAUDE.md', 'Skill.md'].map((h, i) => (
           <div key={`h${i}`} style={{
             padding: '24px 32px',
             fontSize: TYPE_SCALE.body,
@@ -2054,9 +2053,9 @@ export const SkillComparison = ({ n, total }) => (
           }}>{h}</div>
         ))}
         {[
-          ['角色', '這一次的指令', '專案的工作守則', '特定任務的 SOP'],
-          ['時機', '每次輸入',   '啟動時自動載入', '觸發它才執行'],
-          ['比喻', '隨口交辦',     '員工手冊',       '個別工序的作業流程'],
+          ['角色', '專案的工作守則', '特定任務的 SOP'],
+          ['時機', '啟動時自動載入', '觸發它才執行'],
+          ['比喻', '員工手冊',       '個別工序的作業流程'],
         ].map((row, ri) => row.map((cell, ci) => (
           <div key={`r${ri}c${ci}`} style={{
             padding: '28px 32px',
@@ -2220,8 +2219,8 @@ export const subtitle = '透過 Claude Code，將 AI 生成的雜亂介面重構
 
 export default [
   { label: 'Section · 情境二 Design from Code',  render: (p) => <Ch3Divider {...p} /> },
-  { label: '情境二｜現況與接手目標',                render: (p) => <ScenarioIntro {...p} /> },
   { label: '情境二｜三步框架',                      render: (p) => <ThreeStepFramework {...p} /> },
+  { label: '情境二｜現況與接手目標',                render: (p) => <ScenarioIntro {...p} /> },
   { label: 'Step 1｜CLAUDE.md',                    render: (p) => <Step1ClaudeMd {...p} /> },
   { label: 'Step 2-1｜盤點共用元件',                render: (p) => <Step2Inventory {...p} /> },
   { label: 'Step 2-2｜三種調整方式',                render: (p) => <Step2Channels {...p} /> },
@@ -2233,6 +2232,6 @@ export default [
   { label: '範例 03｜Claude 反向改 Code',           render: (p) => <Example03Result {...p} /> },
   { label: 'Step 3｜Skill.md（定義 + 範本）',       render: (p) => <Step3SkillPart1 {...p} /> },
   { label: 'Step 3｜Skill.md（使用與放置）',         render: (p) => <Step3SkillPart2 {...p} /> },
-  { label: 'Prompt vs CLAUDE.md vs Skill.md',      render: (p) => <SkillComparison {...p} /> },
+  { label: 'CLAUDE.md vs Skill.md',                render: (p) => <SkillComparison {...p} /> },
   { label: '防呆｜存檔與回復',                       render: (p) => <Foolproof {...p} /> },
 ]
