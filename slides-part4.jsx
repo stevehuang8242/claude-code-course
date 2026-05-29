@@ -62,6 +62,7 @@ const C = {
   gradientMagenta: '#d44df0',
   gradientOrange:  '#ff7a3d',
   gradientCoral:   '#ff5577',
+  accentBlue:      '#4d9fff',
 };
 
 const ROUNDED = {
@@ -243,7 +244,7 @@ const DesignerWhyRPI = ({ n, total }) => {
       background: C.surface1,
       border: `1px solid ${C.hairline}`,
       borderRadius: ROUNDED.lg,
-      borderLeft: `4px solid ${C.gradientViolet}`,
+      borderLeft: `4px solid ${C.gradientOrange}`,
     }}>
       <div style={{
         fontSize: TYPE_SCALE.tiny,
@@ -263,6 +264,40 @@ const DesignerWhyRPI = ({ n, total }) => {
       background: C.surface1,
       border: `1px solid ${C.hairline}`,
       borderRadius: ROUNDED.lg,
+      borderLeft: `4px solid ${C.gradientCoral}`,
+    }}>
+      <div style={{
+        fontSize: TYPE_SCALE.tiny,
+        color: C.inkMuted,
+        letterSpacing: '0.16em',
+        textTransform: 'uppercase',
+        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+        marginBottom: 12,
+      }}>開始之前</div>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
+        要使用 RPI 工作流，需要先<b style={{ fontWeight: 700 }}>安裝對應的指令</b>才能執行，<span style={{ color: C.inkMuted }}>安裝方式請參考</span>
+        <span
+          onClick={() => {
+            const deck = document.querySelector('deck-stage');
+            if (deck) deck.goTo(deck.length - 1);
+          }}
+          style={{
+            color: C.accentBlue,
+            fontWeight: 700,
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            textUnderlineOffset: 3,
+          }}
+        >簡報最後一頁的附錄</span>
+        <span style={{ color: C.inkMuted }}>。</span>
+      </div>
+    </motion.div>
+    <motion.div variants={FADE_UP} style={{
+      marginTop: 16,
+      padding: '20px 28px',
+      background: C.surface1,
+      border: `1px solid ${C.hairline}`,
+      borderRadius: ROUNDED.lg,
       borderLeft: `4px solid ${C.gradientViolet}`,
     }}>
       <div style={{
@@ -274,7 +309,9 @@ const DesignerWhyRPI = ({ n, total }) => {
         marginBottom: 12,
       }}>Session 接力</div>
       <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
-        每一步都會產出 <b style={{ fontWeight: 700 }}>research.md / plan.md</b>，<span style={{ color: C.inkMuted }}>當前 Session 撞到 token 上限時，下個 Session 直接讀檔接續討論，脈絡不會斷掉。</span>
+        每一步都會產出 <b style={{ fontWeight: 700 }}>research.md / plan.md</b> 存進硬碟，<br />
+        <span style={{ color: C.inkMuted }}>這些檔案只在讀取時佔用少量 context window，能保留更多 token 額度。<br />
+        當 Session 撞到 token 上限時，下個 Session 直接讀檔接續，脈絡就不會斷掉。</span>
       </div>
     </motion.div>
     <SlideNumber n={n} total={total} />
@@ -288,16 +325,18 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
     {
       num: '01', phase: 'Research', title: '建立認知',
       cmd: '/research_codebase 需求',
+      output: 'research.md',
       ai: '研究現有程式碼，產出報告',
       tasks: [
         'sub-agents 平行讀檔，主線只收結論不收原文 → context 保持乾淨',
         '每句結論附「檔案:行號」，杜絕幻覺',
-        '只描述現況、不提方案 → 產出 research.md',
+        '只描述現況、不提方案',
       ],
     },
     {
       num: '02', phase: 'Plan', title: '規劃方案',
       cmd: '/create_plan <research.md>',
+      output: 'plan.md',
       ai: '提出修改計畫，列出影響範圍與風險',
       tasks: [
         '先與你來回問清楚，計畫不留待確認項',
@@ -308,6 +347,7 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
     {
       num: '03', phase: 'Implement', title: '執行落地',
       cmd: '/implement_plan <plan.md>',
+      output: '程式碼變更',
       ai: '依照計畫，逐步執行程式碼修改',
       tasks: [
         '一個 phase 做完就跑自動驗證',
@@ -321,7 +361,7 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
       <motion.div variants={FADE_UP}>
         <SlideHead
           kicker="04 情境三 · RPI Workflow"
-          title="一個指令一步路"
+          title="Research → Plan → Implement"
         />
       </motion.div>
       <motion.div variants={STAGGER_INNER} style={{
@@ -392,6 +432,14 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
                 </div>
               </div>
             </div>
+            <div style={{ marginTop: 'auto', borderTop: `1px solid ${C.hairline}`, paddingTop: 18 }}>
+              <div style={{
+                fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginBottom: 6,
+                letterSpacing: '0.12em', textTransform: 'uppercase',
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+              }}>Output</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.accentBlue, fontWeight: 600, lineHeight: 1.3 }}>{c.output}</div>
+            </div>
           </motion.div>
         ))}
       </motion.div>
@@ -403,7 +451,7 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
 /* SLIDE 6 — STEP 1 Research */
 const DesignerStep1Research = ({ n, total }) => {
   const points = [
-    { num: '01', title: '明確指定研究對象', desc: <>是「Admin Config 人員新增」還是「整個 Admin Config」？<br />範圍越精準，報告越好用。</> },
+    { num: '01', title: '明確指定研究對象', desc: <>是「Admin 人員管理頁面 人員新增」還是「整個 Admin 人員管理頁面」？<br />範圍越精準，報告越好用。</> },
     { num: '02', title: '指明研究維度', desc: '列出要涵蓋的面向 : 可重用 component、API 規格、欄位驗證邏輯' },
     { num: '03', title: '附上現況素材', desc: '現有截圖、Figma 連結、相關 ticket — 讓 AI 不只看程式碼。' },
   ];
@@ -426,7 +474,7 @@ const DesignerStep1Research = ({ n, total }) => {
   const frontmatter = [
     ['date', '2026-05-19'],
     ['repository', 'Chthonia-PaaS-Frontend'],
-    ['topic', '"Admin Config 新增單筆資料流程"'],
+    ['topic', '"Admin 人員管理頁面 新增單筆資料流程"'],
     ['status', 'complete'],
   ];
   const Code = ({ children }) => (
@@ -448,7 +496,7 @@ const DesignerStep1Research = ({ n, total }) => {
       <motion.div variants={FADE_UP}>
         <SlideHead
           kicker="04 情境三 · RPI Workflow"
-          title="情境實作 : Admin Config 新增「批量新增」功能"
+          title="情境實作 : Admin 人員管理頁面 新增「批量新增」功能"
           sub="Research｜先看懂地基，再決定怎麼蓋"
         />
       </motion.div>
@@ -471,7 +519,7 @@ const DesignerStep1Research = ({ n, total }) => {
           fontFamily: "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace",
           fontSize: TYPE_SCALE.small, color: C.gradientOrange, letterSpacing: '-0.01em',
         }}>
-          /research_codebase 請研讀 Admin Config 目前「新增單筆資料」的完整流程
+          /research_codebase 請研讀 Admin 人員管理頁面 目前「新增單筆資料」的完整流程
         </div>
       </motion.div>
       <motion.div variants={STAGGER_INNER} style={{
@@ -559,7 +607,7 @@ const DesignerStep1Research = ({ n, total }) => {
             ))}
             <div style={{ borderTop: `1px solid ${editor.rule}`, margin: '20px 0 18px' }} />
             <div style={{ fontSize: 27, fontWeight: 600, color: editor.heading, lineHeight: 1.2, letterSpacing: '-0.01em' }}>
-              Research: Admin Config 新增單筆資料流程
+              Research: Admin 人員管理頁面 新增單筆資料流程
             </div>
             <H2>Research Question</H2>
             <div style={{ lineHeight: 1.6 }}>
@@ -590,10 +638,10 @@ const DesignerStep2Plan = ({ n, total }) => {
   // 卡片在右側「由上到下」等距固定排列(cardTop/cardY)，與 anchorY 無關；
   // anchorY 仍是 .md 標題在面板上的實測位置，靠直接轉角(elbow)連線對齊。
   const annotations = [
-    { tag: '選定方案', q: '互動模式選對了嗎？', anchorY: 41.5, cardTop: 4, cardY: 12, color: C.gradientOrange },
-    { tag: '影響範圍', q: '命名符合既有規範？可重用元件？', anchorY: 60.5, cardTop: 29, cardY: 37, color: C.gradientMagenta },
-    { tag: '使用者流程', q: '流程順序符合 UX？邊界清楚？', anchorY: 75, cardTop: 54, cardY: 62, color: C.gradientViolet },
-    { tag: '錯誤處理', q: '訊息友善？部分成功 vs Rollback？', anchorY: 94, cardTop: 79, cardY: 87, color: C.gradientCoral },
+    { tag: '選定方案', q: '互動模式選對了嗎？', anchorY: 34.5, cardTop: 2, cardY: 10, color: C.gradientOrange },
+    { tag: '影響範圍', q: '命名符合既有規範？可重用元件？', anchorY: 63.2, cardTop: 24, cardY: 32, color: C.gradientMagenta },
+    { tag: '使用者流程', q: '流程順序符合 UX？邊界清楚？', anchorY: 75, cardTop: 46, cardY: 54, color: C.gradientViolet },
+    { tag: '錯誤處理', q: '訊息友善？部分成功 vs Rollback？', anchorY: 86.9, cardTop: 68, cardY: 76, color: C.gradientCoral },
   ];
   const mono = "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace";
   const ui = "Inter, 'Noto Sans TC', system-ui, sans-serif";
@@ -613,7 +661,7 @@ const DesignerStep2Plan = ({ n, total }) => {
   const fileName = '2026-05-19-admin-config-create-admin-ui-proposals.md';
   const frontmatter = [
     ['date', '2026-05-19'],
-    ['topic', '"Admin Config 批量新增 — 三個 UI 提案"'],
+    ['topic', '"Admin 人員管理頁面 批量新增 — 三個 UI 提案"'],
   ];
   const Code = ({ children }) => (
     <span style={{
@@ -624,8 +672,8 @@ const DesignerStep2Plan = ({ n, total }) => {
   );
   const H2 = ({ children }) => (
     <div style={{
-      fontSize: 16, fontWeight: 600, color: editor.heading,
-      margin: '11px 0 4px', paddingBottom: 4,
+      fontSize: 14, fontWeight: 600, color: editor.heading,
+      margin: '5px 0 2px', paddingBottom: 2,
       borderBottom: `1px solid ${editor.rule}`,
     }}>{children}</div>
   );
@@ -634,7 +682,7 @@ const DesignerStep2Plan = ({ n, total }) => {
       <motion.div variants={FADE_UP}>
         <SlideHead
           kicker="04 情境三 · RPI Workflow"
-          title="情境實作 : Admin Config 新增「批量新增」功能"
+          title="情境實作 : Admin 人員管理頁面 新增「批量新增」功能"
           sub="Plan｜AI 提方案、設計師做決策"
         />
       </motion.div>
@@ -657,7 +705,7 @@ const DesignerStep2Plan = ({ n, total }) => {
           fontFamily: "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace",
           fontSize: TYPE_SCALE.small, color: C.gradientOrange, letterSpacing: '-0.01em',
         }}>
-          /create_plan &lt;research.md 路徑&gt; — 需求是新增「批量新增」功能
+          /create_plan &lt;research.md 路徑&gt; 我的需求是在 Admin 人員管理頁面裡加上「批量新增」的功能
         </div>
       </motion.div>
       <motion.div variants={STAGGER_INNER} style={{
@@ -712,28 +760,61 @@ const DesignerStep2Plan = ({ n, total }) => {
           {/* rendered markdown preview */}
           <div style={{
             flex: 1, minHeight: 0, overflow: 'hidden',
-            padding: '18px 28px',
-            color: editor.text, fontSize: 13.5, lineHeight: 1.45,
+            padding: '14px 28px',
+            color: editor.text, fontSize: 11, lineHeight: 1.38,
           }}>
             {frontmatter.map(([k, v]) => (
               <div key={k} style={{ marginBottom: 2 }}>
                 <span>{k}: </span><span>{v}</span>
               </div>
             ))}
-            <div style={{ borderTop: `1px solid ${editor.rule}`, margin: '12px 0 12px' }} />
-            <div style={{ fontSize: 21, fontWeight: 600, color: editor.heading, lineHeight: 1.2, letterSpacing: '-0.01em' }}>
-              Admin Config 批量新增 — 三個 UI 提案
+            <div style={{ borderTop: `1px solid ${editor.rule}`, margin: '10px 0 10px' }} />
+            <div style={{ fontSize: 19, fontWeight: 600, color: editor.heading, lineHeight: 1.2, letterSpacing: '-0.01em' }}>
+              Admin 人員管理頁面 批量新增 — 三個 UI 提案
             </div>
             <H2>Overview</H2>
             <div style={{ lineHeight: 1.6 }}>
               為 Create Admin 提供三個流程結構不同的 UI 提案，供 UIUX 比較取捨。
             </div>
             <H2>三個提案（擇一）</H2>
-            <ol style={{ margin: '8px 0 0', paddingLeft: 24, lineHeight: 1.6 }}>
-              <li style={{ marginBottom: 6 }}><b style={{ color: editor.heading }}>A</b> — <Code>SplitButton</Code> 入口 + 精簡 Create Modal（最少點擊）</li>
-              <li style={{ marginBottom: 6 }}><b style={{ color: editor.heading }}>B</b> — 多步驟 Wizard Modal（role 描述完整、可加步驟）</li>
-              <li style={{ marginBottom: 6 }}><b style={{ color: editor.heading }}>C</b> — 批次建立 Modal（<Code>CSV</Code> 上傳，一次多筆）</li>
-            </ol>
+            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', margin: '8px 0 0' }}>
+              <ol style={{ flex: '1 1 0', minWidth: 0, margin: 0, paddingLeft: 20, lineHeight: 1.5 }}>
+                <li style={{ marginBottom: 6 }}><b style={{ color: editor.heading }}>A</b> — <Code>SplitButton</Code> 入口 + 精簡 Create Modal（最少點擊）</li>
+                <li style={{ marginBottom: 6 }}><b style={{ color: editor.heading }}>B</b> — 多步驟 Wizard Modal（role 描述完整、可加步驟）</li>
+                <li style={{ marginBottom: 6 }}><b style={{ color: editor.heading }}>C</b> — 批次建立 Modal（<Code>CSV</Code> 上傳，一次多筆）</li>
+              </ol>
+              {/* 提案 A 的 layout 示意 — Create Admin modal wireframe */}
+              <div style={{
+                flex: '0 0 48%',
+                border: `1px dashed ${editor.textMuted}`, borderRadius: 6,
+                padding: '6px 9px', fontFamily: mono, fontSize: 9, lineHeight: 1.25,
+                color: editor.text, display: 'flex', flexDirection: 'column', gap: 3,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px dashed ${editor.rule}`, paddingBottom: 4 }}>
+                  <span style={{ color: editor.heading }}>Create Admin</span>
+                  <span style={{ color: editor.textMuted }}>✕</span>
+                </div>
+                <div>
+                  <div style={{ color: editor.textMuted }}>Email *</div>
+                  <div style={{ border: `1px dashed ${editor.textMuted}`, borderRadius: 3, padding: '1px 5px', color: '#6f6f6f' }}>Type here</div>
+                </div>
+                <div>
+                  <div style={{ color: editor.textMuted }}>Admin Name *</div>
+                  <div style={{ display: 'flex', gap: 5 }}>
+                    <div style={{ flex: 1, border: `1px dashed ${editor.textMuted}`, borderRadius: 3, padding: '1px 5px', color: '#6f6f6f' }}>First Name</div>
+                    <div style={{ flex: 1, border: `1px dashed ${editor.textMuted}`, borderRadius: 3, padding: '1px 5px', color: '#6f6f6f' }}>Last Name</div>
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: editor.textMuted }}>Admin Role *</div>
+                  <div style={{ border: `1px dashed ${editor.textMuted}`, borderRadius: 3, padding: '1px 5px', color: '#6f6f6f', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Select admin role</span><span>⌄</span>
+                  </div>
+                  <div style={{ marginTop: 3, color: editor.textMuted }}>selected: <span style={{ color: editor.codeText }}>[Super Admin ✕] [BPM Admin ✕]</span></div>
+                </div>
+                <div style={{ borderTop: `1px dashed ${editor.rule}`, paddingTop: 4, textAlign: 'right', color: editor.heading }}>[Close]&nbsp;&nbsp;[Create]</div>
+              </div>
+            </div>
             <H2>影響範圍</H2>
             <ul style={{ margin: '8px 0 0', paddingLeft: 22, lineHeight: 1.6 }}>
               <li style={{ marginBottom: 6 }}>拆 <Code>EditModal</Code> → <Code>CreateAdminModal</Code>，解耦 Create / Edit</li>
@@ -780,6 +861,20 @@ const DesignerStep2Plan = ({ n, total }) => {
             </g>
           ))}
         </svg>
+        {/* 右下：備註 — 四項審稿都在 Claude Code chat 對話框裡完成 */}
+        <motion.div variants={FADE_UP} style={{
+          position: 'absolute', left: '63%', right: 0, bottom: 0,
+          padding: '9px 16px',
+          background: C.surface2, border: `1px solid ${C.hairline}`,
+          borderRadius: ROUNDED.pill,
+          fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+          lineHeight: 1.3,
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <span style={{ color: C.accentBlue, fontWeight: 700 }}>↑</span>
+          以上四項皆在 Claude Code chat 對話框裡完成
+        </motion.div>
         {/* 右：設計師審稿重點 — 對應 .md 段落的 leader-line 標註 */}
         {annotations.map((a, i) => (
           <motion.div key={i} variants={FADE_UP} style={{
@@ -817,7 +912,7 @@ const DesignerStep3Implement = ({ n, total }) => {
       <motion.div variants={FADE_UP}>
         <SlideHead
           kicker="04 情境三 · RPI Workflow"
-          title="情境實作 : Admin Config 新增「批量新增」功能"
+          title="情境實作 : Admin 人員管理頁面 新增「批量新增」功能"
           sub="對照目標檢查成果，並做 UI 微調"
         />
       </motion.div>
@@ -902,11 +997,7 @@ const DesignerStep3Implement = ({ n, total }) => {
         }}>
           <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>自動驗證</div>
           <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
-            每個 phase 跑完自動驗，收尾用{' '}
-            <span style={{
-              fontFamily: "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace",
-              color: C.gradientOrange,
-            }}>/validate_plan</span> 整份對驗
+            implement 後 AI 會自動跑驗證（測試 / typecheck / lint），<br />每個 phase 完成就驗一次
           </div>
         </motion.div>
         <motion.div variants={FADE_UP} style={{
@@ -923,77 +1014,6 @@ const DesignerStep3Implement = ({ n, total }) => {
       </motion.div>
       <SlideNumber n={n} total={total} />
     </Animated>
-  );
-};
-
-/* SLIDE 12 — 收尾 + Q&A */
-const DesignerWrapUp = ({ n, total }) => {
-  const [ref, active] = useSlideActive();
-  return (
-  <Frame padded={false} bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 50%, #ff7a3d 100%)">
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={active ? 'show' : 'hidden'}
-      variants={STAGGER}
-      style={{
-        position: 'relative', height: '100%',
-        padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
-        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-        color: C.ink,
-      }}>
-      <motion.div variants={FADE_UP} style={{
-        fontSize: TYPE_SCALE.small,
-        letterSpacing: TRACK.small,
-        color: C.ink, fontWeight: 500,
-        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        opacity: 0.78,
-      }}>04 情境三 · RPI Workflow</motion.div>
-
-      <motion.div variants={FADE_UP}>
-        <div style={{
-          fontSize: TYPE_SCALE.display, fontWeight: 600, lineHeight: 1.0,
-          letterSpacing: TRACK.display, color: C.ink, marginBottom: 32,
-        }}>
-          你不用變成工程師。<br/>
-          你只需要當好&nbsp;
-          <span style={{
-            background: C.ink, color: C.gradientViolet,
-            padding: '0.02em 0.16em', fontWeight: 700, borderRadius: '0.06em',
-          }}>指路、審稿、驗收</span>。
-        </div>
-        <div style={{
-          fontSize: TYPE_SCALE.subtitle, lineHeight: 1.3,
-          color: C.ink, opacity: 0.92, maxWidth: 1500,
-          letterSpacing: TRACK.subtitle,
-        }}>
-          Claude Code 是工具，<b style={{ fontWeight: 700 }}>設計師才是流程的主人</b>。
-        </div>
-      </motion.div>
-
-      <motion.div variants={FADE_UP} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16 }}>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          {['/research_codebase → 指路', '/create_plan → 審稿', '/implement_plan → 驗收'].map((s, i) => (
-            <div key={i} style={{
-              background: 'rgba(255,255,255,0.14)',
-              backdropFilter: 'blur(8px)',
-              padding: '10px 18px',
-              borderRadius: ROUNDED.pill,
-              fontSize: TYPE_SCALE.small, fontWeight: 500,
-              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-              color: C.ink,
-            }}>{s}</div>
-          ))}
-        </div>
-        <div style={{
-          fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 700,
-          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-          letterSpacing: TRACK.small,
-        }}>Q &amp; A</div>
-      </motion.div>
-    </motion.div>
-    <SlideNumber n={n} total={total} color={C.ink} />
-  </Frame>
   );
 };
 
@@ -1023,7 +1043,7 @@ const DesignerInstallAppendix = ({ n, total }) => {
     <Animated>
       <motion.div variants={FADE_UP}>
         <SlideHead
-          kicker="04 情境三 · RPI Workflow"
+          kicker="附錄"
           title="把 RPI Workflow 裝進你的 Claude Code"
           sub="前置需求：Claude Code CLI + Git 環境"
         />
@@ -1092,7 +1112,6 @@ export {
   DesignerStep1Research,
   DesignerStep2Plan,
   DesignerStep3Implement,
-  DesignerWrapUp,
   DesignerInstallAppendix,
 }
 
@@ -1105,7 +1124,19 @@ export default [
     <SectionDivider
       {...p}
       kicker="04 情境三 · RPI Workflow"
-      title="情境三 · RPI Workflow"
+      title={
+        <>
+          <span style={{
+            display: 'block',
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+            fontWeight: 500,
+            textDecoration: 'line-through',
+            textDecorationThickness: '5px',
+            marginBottom: 20,
+          }}>Designer RIP</span>
+          情境三 · RPI Workflow
+        </>
+      }
       subtitle="Research → Plan → Implement — 10 分鐘把 Admin Config 批量新增功能做出來。"
       bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)"
     />
@@ -1115,6 +1146,5 @@ export default [
   { label: 'STEP 1 Research', render: (p) => <DesignerStep1Research {...p} /> },
   { label: 'STEP 2 Plan', render: (p) => <DesignerStep2Plan {...p} /> },
   { label: 'STEP 3 Implement', render: (p) => <DesignerStep3Implement {...p} /> },
-  { label: '收尾 + Q&A', render: (p) => <DesignerWrapUp {...p} /> },
-  { label: 'Appendix · 安裝指南', render: (p) => <DesignerInstallAppendix {...p} /> },
+  { label: 'Appendix · 安裝指南', appendix: true, render: (p) => <DesignerInstallAppendix {...p} /> },
 ]
