@@ -208,7 +208,7 @@ const DesignerWhyRPI = ({ n, total }) => {
   <Animated>
     <motion.div variants={FADE_UP}>
       <SlideHead
-        kicker="04 情境三 · 設計師 RPI"
+        kicker="04 情境三 · RPI Workflow"
         title="為什麼需要 R-P-I"
         sub="脈絡的延續 → 準確性的提高"
       />
@@ -320,7 +320,7 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
     <Animated>
       <motion.div variants={FADE_UP}>
         <SlideHead
-          kicker="04 情境三 · 設計師 RPI"
+          kicker="04 情境三 · RPI Workflow"
           title="一個指令一步路"
         />
       </motion.div>
@@ -447,7 +447,7 @@ const DesignerStep1Research = ({ n, total }) => {
     <Animated>
       <motion.div variants={FADE_UP}>
         <SlideHead
-          kicker="04 情境三 · 設計師 RPI"
+          kicker="04 情境三 · RPI Workflow"
           title="情境實作 : Admin Config 新增「批量新增」功能"
           sub="Research｜先看懂地基，再決定怎麼蓋"
         />
@@ -633,7 +633,7 @@ const DesignerStep2Plan = ({ n, total }) => {
     <Animated>
       <motion.div variants={FADE_UP}>
         <SlideHead
-          kicker="04 情境三 · 設計師 RPI"
+          kicker="04 情境三 · RPI Workflow"
           title="情境實作 : Admin Config 新增「批量新增」功能"
           sub="Plan｜AI 提方案、設計師做決策"
         />
@@ -816,7 +816,7 @@ const DesignerStep3Implement = ({ n, total }) => {
     <Animated>
       <motion.div variants={FADE_UP}>
         <SlideHead
-          kicker="04 情境三 · 設計師 RPI"
+          kicker="04 情境三 · RPI Workflow"
           title="情境實作 : Admin Config 新增「批量新增」功能"
           sub="對照目標檢查成果，並做 UI 微調"
         />
@@ -948,7 +948,7 @@ const DesignerWrapUp = ({ n, total }) => {
         color: C.ink, fontWeight: 500,
         fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         opacity: 0.78,
-      }}>04 情境三 · 設計師 RPI</motion.div>
+      }}>04 情境三 · RPI Workflow</motion.div>
 
       <motion.div variants={FADE_UP}>
         <div style={{
@@ -1023,7 +1023,7 @@ const DesignerInstallAppendix = ({ n, total }) => {
     <Animated>
       <motion.div variants={FADE_UP}>
         <SlideHead
-          kicker="04 情境三 · 設計師 RPI"
+          kicker="04 情境三 · RPI Workflow"
           title="把 RPI Workflow 裝進你的 Claude Code"
           sub="前置需求：Claude Code CLI + Git 環境"
         />
@@ -1097,15 +1097,15 @@ export {
 }
 
 /* Chapter metadata — picked up by slides-agenda.jsx. */
-export const title = '情境三 · 設計師 RPI'
+export const title = '情境三 · RPI Workflow'
 export const subtitle = 'Research → Plan → Implement,10 分鐘把 Admin Config 批量新增功能做出來。'
 
 export default [
   { label: 'Section · Designer RPI Workshop', render: (p) => (
     <SectionDivider
       {...p}
-      kicker="04 情境三 · 設計師 RPI"
-      title="情境三 · 設計師 RPI"
+      kicker="04 情境三 · RPI Workflow"
+      title="情境三 · RPI Workflow"
       subtitle="Research → Plan → Implement — 10 分鐘把 Admin Config 批量新增功能做出來。"
       bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)"
     />
