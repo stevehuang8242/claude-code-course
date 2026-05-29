@@ -76,7 +76,7 @@ const KICKER_STEP2 = '情境二：Design from Code．Step 2｜重構設計規範
 const FIGMA_GALLERY = [
   { src: imgFig01,  stepN: '①', stepLabel: '確認 Figma MCP 連線',          subLabel: 'MCP 連線確認 1/2',     slideLabel: '範例 03｜Figma MCP 開場 + 確認連線' },
   { src: imgFig02,  stepN: '①', stepLabel: '確認 Figma MCP 連線',          subLabel: 'MCP 連線確認 2/2',     slideLabel: '範例 03｜Figma MCP 開場 + 確認連線' },
-  { src: imgFig03,  stepN: '②', stepLabel: '把畫面傳到 Figma',              subLabel: 'a. 下 prompt：「這頁傳到 Figma」', slideLabel: '範例 03｜把畫面傳到 Figma' },
+  { src: imgFig03,  stepN: '②', stepLabel: '把畫面傳到 Figma',              subLabel: 'a. 下 prompt：「這頁<檔案路徑>傳到 Figma」．「瀏覽器畫面的這頁傳到 Figma」．「Login 頁傳到 Figma」', slideLabel: '範例 03｜把畫面傳到 Figma' },
   { src: imgFig04,  stepN: '②', stepLabel: '把畫面傳到 Figma',              subLabel: 'b. 選擇 Figma 目標檔案 1/2',      slideLabel: '範例 03｜把畫面傳到 Figma' },
   { src: imgFig05,  stepN: '②', stepLabel: '把畫面傳到 Figma',              subLabel: 'b. 選擇 Figma 目標檔案 2/2',      slideLabel: '範例 03｜把畫面傳到 Figma' },
   { src: imgFig06,  stepN: '②', stepLabel: '把畫面傳到 Figma',              subLabel: 'c. 選取傳送範圍 1/2',             slideLabel: '範例 03｜把畫面傳到 Figma' },
@@ -132,17 +132,27 @@ function gotoSlideByLabel(labelSuffix) {
  * 取較 portrait 的比例反算可用區域內的共同寬度。 */
 const STEP1_PAIR = [imgFig01, imgFig02]
 
+/* Portrait 比例過高的圖（chat 面板、login 頁）撐滿視窗會壓到上下說明文字，
+ * 單獨縮小顯示，不需要跟其他 landscape 圖共用同高。
+ * SHRINK_PAIR 內兩張會 preload natural size 後 lock 到「較矮那張」的高度，
+ * 確保兩張展開等高（對齊 aspect ratio 較寬的那張）。 */
+const SHRINK_IMAGES = new Set([imgFig03, imgEx03_5])
+const SHRINK_PAIR = [imgFig03, imgEx03_5]
+const SHRINK_MAX_W_RATIO = 0.70
+const SHRINK_MAX_H_RATIO = 0.70
+
 function FigmaGalleryModal() {
   const { open, index, close, setIndex } = useFigmaGallery()
   const current = FIGMA_GALLERY[index]
   const atStart = index === 0
   const atEnd = index === FIGMA_GALLERY.length - 1
   const isStep1 = STEP1_PAIR.includes(current.src)
+  const isShrink = SHRINK_IMAGES.has(current.src)
 
   const [naturalSizes, setNaturalSizes] = useState({})
   useEffect(() => {
     let cancelled = false
-    STEP1_PAIR.forEach((src) => {
+    ;[...STEP1_PAIR, ...SHRINK_PAIR].forEach((src) => {
       if (naturalSizes[src]) return
       const img = new window.Image()
       img.onload = () => {
@@ -163,6 +173,21 @@ function FigmaGalleryModal() {
       const availH = window.innerHeight * (1 - 0.23)
       const minRatio = Math.min(s1.w / s1.h, s2.w / s2.h)
       step1Width = Math.min(availW, availH * minRatio)
+    }
+  }
+
+  /* SHRINK_PAIR 共同高度：兩張展開都鎖到「較矮那張」的渲染高度。
+   * 對每張算 min(maxH, maxW / aspect)，取兩者最小 → 確保兩張等高。 */
+  let shrinkHeight = null
+  if (isShrink && typeof window !== 'undefined') {
+    const sa = naturalSizes[SHRINK_PAIR[0]]
+    const sb = naturalSizes[SHRINK_PAIR[1]]
+    if (sa && sb) {
+      const maxW = window.innerWidth * SHRINK_MAX_W_RATIO
+      const maxH = window.innerHeight * SHRINK_MAX_H_RATIO
+      const heightA = Math.min(maxH, maxW / (sa.w / sa.h))
+      const heightB = Math.min(maxH, maxW / (sb.w / sb.h))
+      shrinkHeight = Math.min(heightA, heightB)
     }
   }
 
@@ -199,7 +224,7 @@ function FigmaGalleryModal() {
         background: 'rgba(9, 9, 9, 0.94)',
         zIndex: 99999,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '15vh 8vw 8vh 8vw',
+        padding: '10vh 4vw 6vh 4vw',
         cursor: 'zoom-out',
       }}
     >
@@ -209,7 +234,11 @@ function FigmaGalleryModal() {
         style={{
           ...(step1Width
             ? { width: step1Width, height: 'auto', maxHeight: '100%' }
-            : { maxWidth: '100%', maxHeight: '100%' }),
+            : shrinkHeight
+            ? { width: 'auto', height: shrinkHeight, maxWidth: '100%' }
+            : isShrink
+            ? { width: 'auto', height: 'auto', maxWidth: '70%', maxHeight: '88%' }
+            : { width: '100%', height: '100%' }),
           objectFit: 'contain',
           borderRadius: 8,
           boxShadow: '0 32px 80px rgba(0, 0, 0, 0.7)',
@@ -699,7 +728,7 @@ const PhotoCard = ({
  * Single surface bg (C.surface2) matches slides_archived.jsx convention;
  * everything else (font, sizes, traffic lights, padding, syntax styling)
  * keeps the original code-editor look. */
-const MdWindow = ({ filename, children, fontSize = TYPE_SCALE.small }) => (
+const MdWindow = ({ filename, children, fontSize = TYPE_SCALE.small, style }) => (
   <div style={{
     background: C.surface2,
     border: '1px solid rgba(255,255,255,0.06)',
@@ -707,6 +736,7 @@ const MdWindow = ({ filename, children, fontSize = TYPE_SCALE.small }) => (
     overflow: 'hidden',
     fontFamily: "'Geist Mono', ui-monospace, monospace",
     boxShadow: '0 24px 60px rgba(0, 0, 0, 0.6)',
+    ...style,
   }}>
     <div style={{
       padding: '14px 24px',
@@ -793,8 +823,7 @@ export const Ch3Divider = ({ n, total }) => (
           opacity: 0.92,
           marginTop: 48,
         }}>
-          透過 Claude Code，將 AI 生成的雜亂介面<br/>
-          重構為具一致性的設計系統
+          
         </div>
       </div>
     </div>
@@ -900,7 +929,7 @@ export const ThreeStepFramework = ({ n, total }) => (
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="三步，讓混亂的 Code 重回可控的設計系統"
+        title="三步驟，從 Code 建立 UI 系統"
         sub="理解 → 規範 → 系統化"
       />
     </motion.div>
@@ -1013,7 +1042,7 @@ export const Step1ClaudeMd = ({ n, total }) => (
     <motion.div
       variants={STAGGER_INNER}
       style={{
-        marginTop: 40,
+        marginTop: 20,
         display: 'grid',
         gridTemplateColumns: '1.1fr 1fr',
         gap: 40,
@@ -1092,6 +1121,22 @@ export const Step1ClaudeMd = ({ n, total }) => (
           它會自動讀過整個專案，產出一份 <span style={{ color: C.ink, fontWeight: 500 }}>CLAUDE.md</span>。
         </div>
       </motion.div>
+    </motion.div>
+
+    {/* 全寬腳註 — .md 格式定義 */}
+    <motion.div
+      variants={FADE_UP}
+      style={{
+        marginTop: 36,
+        paddingTop: 16,
+        borderTop: `1px solid ${C.hairlineSoft}`,
+        fontSize: TYPE_SCALE.small,
+        color: C.inkMuted,
+        lineHeight: 1.5,
+      }}
+    >
+      <span style={{ color: C.ink, fontFamily: "'Geist Mono', ui-monospace, monospace" }}>※ .md</span>
+      （Markdown）是一種 AI 容易解析內容結構的純文字文件格式
     </motion.div>
 
     <SlideNumber n={n} total={total} />
@@ -1714,7 +1759,25 @@ export const Example03Transfer = ({ n, total }) => {
         }}
       >
         {[
-          { n: 'a', label: 'a. 下 prompt：「這頁傳到 Figma」', imgs: [imgFig03] },
+          { n: 'a', label: (
+            <>
+              <div>a. 下 prompt：</div>
+              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  '「這頁<檔案路徑>傳到 Figma」',
+                  '「瀏覽器畫面的這頁傳到 Figma」',
+                  '「Login 頁傳到 Figma」',
+                ].map((p, i) => (
+                  <div key={i} style={{
+                    padding: '10px 14px',
+                    background: C.canvas,
+                    borderRadius: ROUNDED.sm,
+                    fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 500,
+                  }}>{p}</div>
+                ))}
+              </div>
+            </>
+          ), imgs: [imgFig03] },
           { n: 'b', label: 'b. 選擇 Figma 目標檔案',           imgs: [imgFig04, imgFig05] },
           { n: 'c', label: 'c. 選取傳送範圍',                  imgs: [imgFig06, imgFig07] },
         ].map((step, i) => (
@@ -2019,7 +2082,103 @@ export const Step3SkillPart2 = ({ n, total }) => (
 )
 
 /* ============================================================
-   Slide 14 — CLAUDE.md vs Skill 對照
+   Slide 14 — Step 3 · Skill.md 現成範例（社群 / 官方）
+   ============================================================ */
+export const Step3SkillPart3 = ({ n, total }) => (
+  <Animated bg={C.surface1}>
+    <motion.div variants={FADE_UP}>
+      <SlideHead
+        kicker={KICKER}
+        title="Step 3｜建立設計 SOP：Skill.md"
+        sub="現成 Skill 直接抓來用"
+      />
+    </motion.div>
+
+    {/* 兩張 SKILL.md 範例：左 frontend-design（Anthropic 官方）、右 grill-me（社群） */}
+    <motion.div variants={FADE_UP} style={{ marginTop: 32 }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 24,
+        alignItems: 'stretch',
+      }}>
+        {/* Card A — frontend-design */}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
+            Anthropic 官方 Skill．frontend-design
+          </div>
+          <MdWindow filename="SKILL.md" fontSize={TYPE_SCALE.tiny} style={{ flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <span style={{ color: 'rgba(255,255,255,0.45)' }}>---</span><br/>
+                <span style={{ color: C.gradientOrange }}>name</span>
+                <span style={{ color: 'rgba(255,255,255,0.45)' }}>: </span>
+                <span style={{ color: C.ink }}>frontend-design</span><br/>
+                <span style={{ color: C.gradientOrange }}>description</span>
+                <span style={{ color: 'rgba(255,255,255,0.45)' }}>: </span>
+                <span style={{ color: C.ink }}>產出有設計感的 UI，避免 AI 生成的通用模板</span><br/>
+                <span style={{ color: 'rgba(255,255,255,0.45)' }}>---</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <MdBullet>以明確風格為核心，設計要有意圖 (intentional)</MdBullet>
+                <MdBullet>不用常見 AI 套路（字體 / 漸層 / 視覺 clichéd）</MdBullet>
+                <MdBullet>統一配色，維持整體一致性</MdBullet>
+                <MdBullet>優先考慮整體感，而不是局部好看</MdBullet>
+                <MdBullet>每個設計選擇都需要有理由</MdBullet>
+              </div>
+            </div>
+          </MdWindow>
+        </div>
+
+        {/* Card B — grill-me */}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
+            社群公開 Skill．grill-me
+          </div>
+          <MdWindow filename="SKILL.md" fontSize={TYPE_SCALE.tiny} style={{ flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <span style={{ color: 'rgba(255,255,255,0.45)' }}>---</span><br/>
+                <span style={{ color: C.gradientOrange }}>name</span>
+                <span style={{ color: 'rgba(255,255,255,0.45)' }}>: </span>
+                <span style={{ color: C.ink }}>grill-me</span><br/>
+                <span style={{ color: C.gradientOrange }}>description</span>
+                <span style={{ color: 'rgba(255,255,255,0.45)' }}>: </span>
+                <span style={{ color: C.ink }}>強制檢視每個設計決策，直到邏輯完整</span><br/>
+                <span style={{ color: 'rgba(255,255,255,0.45)' }}>---</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <MdBullet>逐步拆解 decision tree，每步都要合理</MdBullet>
+                <MdBullet>不接受直覺答案，必須說明原因</MdBullet>
+                <MdBullet>優先從 code / 現有資訊找答案</MdBullet>
+                <MdBullet>用於壓力測試設計與決策品質</MdBullet>
+              </div>
+            </div>
+          </MdWindow>
+        </div>
+      </div>
+    </motion.div>
+
+    {/* Punchline */}
+    <motion.div variants={FADE_UP} style={{
+      marginTop: 48,
+      fontSize: TYPE_SCALE.subtitle,
+      color: C.ink,
+      fontWeight: 500,
+      letterSpacing: TRACK.subtitle,
+      lineHeight: 1.35,
+      borderLeft: `4px solid ${C.gradientOrange}`,
+      paddingLeft: 20,
+    }}>
+      找到喜歡的 skill — 放進 <span style={{ fontFamily: "'Geist Mono', ui-monospace, monospace", color: C.gradientOrange }}>.claude/skills/</span> 就能用。
+    </motion.div>
+
+    <SlideNumber n={n} total={total} />
+  </Animated>
+)
+
+/* ============================================================
+   Slide 15 — CLAUDE.md vs Skill 對照
    ============================================================ */
 export const SkillComparison = ({ n, total }) => (
   <Animated bg={C.canvas}>
@@ -2232,6 +2391,7 @@ export default [
   { label: '範例 03｜Claude 反向改 Code',           render: (p) => <Example03Result {...p} /> },
   { label: 'Step 3｜Skill.md（定義 + 範本）',       render: (p) => <Step3SkillPart1 {...p} /> },
   { label: 'Step 3｜Skill.md（使用與放置）',         render: (p) => <Step3SkillPart2 {...p} /> },
+  { label: 'Step 3｜Skill.md（現成範例）',           render: (p) => <Step3SkillPart3 {...p} /> },
   { label: 'CLAUDE.md vs Skill.md',                render: (p) => <SkillComparison {...p} /> },
   { label: '防呆｜存檔與回復',                       render: (p) => <Foolproof {...p} /> },
 ]
