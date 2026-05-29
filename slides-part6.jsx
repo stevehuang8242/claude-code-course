@@ -180,8 +180,8 @@ const HwBrief = ({ n, total }) => {
       title: '關鍵轉折？',
       accent: C.gradientMagenta,
       bullets: [
-        'Figma MCP 回傳的 code 跟你想的不一樣嗎？怎麼處理？',
-        '哪個 prompt 沒效？你怎麼調整、或決定換方向？',
+        '用了 Figma MCP 但改的結果還是不如你的想像，怎麼處理？',
+        '互動過程碰到什麼困難，你怎麼調整？',
       ],
       star: true,
     },
@@ -190,7 +190,6 @@ const HwBrief = ({ n, total }) => {
       title: '下次怎麼做？',
       accent: C.gradientOrange,
       bullets: [
-        '哪一個環節你會用完全不同的方式處理？',
         '對 Figma MCP / Claude Code 的「能 vs. 不能」有什麼新認知？',
         '會改變你跟工程師合作的方式嗎？',
       ],
@@ -217,7 +216,10 @@ const HwBrief = ({ n, total }) => {
     },
     {
       label: '作業發表',
-      text: '6/12（五），每人 5–10 分鐘，可參考以下三個分享面向：',
+      text: '6/17（三）15:00~16:30，每人 5–10 分鐘，可參考以下三個分享面向：',
+      notes: [
+        '報告順序依字母序（發會議通知時會附上報告順序）',
+      ],
     },
   ];
 
