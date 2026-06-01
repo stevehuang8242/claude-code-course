@@ -11,7 +11,7 @@
 | 項目 | 內容 |
 |---|---|
 | 對象 | 已完成 Part 1（會用 Cursor + Claude Code + Figma MCP）的 UX Designer |
-| 形式 | 10–12 張投影片 · 講授 + 雙情境 demo + 動手操作 |
+| 形式 | 10–12 張投影片 · 講授 + 雙情境 demo |
 | 建議時數 | 75–90 分鐘（含 Q&A） |
 | 先備知識 | Part 1 Ch.02（Toolchain）、Ch.03（Cursor 操作）、Ch.04（Model 選擇） |
 | 學完能做到 | 在無設計稿情況下用 Claude Design + 參考資料產出 UI 並 handoff 到 Claude Code；將既有 Figma 圖稿透過 Cursor + Claude Code chatbot 轉成可操作互動介面 |
@@ -34,7 +34,7 @@ Block B — Scenario 1 · 從想法到互動介面（Chapters 03–04）
        設計師沒有圖稿，只有需求與品牌素材時的路徑
 
 Block C — Scenario 2 · 從 Figma 圖稿到互動介面（Chapters 05–06）
-  └─ Figma 圖稿準備 · Cursor + Claude Code Chatbot 實作
+  └─ Figma 圖稿準備 · Claude Code 透過 Figma MCP 讀取圖稿並實作
        設計師已有完整 UI 圖稿時的路徑
 ```
 
@@ -52,10 +52,10 @@ Block C — Scenario 2 · 從 Figma 圖稿到互動介面（Chapters 05–06）
 | 06 | 多方參考整理術 | Ch.03 | Scenario 1 · Inputs |
 | 07 | Claude Design 產出與 Handoff | Ch.04 | Scenario 1 · 產出 |
 | 08 | Section Divider · Scenario 2 | — | Block C 進場 |
-| 09 | Figma → Cursor 接軌 | Ch.05 | Scenario 2 · 接軌 |
-| 10 | Claude Code Chatbot 互動實作 | Ch.06 | Scenario 2 · 實作 |
+| 09 | Figma → Claude Code（Figma MCP）接軌 | Ch.05 | Scenario 2 · 接軌 |
+| 10 | Claude Code × Figma MCP 互動實作 | Ch.06 | Scenario 2 · 實作 |
 | 11 | Overview · 兩條路徑一張圖 | — | 概念整合 |
-| 12 | Closing · 動手做 | — | 收尾 + 課後任務 |
+| 12 | Closing · 收尾 | — | 收尾 + 重點回顧（不含動手作） |
 
 ---
 
@@ -113,8 +113,8 @@ Block C — Scenario 2 · 從 Figma 圖稿到互動介面（Chapters 05–06）
 
 ---
 
-### Ch.05 Figma to Cursor — 已有圖稿的接軌準備
-- **學習目標**：學會把現有 Figma 圖稿準備到「Cursor + Claude Code 可讀」的狀態。
+### Ch.05 Figma to Claude Code（Figma MCP）— 已有圖稿的接軌準備
+- **學習目標**：學會把現有 Figma 圖稿準備到「Claude Code 透過 Figma MCP 可讀」的狀態。
 - **核心訊息**：MCP 不是萬能讀心術——圖層命名、component 結構、auto-layout 直接決定 Claude Code 看得懂多少。
 - **講授要點**：
   - **圖稿健檢清單**：圖層命名、frame 命名、component 用法、auto-layout 套用度
@@ -126,11 +126,11 @@ Block C — Scenario 2 · 從 Figma 圖稿到互動介面（Chapters 05–06）
 
 ---
 
-### Ch.06 Chatbot in Action — Cursor + Claude Code 從圖稿到互動介面
-- **學習目標**：能在 Cursor 內透過 Claude Code chatbot，把 Figma 圖稿轉成可操作互動介面並完成一輪迭代。
-- **核心訊息**：Chatbot 不是「貼圖等結果」——它是設計師與 AI 共同看著同一張圖討論的工作介面。
+### Ch.06 Claude Code × Figma MCP in Action — 從圖稿到互動介面
+- **學習目標**：能在 Cursor 內讓 Claude Code 透過 Figma MCP 讀取 Figma 圖稿，轉成可操作互動介面並完成一輪迭代。
+- **核心訊息**：不是「貼圖等結果」——Claude Code 透過 Figma MCP 直接讀取圖稿結構，設計師與 AI 共同看著同一張圖討論並改 code。
 - **講授要點**：
-  - **第一輪指令**：「請讀取這個 frame，產出對應的 component，使用既有 design token」
+  - **第一輪指令**：「請透過 Figma MCP 讀取這個 frame，產出對應的 component，使用既有 design token」
   - **驗證**：跑起來 → 對照 Figma → 找差異 → 回報給 chatbot
   - **互動行為補完**：hover / focus / loading / empty / error 五種 state
   - **迭代策略**：小範圍修正而非整頁重寫；用「保留結構，只改 X」框住範圍
@@ -151,8 +151,8 @@ Block C — Scenario 2 · 從 Figma 圖稿到互動介面（Chapters 05–06）
   │
   └─ Scenario 2 · From Figma（已有圖稿）
         └─ Figma 健檢（命名 / Component / Token）
-              └─ Cursor + Figma MCP（讀取圖稿）
-                    └─ Claude Code Chatbot（產出互動介面）
+              └─ Claude Code 透過 Figma MCP（讀取圖稿）
+                    └─ Claude Code 實作（產出互動介面）
 
 兩條路徑會合 → Claude Code 實作 → 迭代
   ├─ Research → Plan → Implement（Part 1 Ch.04 工作流）
