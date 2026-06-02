@@ -309,7 +309,7 @@ const SHIFT_PHASES = [
     phase: 'AFTER',
     sub: 'What · AI 帶來的轉變',
     accent: C.gradientCoral,
-    headline: '一致性的產品執行循環',
+    headline: '一致性的產品設計循環',
     bullets: [
       '設計變為可執行結果',
       'UI 與程式碼開始融合',

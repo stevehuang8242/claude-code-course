@@ -7,12 +7,13 @@
  *
  * Manifest + chapter metadata live at the bottom of this file. */
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { createPortal } from 'react-dom'
 import { useSlideActive } from './useSlideActive.js'
-import { SectionDivider } from './slides_archived.jsx'
-import researchImg from './Slide/Image/Part4/3 research.png'
-import createPlanImg from './Slide/Image/Part4/5 create plan.png'
+import { SectionDivider, FADE_UP, STAGGER, STAGGER_INNER } from './slides_archived.jsx'
+import beforeImg from './Slide/Image/Part4/Before.png'
+import afterImg from './Slide/Image/Part4/After.png'
 
 /* ============================================================
    Design tokens — 與 slides_archived.jsx 保持同步
@@ -47,25 +48,6 @@ const SPACING = {
   itemGap: 28,
 };
 
-const FADE_UP = {
-  hidden: { opacity: 0, y: 24 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { type: 'spring', stiffness: 240, damping: 26 },
-  },
-};
-
-const STAGGER = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
-};
-
-const STAGGER_INNER = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.06 } },
-};
-
 const C = {
   canvas:        '#090909',
   surface1:      '#141414',
@@ -80,9 +62,7 @@ const C = {
   gradientMagenta: '#d44df0',
   gradientOrange:  '#ff7a3d',
   gradientCoral:   '#ff5577',
-  // Tag chips
-  tagGreen:     '#1c1c1c',
-  tagGreenText: '#ffffff',
+  accentBlue:      '#4d9fff',
 };
 
 const ROUNDED = {
@@ -141,19 +121,6 @@ const SlideNumber = ({ n, total, color = C.textDescription }) => (
   </div>
 );
 
-const Tag = ({ children, bg = C.tagGreen, fg = C.tagGreenText }) => (
-  <span style={{
-    display: 'inline-block',
-    background: bg,
-    color: fg,
-    fontSize: TYPE_SCALE.small,
-    fontWeight: 500,
-    padding: '6px 14px',
-    borderRadius: ROUNDED.pill,
-    letterSpacing: TRACK.small,
-  }}>{children}</span>
-);
-
 const SlideHead = ({ kicker, title, sub }) => (
   <div>
     {kicker && <Eyebrow>{kicker}</Eyebrow>}
@@ -178,153 +145,106 @@ const SlideHead = ({ kicker, title, sub }) => (
   </div>
 );
 
-/* SLIDE 1 — 課程封面 */
-const DesignerCourseTitle = ({ n, total }) => {
+/* Animated — Frame wrapper that replays a staggered fade-up entrance each
+ * time its slide becomes active (mirrors the pattern in slides-part3.jsx).
+ * Wrap content blocks in <motion.div variants={FADE_UP}> for individual
+ * motion, and grids in <motion.div variants={STAGGER_INNER}> to cascade
+ * their cards. */
+const Animated = ({ children, style = {}, bg = C.canvas }) => {
   const [ref, active] = useSlideActive();
-  const state = active ? 'show' : 'hidden';
+  return (
+    <Frame bg={bg}>
+      <motion.div
+        ref={ref}
+        initial="hidden"
+        animate={active ? 'show' : 'hidden'}
+        variants={STAGGER}
+        style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, ...style }}
+      >
+        {children}
+      </motion.div>
+    </Frame>
+  );
+};
+
+/* Lightbox — click-to-zoom overlay for slide images. Renders into document.body
+ * via portal; closes on backdrop click or Esc. Nav keys are swallowed while open
+ * so the deck doesn't flip slides behind the zoomed image. */
+const NAV_KEYS = ['Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'PageUp', 'PageDown'];
+const Lightbox = ({ src, alt, onClose }) => {
+  useEffect(() => {
+    if (!src) return;
+    const onKey = (e) => {
+      if (!NAV_KEYS.includes(e.key)) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey, { capture: true });
+    return () => window.removeEventListener('keydown', onKey, { capture: true });
+  }, [src, onClose]);
+  if (!src) return null;
+  return createPortal(
+    <div onClick={onClose} style={{
+      position: 'fixed', inset: 0, background: 'rgba(9, 9, 9, 0.94)', zIndex: 99999,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '6vh 6vw', cursor: 'zoom-out',
+    }}>
+      <img src={src} alt={alt} style={{
+        maxWidth: '100%', maxHeight: '100%', objectFit: 'contain',
+        borderRadius: 8, boxShadow: '0 32px 80px rgba(0, 0, 0, 0.7)', pointerEvents: 'none',
+      }} />
+    </div>,
+    document.body,
+  );
+};
+
+/* SLIDE 1 — 為什麼需要 R-P-I（含 HumanLayer 介紹 + 三步驟卡片）*/
+const DesignerWhyRPI = ({ n, total }) => {
   const steps = [
     { icon: '🔍', label: 'Research', sub: '建立認知 · 看懂現況' },
     { icon: '📋', label: 'Plan', sub: '規劃方案 · 先想再做' },
     { icon: '🛠', label: 'Implement', sub: '執行落地 · 按圖施工' },
   ];
   return (
-    <Frame>
-      <motion.div
-        ref={ref}
-        initial="hidden"
-        animate={state}
-        variants={STAGGER}
-        style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'center' }}
-      >
-        <motion.div variants={FADE_UP}>
-          <Eyebrow>04 情境三 · 設計師 RPI</Eyebrow>
-        </motion.div>
-        <motion.h1
-          variants={FADE_UP}
-          style={{
-            fontSize: TYPE_SCALE.hero,
-            fontWeight: 600,
-            lineHeight: 1.0,
-            letterSpacing: TRACK.hero,
-            margin: '36px 0 24px 0',
-            color: C.ink,
-          }}
-        >
-          Context<br/>Engineering
-        </motion.h1>
-        <motion.div
-          variants={FADE_UP}
-          style={{
-            fontSize: TYPE_SCALE.subtitle,
-            color: C.inkMuted,
-            lineHeight: 1.3,
-            letterSpacing: TRACK.subtitle,
-            marginBottom: 72,
-            maxWidth: 1400,
-          }}
-        >
-          設計師的 Claude Code 三步驟工作法
-        </motion.div>
-        <motion.div
-          variants={STAGGER_INNER}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 20,
-            maxWidth: 1400,
-          }}
-        >
-          {steps.map((s, i) => (
-            <motion.div
-              key={i}
-              variants={FADE_UP}
-              style={{
-                background: C.surface1,
-                border: `1px solid ${C.hairline}`,
-                borderRadius: ROUNDED.lg,
-                padding: '28px 32px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 20,
-              }}
-            >
-              <div style={{ fontSize: 56, lineHeight: 1 }}>{s.icon}</div>
-              <div>
-                <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>{s.label}</div>
-                <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, marginTop: 4 }}>{s.sub}</div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </motion.div>
-      <SlideNumber n={n} total={total} />
-    </Frame>
-  );
-};
-
-/* SLIDE 2 — 為什麼需要 R-P-I（含 HumanLayer 介紹） */
-const DesignerWhyRPI = ({ n, total }) => (
-  <Frame>
-    <SlideHead
-      kicker="04 情境三 · 設計師 RPI"
-      title="為什麼需要 R-P-I"
-      sub="先想清楚 → 再規劃方案 → 最後才動手｜每一步都有設計師介入的 checkpoint，避免 AI 失控亂寫"
-    />
-    <div style={{
-      marginTop: 48,
+  <Animated>
+    <motion.div variants={FADE_UP}>
+      <SlideHead
+        kicker="04 情境三 · RPI Workflow"
+        title="為什麼需要 R-P-I"
+        sub="脈絡的延續 → 準確性的提高"
+      />
+    </motion.div>
+    <motion.div variants={STAGGER_INNER} style={{
+      marginTop: 28,
       display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: 24,
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: 16,
     }}>
-      <div style={{
-        background: C.surface1,
-        border: `1px solid ${C.hairline}`,
-        borderRadius: ROUNDED.lg,
-        padding: 36,
-      }}>
-        <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 500,
-          color: C.inkMuted, letterSpacing: '0.16em', textTransform: 'uppercase',
-          marginBottom: 16,
-          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        }}>❌ 傳統作法</div>
-        <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.ink, marginBottom: 12, letterSpacing: '-0.01em' }}>
-          需求 → 直接寫程式 → 不符預期
-        </div>
-        <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.55 }}>
-          憑感覺 vibe coding，AI 沒看脈絡就亂寫，做出來不是你想的。
-        </div>
-      </div>
-      <div style={{
-        background: C.ink,
-        color: C.inverseInk,
-        borderRadius: ROUNDED.lg,
-        padding: 36,
-      }}>
-        <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 500,
-          color: C.inverseInk, opacity: 0.55,
-          letterSpacing: '0.16em', textTransform: 'uppercase',
-          marginBottom: 16,
-          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        }}>✅ 三步驟作法</div>
-        <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, marginBottom: 12, letterSpacing: '-0.01em' }}>
-          Research → Plan → Implement
-        </div>
-        <div style={{ fontSize: TYPE_SCALE.small, opacity: 0.7, lineHeight: 1.55 }}>
-          每步都先停下來，讓設計師介入、審查、把關。
-        </div>
-      </div>
-    </div>
-    <div style={{
+      {steps.map((s, i) => (
+        <motion.div key={i} variants={FADE_UP} style={{
+          background: C.surface1,
+          border: `1px solid ${C.hairline}`,
+          borderRadius: ROUNDED.lg,
+          padding: '20px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 18,
+        }}>
+          <div style={{ fontSize: 40, lineHeight: 1 }}>{s.icon}</div>
+          <div>
+            <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>{s.label}</div>
+            <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, marginTop: 4 }}>{s.sub}</div>
+          </div>
+        </motion.div>
+      ))}
+    </motion.div>
+    <motion.div variants={FADE_UP} style={{
       marginTop: 28,
       padding: '20px 28px',
       background: C.surface1,
       border: `1px solid ${C.hairline}`,
       borderRadius: ROUNDED.lg,
-      display: 'flex',
-      alignItems: 'center',
-      gap: 24,
+      borderLeft: `4px solid ${C.gradientOrange}`,
     }}>
       <div style={{
         fontSize: TYPE_SCALE.tiny,
@@ -332,24 +252,53 @@ const DesignerWhyRPI = ({ n, total }) => (
         letterSpacing: '0.16em',
         textTransform: 'uppercase',
         fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        flexShrink: 0,
-      }}>📚 方法來歷</div>
+        marginBottom: 12,
+      }}>方法來歷</div>
       <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
-        提出者 <b style={{ fontWeight: 700 }}>Dex Horthy</b>（HumanLayer 創辦人 / YC F24），核心理念：
-        <span style={{ color: C.inkMuted }}>「在 AI 寫一行程式之前，人類必須先看過並同意計畫。」</span>
-        因解決 vibe coding 痛點而被廣泛採用，與 <b style={{ fontWeight: 700 }}>Context Engineering</b> 同源。
+        由 HumanLayer 創辦人 <b style={{ fontWeight: 700 }}>Dex Horthy</b> 提出，為了解決 <b style={{ fontWeight: 700 }}>Context window</b> 的限制下仍可保持脈絡的準確性。
       </div>
-    </div>
-    <div style={{
+    </motion.div>
+    <motion.div variants={FADE_UP} style={{
+      marginTop: 16,
+      padding: '20px 28px',
+      background: C.surface1,
+      border: `1px solid ${C.hairline}`,
+      borderRadius: ROUNDED.lg,
+      borderLeft: `4px solid ${C.gradientCoral}`,
+    }}>
+      <div style={{
+        fontSize: TYPE_SCALE.tiny,
+        color: C.inkMuted,
+        letterSpacing: '0.16em',
+        textTransform: 'uppercase',
+        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+        marginBottom: 12,
+      }}>開始之前</div>
+      <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
+        要使用 RPI 工作流，需要先<b style={{ fontWeight: 700 }}>安裝對應的指令</b>才能執行，<span style={{ color: C.inkMuted }}>安裝方式請參考</span>
+        <span
+          onClick={() => {
+            const deck = document.querySelector('deck-stage');
+            if (deck) deck.goTo(deck.length - 1);
+          }}
+          style={{
+            color: C.accentBlue,
+            fontWeight: 700,
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            textUnderlineOffset: 3,
+          }}
+        >簡報最後一頁的附錄</span>
+        <span style={{ color: C.inkMuted }}>。</span>
+      </div>
+    </motion.div>
+    <motion.div variants={FADE_UP} style={{
       marginTop: 16,
       padding: '20px 28px',
       background: C.surface1,
       border: `1px solid ${C.hairline}`,
       borderRadius: ROUNDED.lg,
       borderLeft: `4px solid ${C.gradientViolet}`,
-      display: 'flex',
-      alignItems: 'center',
-      gap: 24,
     }}>
       <div style={{
         fontSize: TYPE_SCALE.tiny,
@@ -357,56 +306,72 @@ const DesignerWhyRPI = ({ n, total }) => (
         letterSpacing: '0.16em',
         textTransform: 'uppercase',
         fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        flexShrink: 0,
-      }}>📦 Session 接力</div>
+        marginBottom: 12,
+      }}>Session 接力</div>
       <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
-        每一步都會產出 <b style={{ fontWeight: 700 }}>research.md / plan.md</b>，這些檔案就是你的「外部記憶」。
-        <span style={{ color: C.inkMuted }}>當前 Session 撞到 token 上限時，下個 Session 直接讀檔接續討論，脈絡不會斷掉。</span>
+        每一步都會產出 <b style={{ fontWeight: 700 }}>research.md / plan.md</b> 存進硬碟，<br />
+        <span style={{ color: C.inkMuted }}>這些檔案只在讀取時佔用少量 context window，能保留更多 token 額度。<br />
+        當 Session 撞到 token 上限時，下個 Session 直接讀檔接續，脈絡就不會斷掉。</span>
       </div>
-    </div>
+    </motion.div>
     <SlideNumber n={n} total={total} />
-  </Frame>
-);
+  </Animated>
+  );
+};
 
-/* SLIDE 3 — 三步驟總覽 */
+/* SLIDE 2 — 三步驟總覽 */
 const DesignerThreeStepsOverview = ({ n, total }) => {
   const cols = [
     {
       num: '01', phase: 'Research', title: '建立認知',
       cmd: '/research_codebase 需求',
+      output: 'research.md',
       ai: '研究現有程式碼，產出報告',
-      role: '指路',
-      roleDesc: '指定路徑與來源，確認需求',
+      tasks: [
+        'sub-agents 平行讀檔，主線只收結論不收原文 → context 保持乾淨',
+        '每句結論附「檔案:行號」，杜絕幻覺',
+        '只描述現況、不提方案',
+      ],
     },
     {
       num: '02', phase: 'Plan', title: '規劃方案',
       cmd: '/create_plan <research.md>',
+      output: 'plan.md',
       ai: '提出修改計畫，列出影響範圍與風險',
-      role: '審稿',
-      roleDesc: '審閱方案，加入 UX 思維',
+      tasks: [
+        '先與你來回問清楚，計畫不留待確認項',
+        '拆成多個 phase，明列每步改動',
+        '列出驗收標準：自動驗證 ＋ 手動驗證',
+      ],
     },
     {
       num: '03', phase: 'Implement', title: '執行落地',
       cmd: '/implement_plan <plan.md>',
+      output: '程式碼變更',
       ai: '依照計畫，逐步執行程式碼修改',
-      role: '驗收',
-      roleDesc: '對照目標檢查成果，UI 優化',
+      tasks: [
+        '一個 phase 做完就跑自動驗證',
+        '回寫 plan checklist 打勾',
+        '偏離計畫就停下、回頭問你',
+      ],
     },
   ];
   return (
-    <Frame>
-      <SlideHead
-        kicker="04 情境三 · 設計師 RPI"
-        title="一個指令一步路，每步都有設計師的角色"
-      />
-      <div style={{
+    <Animated>
+      <motion.div variants={FADE_UP}>
+        <SlideHead
+          kicker="04 情境三 · RPI Workflow"
+          title="Research → Plan → Implement"
+        />
+      </motion.div>
+      <motion.div variants={STAGGER_INNER} style={{
         marginTop: 48,
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: 20,
       }}>
         {cols.map((c, i) => (
-          <div key={i} style={{
+          <motion.div key={i} variants={FADE_UP} style={{
             background: C.surface1,
             border: `1px solid ${C.hairline}`,
             borderRadius: ROUNDED.lg,
@@ -431,14 +396,18 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
               {c.title}
             </div>
             <div style={{
-              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+              fontFamily: "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace",
               fontSize: TYPE_SCALE.tiny,
               background: C.surface2,
-              color: C.ink,
               padding: '10px 14px',
               borderRadius: ROUNDED.sm,
               wordBreak: 'break-all',
-            }}>{c.cmd}</div>
+              display: 'flex',
+              gap: 8,
+              alignItems: 'baseline',
+            }}>
+              <span style={{ color: C.gradientOrange, letterSpacing: '-0.01em' }}>{c.cmd}</span>
+            </div>
             <div style={{ borderTop: `1px solid ${C.hairline}`, paddingTop: 18, display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
                 <div style={{
@@ -447,152 +416,97 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
                   fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                 }}>AI 做什麼</div>
                 <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.45 }}>{c.ai}</div>
-              </div>
-              <div>
-                <div style={{
-                  fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginBottom: 6,
-                  letterSpacing: '0.12em', textTransform: 'uppercase',
-                  fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-                }}>設計師角色</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <Tag>{c.role}</Tag>
-                  <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted }}>{c.roleDesc}</div>
+                <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 9 }}>
+                  {c.tasks.map((t, ti) => (
+                    <div key={ti} style={{
+                      display: 'flex', gap: 10,
+                      fontSize: TYPE_SCALE.tiny, color: C.inkMuted, lineHeight: 1.4,
+                    }}>
+                      <span style={{
+                        width: 5, height: 5, borderRadius: '50%',
+                        background: C.gradientViolet, flexShrink: 0, marginTop: 9,
+                      }} />
+                      <span>{t}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-      <SlideNumber n={n} total={total} />
-    </Frame>
-  );
-};
-
-/* SLIDE 4 — Key Takeaway */
-const DesignerKeyTakeaway = ({ n, total }) => (
-  <Frame padded={false} bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)">
-    <div style={{
-      position: 'relative', height: '100%',
-      padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
-      display: 'flex', flexDirection: 'column', justifyContent: 'center', color: C.ink,
-    }}>
-      <div style={{
-        fontSize: TYPE_SCALE.small,
-        letterSpacing: TRACK.small,
-        color: C.ink, fontWeight: 500,
-        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        opacity: 0.78,
-        marginBottom: 56,
-      }}>04 情境三 · 設計師 RPI</div>
-      <div style={{
-        fontSize: TYPE_SCALE.hero, fontWeight: 600, lineHeight: 0.95,
-        letterSpacing: TRACK.hero, color: C.ink,
-      }}>
-        指路 → 審稿 → 驗收
-      </div>
-      <div style={{
-        marginTop: 36, fontSize: TYPE_SCALE.subtitle, lineHeight: 1.3,
-        color: C.ink, fontWeight: 400, maxWidth: 1500,
-        letterSpacing: TRACK.subtitle,
-        opacity: 0.92,
-      }}>
-        這就是設計師在 AI 時代的三個關鍵角色。<br/>
-        你不需要會寫程式，但要會 <b style={{ fontWeight: 700 }}>看懂計畫、提出疑問、把關品質</b>。
-      </div>
-    </div>
-    <SlideNumber n={n} total={total} color={C.ink} />
-  </Frame>
-);
-
-/* SLIDE 5 — 情境背景 Admin Config 批量新增 */
-const DesignerCaseIntro = ({ n, total }) => {
-  const unknowns = [
-    { num: '01', q: '現有「單筆新增」程式架構長什麼樣？', solver: 'Research 解決' },
-    { num: '02', q: '批量新增該用什麼互動模式？', solver: 'Plan 決策' },
-    { num: '03', q: '錯誤狀態、成功回饋有沒有做好？', solver: 'Implement 驗收' },
-  ];
-  return (
-    <Frame>
-      <SlideHead
-        kicker="04 情境三 · 設計師 RPI"
-        title="情境實作 : Admin Config 新增「批量新增」功能"
-        sub="設計師如何用三步驟落地"
-      />
-      <div style={{
-        marginTop: 40,
-        padding: '28px 36px',
-        background: C.ink, color: C.inverseInk,
-        borderRadius: ROUNDED.lg,
-      }}>
-        <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 500,
-          letterSpacing: '0.16em', textTransform: 'uppercase',
-          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-          opacity: 0.55, marginBottom: 12,
-        }}>📌 真實痛點</div>
-        <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 540, lineHeight: 1.4, letterSpacing: '-0.01em' }}>
-          目前 Admin Config 只能一筆一筆新增，客戶要一次匯入 50 筆人員時，操作非常痛苦。
-        </div>
-      </div>
-      <div style={{ marginTop: 28 }}>
-        <div style={{
-          fontSize: TYPE_SCALE.small, fontWeight: 500,
-          color: C.inkMuted,
-          letterSpacing: '0.16em', textTransform: 'uppercase',
-          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-          marginBottom: 16,
-        }}>設計師面對的三個未知</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {unknowns.map((u, i) => (
-            <div key={i} style={{
-              background: C.surface1,
-              border: `1px solid ${C.hairline}`,
-              borderRadius: ROUNDED.lg,
-              padding: 28,
-              display: 'flex', flexDirection: 'column', gap: 14,
-            }}>
+            <div style={{ marginTop: 'auto', borderTop: `1px solid ${C.hairline}`, paddingTop: 18 }}>
               <div style={{
-                fontSize: 32, fontWeight: 540, lineHeight: 1,
-                color: C.inkMuted, letterSpacing: '-0.04em',
+                fontSize: TYPE_SCALE.tiny, color: C.inkMuted, marginBottom: 6,
+                letterSpacing: '0.12em', textTransform: 'uppercase',
                 fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-              }}>{u.num}</div>
-              <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 600, color: C.ink, lineHeight: 1.35, letterSpacing: '-0.01em' }}>
-                {u.q}
-              </div>
-              <div style={{
-                fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
-                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-                letterSpacing: '0.08em',
-              }}>→ {u.solver}</div>
+              }}>Output</div>
+              <div style={{ fontSize: TYPE_SCALE.small, color: C.accentBlue, fontWeight: 600, lineHeight: 1.3 }}>{c.output}</div>
             </div>
-          ))}
-        </div>
-      </div>
+          </motion.div>
+        ))}
+      </motion.div>
       <SlideNumber n={n} total={total} />
-    </Frame>
+    </Animated>
   );
 };
 
 /* SLIDE 6 — STEP 1 Research */
 const DesignerStep1Research = ({ n, total }) => {
   const points = [
-    { num: '01', title: '明確指定研究對象', desc: '是「Admin Config 人員新增」還是「整個 Admin Config」？範圍越精準，報告越好用。' },
-    { num: '02', title: '指明研究維度', desc: '欄位 / 驗證 / API / 可重用 component — 列出你要 AI 涵蓋的面向。' },
+    { num: '01', title: '明確指定研究對象', desc: <>是「Admin 人員管理頁面 人員新增」還是「整個 Admin 人員管理頁面」？<br />範圍越精準，報告越好用。</> },
+    { num: '02', title: '指明研究維度', desc: '列出要涵蓋的面向 : 可重用 component、API 規格、欄位驗證邏輯' },
     { num: '03', title: '附上現況素材', desc: '現有截圖、Figma 連結、相關 ticket — 讓 AI 不只看程式碼。' },
   ];
+  const mono = "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace";
+  const ui = "Inter, 'Noto Sans TC', system-ui, sans-serif";
+  // VS Code / Cursor Dark+ 取色，讓 research.md 看起來像 Cursor 裡的真實截圖
+  const editor = {
+    bg: '#1e1e1e',
+    tabBar: '#202020',
+    text: '#cccccc',
+    textMuted: '#858585',
+    heading: '#e8e8e8',
+    rule: '#3a3a3a',
+    codeBg: '#3a3a3a',
+    codeText: '#ce9178',
+    accent: '#0a84ff',
+    mdIcon: '#519aba',
+  };
+  const fileName = '2026-05-19-admin-config-create-admin-flow.md';
+  const frontmatter = [
+    ['date', '2026-05-19'],
+    ['repository', 'Chthonia-PaaS-Frontend'],
+    ['topic', '"Admin 人員管理頁面 新增單筆資料流程"'],
+    ['status', 'complete'],
+  ];
+  const Code = ({ children }) => (
+    <span style={{
+      fontFamily: mono, fontSize: '0.84em',
+      background: editor.codeBg, color: editor.codeText,
+      padding: '1px 6px', borderRadius: 4, wordBreak: 'break-all',
+    }}>{children}</span>
+  );
+  const H2 = ({ children }) => (
+    <div style={{
+      fontSize: 21, fontWeight: 600, color: editor.heading,
+      margin: '20px 0 8px', paddingBottom: 6,
+      borderBottom: `1px solid ${editor.rule}`,
+    }}>{children}</div>
+  );
   return (
-    <Frame>
-      <SlideHead
-        kicker="04 情境三 · 設計師 RPI"
-        title="Research｜先看懂地基，再決定怎麼蓋"
-        sub="設計師指路 : 指定範圍與來源，確認需求"
-      />
-      <div style={{
+    <Animated>
+      <motion.div variants={FADE_UP}>
+        <SlideHead
+          kicker="04 情境三 · RPI Workflow"
+          title="情境實作 : Admin 人員管理頁面 新增「批量新增」功能"
+          sub="Research｜先看懂地基，再決定怎麼蓋"
+        />
+      </motion.div>
+      <motion.div variants={FADE_UP} style={{
         marginTop: 32,
         background: C.surface2, color: C.ink,
         borderRadius: ROUNDED.lg,
         border: `1px solid ${C.hairline}`,
-        padding: '20px 24px',
+        padding: '0 24px',
+        height: 60, boxSizing: 'border-box',
         display: 'flex', alignItems: 'center', gap: 16,
       }}>
         <div style={{
@@ -600,95 +514,185 @@ const DesignerStep1Research = ({ n, total }) => {
           letterSpacing: '0.16em', textTransform: 'uppercase',
           fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           flexShrink: 0,
-        }}>🟧 指令</div>
+        }}>指令</div>
         <div style={{
-          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-          fontSize: TYPE_SCALE.body, color: C.ink, letterSpacing: '-0.005em',
+          fontFamily: "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace",
+          fontSize: TYPE_SCALE.small, color: C.gradientOrange, letterSpacing: '-0.01em',
         }}>
-          /research_codebase 請研讀 Admin Config 目前「新增單筆資料」的完整流程
+          /research_codebase 請研讀 Admin 人員管理頁面 目前「新增單筆資料」的完整流程
         </div>
-      </div>
-      <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-        {points.map((p, i) => (
-          <div key={i} style={{
-            background: C.surface1, border: `1px solid ${C.hairline}`,
-            borderRadius: ROUNDED.lg, padding: 28,
-            display: 'flex', flexDirection: 'column', gap: 12,
+      </motion.div>
+      <motion.div variants={STAGGER_INNER} style={{
+        marginTop: 28,
+        flex: 1,
+        minHeight: 0,
+        display: 'grid',
+        gridTemplateColumns: '1.05fr 1fr',
+        gap: 24,
+      }}>
+        {/* 右：三張卡片直式並排 */}
+        <motion.div variants={STAGGER_INNER} style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 0 }}>
+          {points.map((p, i) => (
+            <motion.div key={i} variants={FADE_UP} style={{
+              flex: 1,
+              background: C.surface1, border: `1px solid ${C.hairline}`,
+              borderRadius: ROUNDED.lg, padding: '20px 28px',
+              display: 'flex', flexDirection: 'column', gap: 8,
+              justifyContent: 'center',
+            }}>
+              <div style={{
+                fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+                letterSpacing: '0.08em',
+              }}>{p.num}</div>
+              <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>{p.title}</div>
+              <div style={{ fontSize: 23, color: C.inkMuted, lineHeight: 1.5 }}>{p.desc}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* 左：research.md — 模擬 Cursor 編輯器內的真實截圖 */}
+        <motion.div variants={FADE_UP} style={{
+          order: -1,
+          background: editor.bg,
+          border: `2px solid #5a5a5a`,
+          borderRadius: ROUNDED.lg,
+          overflow: 'hidden',
+          display: 'flex', flexDirection: 'column', minHeight: 0,
+          fontFamily: ui,
+        }}>
+          {/* tab bar */}
+          <div style={{ display: 'flex', alignItems: 'stretch', background: editor.tabBar, flexShrink: 0, height: 38 }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '0 14px',
+              background: editor.bg, borderTop: `1px solid ${editor.accent}`,
+              borderRight: '1px solid #111', fontSize: 14, minWidth: 0,
+            }}>
+              <span style={{ color: editor.mdIcon, fontWeight: 700, fontSize: 12, letterSpacing: '-0.05em', flexShrink: 0 }}>M↓</span>
+              <span style={{ color: '#e8e8e8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{fileName}</span>
+              <span style={{ color: editor.textMuted, fontSize: 15, marginLeft: 2, flexShrink: 0 }}>×</span>
+            </div>
+          </div>
+          {/* breadcrumb + preview/markdown toggle */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '6px 16px', borderBottom: '1px solid #161616', flexShrink: 0, gap: 12,
           }}>
             <div style={{
-              fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
-              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-              letterSpacing: '0.08em',
-            }}>{p.num}</div>
-            <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>{p.title}</div>
-            <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>{p.desc}</div>
+              display: 'flex', alignItems: 'center', gap: 6,
+              color: editor.textMuted, fontSize: 12.5,
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0,
+            }}>
+              {['Chthonia-PaaS-Frontend', 'thoughts', 'shared', 'research'].map((c) => (
+                <React.Fragment key={c}><span>{c}</span><span style={{ opacity: 0.6 }}>›</span></React.Fragment>
+              ))}
+              <span style={{ color: editor.mdIcon, fontWeight: 700, fontSize: 11, letterSpacing: '-0.05em' }}>M↓</span>
+              <span style={{ color: '#bdbdbd', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fileName}</span>
+            </div>
+            <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+              <span style={{ fontSize: 12.5, color: '#e8e8e8', background: '#37373d', padding: '2px 9px', borderRadius: 4 }}>Preview</span>
+              <span style={{ fontSize: 12.5, color: editor.textMuted, padding: '2px 9px' }}>Markdown</span>
+            </div>
           </div>
-        ))}
-      </div>
+          {/* rendered markdown preview */}
+          <div style={{
+            flex: 1, minHeight: 0, overflow: 'hidden',
+            padding: '22px 30px',
+            color: editor.text, fontSize: 16, lineHeight: 1.5,
+          }}>
+            {frontmatter.map(([k, v]) => (
+              <div key={k} style={{ marginBottom: 3 }}>
+                <span>{k}: </span><span>{v}</span>
+              </div>
+            ))}
+            <div style={{ borderTop: `1px solid ${editor.rule}`, margin: '20px 0 18px' }} />
+            <div style={{ fontSize: 27, fontWeight: 600, color: editor.heading, lineHeight: 1.2, letterSpacing: '-0.01em' }}>
+              Research: Admin 人員管理頁面 新增單筆資料流程
+            </div>
+            <H2>Research Question</H2>
+            <div style={{ lineHeight: 1.6 }}>
+              目前「新增單筆資料」的完整流程是什麼？包含 UI 進入點、表單欄位、驗證、API 呼叫。
+            </div>
+            <H2>Summary</H2>
+            <div style={{ lineHeight: 1.6 }}>
+              單筆新增由 <Code>AddMemberForm.tsx</Code> 觸發，送出走 <Code>POST /api/members</Code>，一次只能一筆。
+            </div>
+            <ol style={{ margin: '8px 0 0', paddingLeft: 24, lineHeight: 1.6 }}>
+              <li style={{ marginBottom: 6 }}>進入點：<Code>AddButton</Code> 開啟 <Code>EditModal</Code>（create 模式）</li>
+              <li style={{ marginBottom: 6 }}>欄位：name / email / role，email 走 <Code>zod</Code> schema 驗證</li>
+              <li style={{ marginBottom: 6 }}>API：<Code>POST /api/members</Code> 無批量端點</li>
+              <li style={{ marginBottom: 6 }}>可重用 component：<Code>FormField</Code> / <Code>Toast</Code></li>
+            </ol>
+          </div>
+        </motion.div>
+      </motion.div>
       <SlideNumber n={n} total={total} />
-    </Frame>
+    </Animated>
   );
 };
 
-/* SLIDE 7 — Research 產出（research.md 範例 + 截圖位置） */
-const DesignerResearchOutput = ({ n, total }) => (
-  <Frame>
-    <SlideHead
-      kicker="04 情境三 · 設計師 RPI"
-      title="🟦 AI 產出：Research.md"
-      sub="含現有元件清單、API 規格、欄位驗證邏輯。"
-    />
-    <div style={{
-      marginTop: 32,
-      flex: 1,
-      minHeight: 0,
-      background: C.surface1,
-      border: `1px solid ${C.hairline}`,
-      borderRadius: ROUNDED.lg,
-      overflow: 'hidden',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
-      <img
-        src={researchImg}
-        alt="research.md 產出畫面"
-        style={{
-          maxWidth: '100%',
-          maxHeight: '100%',
-          width: 'auto',
-          height: 'auto',
-          objectFit: 'contain',
-          display: 'block',
-        }}
-      />
-    </div>
-    <SlideNumber n={n} total={total} />
-  </Frame>
-);
-
 /* SLIDE 8 — STEP 2 Plan ⭐（合併：plan.md 截圖 + 設計師審稿重點）*/
 const DesignerStep2Plan = ({ n, total }) => {
-  const reviewSections = [
-    { tag: '1. 選定方案', review: '⭐ 互動模式選對了嗎？' },
-    { tag: '2. 影響範圍', review: '🎨 命名符合既有規範？可重用元件？' },
-    { tag: '3. 使用者流程', review: '🎯 流程順序符合 UX 預期？' },
-    { tag: '4. 錯誤處理', review: '⚠️ 訊息夠友善？Rollback 還是部分成功？' },
-    { tag: '5. 風險評估', review: '💡 上限合理？loading 夠清楚？' },
+  // 設計師審稿重點 — 從 plan.md 對應段落用 leader line 拉出來標註。
+  // anchorY: 標註點在 .md 面板右緣的垂直位置(%)；cardTop: 右側卡片頂端(%)；cardY: 連線在卡片端的 y(%)。
+  // 卡片在右側「由上到下」等距固定排列(cardTop/cardY)，與 anchorY 無關；
+  // anchorY 仍是 .md 標題在面板上的實測位置，靠直接轉角(elbow)連線對齊。
+  const annotations = [
+    { tag: '選定方案', q: '互動模式選對了嗎？', anchorY: 34.5, cardTop: 2, cardY: 10, color: C.gradientOrange },
+    { tag: '影響範圍', q: '命名符合既有規範？可重用元件？', anchorY: 63.2, cardTop: 24, cardY: 32, color: C.gradientMagenta },
+    { tag: '使用者流程', q: '流程順序符合 UX？邊界清楚？', anchorY: 75, cardTop: 46, cardY: 54, color: C.gradientViolet },
+    { tag: '錯誤處理', q: '訊息友善？部分成功 vs Rollback？', anchorY: 86.9, cardTop: 68, cardY: 76, color: C.gradientCoral },
   ];
+  const mono = "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace";
+  const ui = "Inter, 'Noto Sans TC', system-ui, sans-serif";
+  // VS Code / Cursor Dark+ 取色，讓 plan.md 看起來像 Cursor 裡的真實截圖（與 P.42 research.md 一致）
+  const editor = {
+    bg: '#1e1e1e',
+    tabBar: '#202020',
+    text: '#cccccc',
+    textMuted: '#858585',
+    heading: '#e8e8e8',
+    rule: '#3a3a3a',
+    codeBg: '#3a3a3a',
+    codeText: '#ce9178',
+    accent: '#0a84ff',
+    mdIcon: '#519aba',
+  };
+  const fileName = '2026-05-19-admin-config-create-admin-ui-proposals.md';
+  const frontmatter = [
+    ['date', '2026-05-19'],
+    ['topic', '"Admin 人員管理頁面 批量新增 — 三個 UI 提案"'],
+  ];
+  const Code = ({ children }) => (
+    <span style={{
+      fontFamily: mono, fontSize: '0.84em',
+      background: editor.codeBg, color: editor.codeText,
+      padding: '1px 6px', borderRadius: 4, wordBreak: 'break-all',
+    }}>{children}</span>
+  );
+  const H2 = ({ children }) => (
+    <div style={{
+      fontSize: 14, fontWeight: 600, color: editor.heading,
+      margin: '5px 0 2px', paddingBottom: 2,
+      borderBottom: `1px solid ${editor.rule}`,
+    }}>{children}</div>
+  );
   return (
-    <Frame>
-      <SlideHead
-        kicker="04 情境三 · 設計師 RPI"
-        title="Plan｜選對互動模式 — 設計師的審稿戰場"
-        sub="AI 提方案、設計師審 UX"
-      />
-      <div style={{
+    <Animated>
+      <motion.div variants={FADE_UP}>
+        <SlideHead
+          kicker="04 情境三 · RPI Workflow"
+          title="情境實作 : Admin 人員管理頁面 新增「批量新增」功能"
+          sub="Plan｜AI 提方案、設計師做決策"
+        />
+      </motion.div>
+      <motion.div variants={FADE_UP} style={{
         marginTop: 20,
         background: C.surface2,
         borderRadius: ROUNDED.lg,
         border: `1px solid ${C.hairline}`,
-        padding: '14px 24px',
+        padding: '0 24px',
+        height: 60, boxSizing: 'border-box',
         display: 'flex', alignItems: 'center', gap: 16,
       }}>
         <div style={{
@@ -696,115 +700,229 @@ const DesignerStep2Plan = ({ n, total }) => {
           letterSpacing: '0.16em', textTransform: 'uppercase',
           fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           flexShrink: 0,
-        }}>🟧 指令</div>
+        }}>指令</div>
         <div style={{
-          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-          fontSize: TYPE_SCALE.small, color: C.ink,
+          fontFamily: "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace",
+          fontSize: TYPE_SCALE.small, color: C.gradientOrange, letterSpacing: '-0.01em',
         }}>
-          /create_plan &lt;research.md 路徑&gt; — 需求是新增「批量新增」功能
+          /create_plan &lt;research.md 路徑&gt; 我的需求是在 Admin 人員管理頁面裡加上「批量新增」的功能
         </div>
-      </div>
-      <div style={{
+      </motion.div>
+      <motion.div variants={STAGGER_INNER} style={{
         marginTop: 20,
         flex: 1,
         minHeight: 0,
-        display: 'grid',
-        gridTemplateColumns: '1.1fr 1fr',
-        gap: 20,
+        position: 'relative',
       }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 0 }}>
-          <div style={{
-            fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
-            letterSpacing: '0.16em', textTransform: 'uppercase',
-            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-          }}>🟦 AI 產出：plan.md</div>
-          <div style={{
-            flex: 1,
-            minHeight: 0,
-            background: C.surface1,
-            border: `1px solid ${C.hairline}`,
-            borderRadius: ROUNDED.lg,
-            overflow: 'hidden',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-            <img
-              src={createPlanImg}
-              alt="plan.md 產出畫面"
-              style={{
-                maxWidth: '100%',
-                maxHeight: '100%',
-                width: 'auto',
-                height: 'auto',
-                objectFit: 'contain',
-                display: 'block',
-              }}
-            />
+        {/* 左：plan.md — 模擬 Cursor 編輯器內的真實截圖（與 P.42 research.md 一致）*/}
+        <motion.div variants={FADE_UP} style={{
+          position: 'absolute', left: 0, top: 0, bottom: 0, width: '54%',
+          background: editor.bg,
+          border: `2px solid #5a5a5a`,
+          borderRadius: ROUNDED.lg,
+          overflow: 'hidden',
+          display: 'flex', flexDirection: 'column',
+          fontFamily: ui,
+        }}>
+          {/* tab bar */}
+          <div style={{ display: 'flex', alignItems: 'stretch', background: editor.tabBar, flexShrink: 0, height: 38 }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '0 14px',
+              background: editor.bg, borderTop: `1px solid ${editor.accent}`,
+              borderRight: '1px solid #111', fontSize: 14, minWidth: 0,
+            }}>
+              <span style={{ color: editor.mdIcon, fontWeight: 700, fontSize: 12, letterSpacing: '-0.05em', flexShrink: 0 }}>M↓</span>
+              <span style={{ color: '#e8e8e8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{fileName}</span>
+              <span style={{ color: editor.textMuted, fontSize: 15, marginLeft: 2, flexShrink: 0 }}>×</span>
+            </div>
           </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 0 }}>
+          {/* breadcrumb + preview/markdown toggle */}
           <div style={{
-            fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
-            letterSpacing: '0.16em', textTransform: 'uppercase',
-            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-          }}>設計師審稿重點</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
-            {reviewSections.map((s, i) => (
-              <div key={i} style={{
-                background: C.surface1, border: `1px solid ${C.hairline}`,
-                borderRadius: ROUNDED.md, padding: '14px 18px',
-                display: 'flex', alignItems: 'center', gap: 14,
-              }}>
-                <div style={{
-                  fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
-                  fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-                  width: 160, flexShrink: 0, whiteSpace: 'nowrap',
-                }}>{s.tag}</div>
-                <div style={{ flex: 1, fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.4 }}>
-                  {s.review}
-                </div>
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '6px 16px', borderBottom: '1px solid #161616', flexShrink: 0, gap: 12,
+          }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              color: editor.textMuted, fontSize: 12.5,
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0,
+            }}>
+              {['Chthonia-PaaS-Frontend', 'thoughts', 'shared', 'plans'].map((c) => (
+                <React.Fragment key={c}><span>{c}</span><span style={{ opacity: 0.6 }}>›</span></React.Fragment>
+              ))}
+              <span style={{ color: editor.mdIcon, fontWeight: 700, fontSize: 11, letterSpacing: '-0.05em' }}>M↓</span>
+              <span style={{ color: '#bdbdbd', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fileName}</span>
+            </div>
+            <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+              <span style={{ fontSize: 12.5, color: '#e8e8e8', background: '#37373d', padding: '2px 9px', borderRadius: 4 }}>Preview</span>
+              <span style={{ fontSize: 12.5, color: editor.textMuted, padding: '2px 9px' }}>Markdown</span>
+            </div>
+          </div>
+          {/* rendered markdown preview */}
+          <div style={{
+            flex: 1, minHeight: 0, overflow: 'hidden',
+            padding: '14px 28px',
+            color: editor.text, fontSize: 11, lineHeight: 1.38,
+          }}>
+            {frontmatter.map(([k, v]) => (
+              <div key={k} style={{ marginBottom: 2 }}>
+                <span>{k}: </span><span>{v}</span>
               </div>
             ))}
+            <div style={{ borderTop: `1px solid ${editor.rule}`, margin: '10px 0 10px' }} />
+            <div style={{ fontSize: 19, fontWeight: 600, color: editor.heading, lineHeight: 1.2, letterSpacing: '-0.01em' }}>
+              Admin 人員管理頁面 批量新增 — 三個 UI 提案
+            </div>
+            <H2>Overview</H2>
+            <div style={{ lineHeight: 1.6 }}>
+              為 Create Admin 提供三個流程結構不同的 UI 提案，供 UIUX 比較取捨。
+            </div>
+            <H2>三個提案（擇一）</H2>
+            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', margin: '8px 0 0' }}>
+              <ol style={{ flex: '1 1 0', minWidth: 0, margin: 0, paddingLeft: 20, lineHeight: 1.5 }}>
+                <li style={{ marginBottom: 6 }}><b style={{ color: editor.heading }}>A</b> — <Code>SplitButton</Code> 入口 + 精簡 Create Modal（最少點擊）</li>
+                <li style={{ marginBottom: 6 }}><b style={{ color: editor.heading }}>B</b> — 多步驟 Wizard Modal（role 描述完整、可加步驟）</li>
+                <li style={{ marginBottom: 6 }}><b style={{ color: editor.heading }}>C</b> — 批次建立 Modal（<Code>CSV</Code> 上傳，一次多筆）</li>
+              </ol>
+              {/* 提案 A 的 layout 示意 — Create Admin modal wireframe */}
+              <div style={{
+                flex: '0 0 48%',
+                border: `1px dashed ${editor.textMuted}`, borderRadius: 6,
+                padding: '6px 9px', fontFamily: mono, fontSize: 9, lineHeight: 1.25,
+                color: editor.text, display: 'flex', flexDirection: 'column', gap: 3,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px dashed ${editor.rule}`, paddingBottom: 4 }}>
+                  <span style={{ color: editor.heading }}>Create Admin</span>
+                  <span style={{ color: editor.textMuted }}>✕</span>
+                </div>
+                <div>
+                  <div style={{ color: editor.textMuted }}>Email *</div>
+                  <div style={{ border: `1px dashed ${editor.textMuted}`, borderRadius: 3, padding: '1px 5px', color: '#6f6f6f' }}>Type here</div>
+                </div>
+                <div>
+                  <div style={{ color: editor.textMuted }}>Admin Name *</div>
+                  <div style={{ display: 'flex', gap: 5 }}>
+                    <div style={{ flex: 1, border: `1px dashed ${editor.textMuted}`, borderRadius: 3, padding: '1px 5px', color: '#6f6f6f' }}>First Name</div>
+                    <div style={{ flex: 1, border: `1px dashed ${editor.textMuted}`, borderRadius: 3, padding: '1px 5px', color: '#6f6f6f' }}>Last Name</div>
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: editor.textMuted }}>Admin Role *</div>
+                  <div style={{ border: `1px dashed ${editor.textMuted}`, borderRadius: 3, padding: '1px 5px', color: '#6f6f6f', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Select admin role</span><span>⌄</span>
+                  </div>
+                  <div style={{ marginTop: 3, color: editor.textMuted }}>selected: <span style={{ color: editor.codeText }}>[Super Admin ✕] [BPM Admin ✕]</span></div>
+                </div>
+                <div style={{ borderTop: `1px dashed ${editor.rule}`, paddingTop: 4, textAlign: 'right', color: editor.heading }}>[Close]&nbsp;&nbsp;[Create]</div>
+              </div>
+            </div>
+            <H2>影響範圍</H2>
+            <ul style={{ margin: '8px 0 0', paddingLeft: 22, lineHeight: 1.6 }}>
+              <li style={{ marginBottom: 6 }}>拆 <Code>EditModal</Code> → <Code>CreateAdminModal</Code>，解耦 Create / Edit</li>
+              <li style={{ marginBottom: 6 }}>可重用 <Code>Stepper</Code> / <Code>SplitButton</Code>；型別 / API 不變</li>
+            </ul>
+            <H2>使用者流程</H2>
+            <ol style={{ margin: '8px 0 0', paddingLeft: 24, lineHeight: 1.6 }}>
+              <li style={{ marginBottom: 6 }}>列表頁 <Code>SplitButton</Code> →「批量新增」開 Modal，逐列填 email / role</li>
+              <li style={{ marginBottom: 6 }}>一次送出多筆，顯示逐筆建立進度</li>
+            </ol>
+            <H2>錯誤處理</H2>
+            <ul style={{ margin: '8px 0 0', paddingLeft: 22, lineHeight: 1.6 }}>
+              <li style={{ marginBottom: 6 }}>送出前 inline 驗證：email 格式 / 重複標紅，不阻擋其他列</li>
+              <li style={{ marginBottom: 6 }}>採「部分成功」：成功者建立，失敗者保留於 Modal 並標示原因</li>
+            </ul>
           </div>
-          <div style={{
-            padding: '12px 18px',
-            background: C.surface2,
+        </motion.div>
+        {/* leader lines — 斜直線；進場時圓點先 pop、虛線再由錨點往卡片畫出 */}
+        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}>
+          {annotations.map((a, i) => (
+            <g key={i}>
+              <motion.line
+                x1="54%" y1={`${a.anchorY}%`}
+                stroke={a.color} strokeWidth="1.5" strokeDasharray="5 4" strokeLinecap="round"
+                variants={{
+                  hidden: { x2: '54%', y2: `${a.anchorY}%`, opacity: 0 },
+                  show: {
+                    x2: '63%', y2: `${a.cardY}%`, opacity: 0.85,
+                    transition: { delay: 0.25 + i * 0.12, duration: 0.45, ease: 'easeOut' },
+                  },
+                }}
+              />
+              <motion.circle
+                cx="54%" cy={`${a.anchorY}%`} r="5" fill={a.color}
+                style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+                variants={{
+                  hidden: { scale: 0, opacity: 0 },
+                  show: {
+                    scale: 1, opacity: 1,
+                    transition: { delay: 0.18 + i * 0.12, type: 'spring', stiffness: 420, damping: 22 },
+                  },
+                }}
+              />
+            </g>
+          ))}
+        </svg>
+        {/* 右下：備註 — 四項審稿都在 Claude Code chat 對話框裡完成 */}
+        <motion.div variants={FADE_UP} style={{
+          position: 'absolute', left: '63%', right: 0, bottom: 0,
+          padding: '9px 16px',
+          background: C.surface2, border: `1px solid ${C.hairline}`,
+          borderRadius: ROUNDED.pill,
+          fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
+          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+          lineHeight: 1.3,
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <span style={{ color: C.accentBlue, fontWeight: 700 }}>↑</span>
+          以上四項皆在 Claude Code chat 對話框裡完成
+        </motion.div>
+        {/* 右：設計師審稿重點 — 對應 .md 段落的 leader-line 標註 */}
+        {annotations.map((a, i) => (
+          <motion.div key={i} variants={FADE_UP} style={{
+            position: 'absolute', left: '63%', right: 0,
+            top: `${a.cardTop}%`,
+            background: C.surface1,
+            border: `1px solid ${C.hairline}`,
+            borderLeft: `4px solid ${a.color}`,
             borderRadius: ROUNDED.md,
-            borderLeft: `4px solid ${C.gradientMagenta}`,
-            fontSize: TYPE_SCALE.tiny, color: C.inkMuted, lineHeight: 1.5,
-            fontStyle: 'italic',
+            padding: '14px 20px',
           }}>
-            你不用看懂程式碼，但你要看懂 — 流程、互動、錯誤、邊界。
-          </div>
-        </div>
-      </div>
+            <div style={{
+              fontSize: TYPE_SCALE.tiny, color: a.color, marginBottom: 6,
+              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+              fontWeight: 700, letterSpacing: '0.04em',
+            }}>{a.tag}</div>
+            <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.45 }}>{a.q}</div>
+          </motion.div>
+        ))}
+      </motion.div>
       <SlideNumber n={n} total={total} />
-    </Frame>
+    </Animated>
   );
 };
 
 /* SLIDE 9 — STEP 3 Implement */
 const DesignerStep3Implement = ({ n, total }) => {
-  const checks = [
-    { icon: '✅', label: '走 Happy Path', desc: '選檔 → 預覽 → 確認 → 成功，每步畫面對到 plan' },
-    { icon: '🐛', label: '故意製造錯誤', desc: '格式錯誤檔、留空必填 — 錯誤訊息夠不夠友善' },
-    { icon: '📏', label: '邊界測試', desc: '上傳 0 筆？超過上限？權限不足？' },
-    { icon: '✨', label: '微調 UI', desc: '用自然語言請 AI 改：Toast 位置、紅色標示等' },
+  const [zoom, setZoom] = useState(null);
+  const cells = [
+    { tag: 'BEFORE', label: '一筆一筆新增', accent: C.inkMuted, src: beforeImg },
+    { tag: 'AFTER',  label: '批量新增完成',  accent: C.gradientCoral, src: afterImg },
   ];
   return (
-    <Frame>
-      <SlideHead
-        kicker="04 情境三 · 設計師 RPI"
-        title="Implement｜驗收體驗，而非程式碼"
-        sub="設計師驗收：對照目標檢查成果，並做 UI 微調"
-      />
-      <div style={{
+    <Animated>
+      <motion.div variants={FADE_UP}>
+        <SlideHead
+          kicker="04 情境三 · RPI Workflow"
+          title="情境實作 : Admin 人員管理頁面 新增「批量新增」功能"
+          sub="對照目標檢查成果，並做 UI 微調"
+        />
+      </motion.div>
+      <motion.div variants={FADE_UP} style={{
         marginTop: 32,
-        background: C.surface2,
+        background: C.surface2, color: C.ink,
         borderRadius: ROUNDED.lg,
         border: `1px solid ${C.hairline}`,
-        padding: '20px 24px',
+        padding: '0 24px',
+        height: 60, boxSizing: 'border-box',
         display: 'flex', alignItems: 'center', gap: 16,
       }}>
         <div style={{
@@ -812,64 +930,16 @@ const DesignerStep3Implement = ({ n, total }) => {
           letterSpacing: '0.16em', textTransform: 'uppercase',
           fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
           flexShrink: 0,
-        }}>🟧 指令</div>
+        }}>指令</div>
         <div style={{
-          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-          fontSize: TYPE_SCALE.body, color: C.ink, letterSpacing: '-0.005em',
+          fontFamily: "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace",
+          fontSize: TYPE_SCALE.small, color: C.gradientOrange, letterSpacing: '-0.01em',
         }}>
           /implement_plan &lt;plan.md 路徑&gt;
         </div>
-      </div>
-      <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
-        {checks.map((c, i) => (
-          <div key={i} style={{
-            background: C.surface1, border: `1px solid ${C.hairline}`,
-            borderRadius: ROUNDED.lg, padding: 24,
-            display: 'flex', alignItems: 'flex-start', gap: 18,
-          }}>
-            <div style={{ fontSize: 32, lineHeight: 1, flexShrink: 0 }}>{c.icon}</div>
-            <div>
-              <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, color: C.ink, marginBottom: 6, letterSpacing: '-0.01em' }}>
-                {c.label}
-              </div>
-              <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
-                {c.desc}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div style={{
+      </motion.div>
+      <motion.div variants={STAGGER_INNER} style={{
         marginTop: 28,
-        padding: '20px 28px',
-        background: C.surface1,
-        borderRadius: ROUNDED.md,
-        borderLeft: `4px solid ${C.gradientCoral}`,
-        fontSize: TYPE_SCALE.small, lineHeight: 1.55,
-      }}>
-        <b style={{ color: C.ink }}>💡 微調範例：</b>
-        <span style={{ color: C.inkMuted }}>「批量上傳成功後請改用 Toast 顯示在右上角，停留 3 秒」</span>
-      </div>
-      <SlideNumber n={n} total={total} />
-    </Frame>
-  );
-};
-
-/* SLIDE 11 — Before & After 系統畫面對照 */
-const DesignerBeforeAfter = ({ n, total }) => {
-  const cells = [
-    { tag: 'BEFORE', label: '一筆一筆新增', accent: C.inkMuted },
-    { tag: 'AFTER',  label: '批量匯入完成',  accent: C.gradientCoral },
-  ];
-  return (
-    <Frame>
-      <SlideHead
-        kicker="04 情境三 · 設計師 RPI"
-        title="驗收成果"
-        sub="Before → After"
-      />
-      <div style={{
-        marginTop: 32,
         flex: 1,
         minHeight: 0,
         display: 'grid',
@@ -877,17 +947,13 @@ const DesignerBeforeAfter = ({ n, total }) => {
         gap: 24,
       }}>
         {cells.map((c, i) => (
-          <div key={i} style={{
+          <motion.div key={i} variants={FADE_UP} style={{
             display: 'flex',
             flexDirection: 'column',
             gap: 14,
             minHeight: 0,
           }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-            }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{
                 fontSize: TYPE_SCALE.tiny,
                 fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
@@ -901,97 +967,55 @@ const DesignerBeforeAfter = ({ n, total }) => {
                 fontWeight: 500,
               }}>{c.label}</div>
             </div>
-            <div style={{
+            <div onClick={() => setZoom(c.src)} style={{
               flex: 1,
               minHeight: 0,
               background: C.surface1,
-              border: `2px dashed ${C.hairline}`,
+              border: `1px solid ${C.hairline}`,
               borderRadius: ROUNDED.lg,
+              overflow: 'hidden',
+              cursor: 'zoom-in',
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 10,
-              color: C.inkMuted,
             }}>
-              <div style={{ fontSize: 48, lineHeight: 1 }}>🖼</div>
-              <div style={{
-                fontSize: TYPE_SCALE.tiny,
-                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-              }}>{c.tag} 截圖位置</div>
+              <img src={c.src} alt={`${c.tag} · ${c.label}`} style={{
+                width: '100%', height: '100%', objectFit: 'contain', display: 'block',
+              }} />
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
+      <Lightbox src={zoom} alt="放大檢視" onClose={() => setZoom(null)} />
+      <motion.div variants={STAGGER_INNER} style={{
+        marginTop: 20,
+        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16,
+      }}>
+        <motion.div variants={FADE_UP} style={{
+          background: C.surface1, borderRadius: ROUNDED.md,
+          borderLeft: `4px solid ${C.gradientOrange}`,
+          padding: '16px 20px',
+          display: 'flex', flexDirection: 'column', gap: 6,
+        }}>
+          <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>自動驗證</div>
+          <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
+            implement 後 AI 會自動跑驗證（測試 / typecheck / lint），<br />每個 phase 完成就驗一次
+          </div>
+        </motion.div>
+        <motion.div variants={FADE_UP} style={{
+          background: C.surface1, borderRadius: ROUNDED.md,
+          borderLeft: `4px solid ${C.gradientCoral}`,
+          padding: '16px 20px',
+          display: 'flex', flexDirection: 'column', gap: 6,
+        }}>
+          <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>手動驗證</div>
+          <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.5 }}>
+            UX、互動、錯誤、邊界仍要人走一遍
+          </div>
+        </motion.div>
+      </motion.div>
       <SlideNumber n={n} total={total} />
-    </Frame>
+    </Animated>
   );
 };
-
-/* SLIDE 12 — 收尾 + Q&A */
-const DesignerWrapUp = ({ n, total }) => (
-  <Frame padded={false} bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 50%, #ff7a3d 100%)">
-    <div style={{
-      position: 'relative', height: '100%',
-      padding: `${SPACING.paddingTop}px ${SPACING.paddingX}px ${SPACING.paddingBottom}px`,
-      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-      color: C.ink,
-    }}>
-      <div style={{
-        fontSize: TYPE_SCALE.small,
-        letterSpacing: TRACK.small,
-        color: C.ink, fontWeight: 500,
-        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        opacity: 0.78,
-      }}>04 情境三 · 設計師 RPI</div>
-
-      <div>
-        <div style={{
-          fontSize: TYPE_SCALE.display, fontWeight: 600, lineHeight: 1.0,
-          letterSpacing: TRACK.display, color: C.ink, marginBottom: 32,
-        }}>
-          你不用變成工程師。<br/>
-          你只需要當好&nbsp;
-          <span style={{
-            background: C.ink, color: C.gradientViolet,
-            padding: '0.02em 0.16em', fontWeight: 700, borderRadius: '0.06em',
-          }}>指路、審稿、驗收</span>。
-        </div>
-        <div style={{
-          fontSize: TYPE_SCALE.subtitle, lineHeight: 1.3,
-          color: C.ink, opacity: 0.92, maxWidth: 1500,
-          letterSpacing: TRACK.subtitle,
-        }}>
-          Claude Code 是工具，<b style={{ fontWeight: 700 }}>設計師才是流程的主人</b>。
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16 }}>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          {['/research_codebase → 指路', '/create_plan → 審稿', '/implement_plan → 驗收'].map((s, i) => (
-            <div key={i} style={{
-              background: 'rgba(255,255,255,0.14)',
-              backdropFilter: 'blur(8px)',
-              padding: '10px 18px',
-              borderRadius: ROUNDED.pill,
-              fontSize: TYPE_SCALE.small, fontWeight: 500,
-              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-              color: C.ink,
-            }}>{s}</div>
-          ))}
-        </div>
-        <div style={{
-          fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 700,
-          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-          letterSpacing: TRACK.small,
-        }}>Q &amp; A</div>
-      </div>
-    </div>
-    <SlideNumber n={n} total={total} color={C.ink} />
-  </Frame>
-);
 
 /* APPENDIX — HumanLayer RPI 安裝指南 */
 const DesignerInstallAppendix = ({ n, total }) => {
@@ -1016,15 +1040,17 @@ const DesignerInstallAppendix = ({ n, total }) => {
     { cmd: '/commit',            use: '產生 commit', covered: '進階' },
   ];
   return (
-    <Frame>
-      <SlideHead
-        kicker="04 情境三 · 設計師 RPI"
-        title="把 RPI Workflow 裝進你的 Claude Code"
-        sub="前置需求：Claude Code CLI + Git 環境"
-      />
-      <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+    <Animated>
+      <motion.div variants={FADE_UP}>
+        <SlideHead
+          kicker="附錄"
+          title="把 RPI Workflow 裝進你的 Claude Code"
+          sub="前置需求：Claude Code CLI + Git 環境"
+        />
+      </motion.div>
+      <motion.div variants={STAGGER_INNER} style={{ marginTop: 28, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         {methods.map((m, i) => (
-          <div key={i} style={{
+          <motion.div key={i} variants={FADE_UP} style={{
             background: C.surface1, border: `1px solid ${C.hairline}`,
             borderRadius: ROUNDED.lg, padding: 24,
             display: 'flex', flexDirection: 'column', gap: 14,
@@ -1042,21 +1068,21 @@ const DesignerInstallAppendix = ({ n, total }) => {
               borderRadius: ROUNDED.sm, lineHeight: 1.6,
               whiteSpace: 'pre-wrap', wordBreak: 'break-all',
             }}>{m.cmd}</div>
-          </div>
+          </motion.div>
         ))}
-      </div>
-      <div style={{
+      </motion.div>
+      <motion.div variants={FADE_UP} style={{
         marginTop: 24,
         fontSize: TYPE_SCALE.tiny, color: C.inkMuted,
         letterSpacing: '0.16em', textTransform: 'uppercase',
         fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
         marginBottom: 10,
-      }}>安裝後你會得到的 slash commands（節錄）</div>
-      <div style={{
+      }}>安裝後你會得到的 slash commands（節錄）</motion.div>
+      <motion.div variants={STAGGER_INNER} style={{
         display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8,
       }}>
         {commands.map((c, i) => (
-          <div key={i} style={{
+          <motion.div key={i} variants={FADE_UP} style={{
             background: C.surface1, border: `1px solid ${C.hairline}`,
             borderRadius: ROUNDED.sm, padding: '10px 16px',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
@@ -1072,53 +1098,53 @@ const DesignerInstallAppendix = ({ n, total }) => {
               fontSize: 14, color: c.covered === '進階' ? C.inkMuted : C.ink, fontWeight: 600,
               fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
             }}>{c.covered}</div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
       <SlideNumber n={n} total={total} />
-    </Frame>
+    </Animated>
   );
 };
 
 export {
-  DesignerCourseTitle,
   DesignerWhyRPI,
   DesignerThreeStepsOverview,
-  DesignerKeyTakeaway,
-  DesignerCaseIntro,
   DesignerStep1Research,
-  DesignerResearchOutput,
   DesignerStep2Plan,
   DesignerStep3Implement,
-  DesignerBeforeAfter,
-  DesignerWrapUp,
   DesignerInstallAppendix,
 }
 
 /* Chapter metadata — picked up by slides-agenda.jsx. */
-export const title = '情境三 · 設計師 RPI'
+export const title = '情境三 · RPI Workflow'
 export const subtitle = 'Research → Plan → Implement,10 分鐘把 Admin Config 批量新增功能做出來。'
 
 export default [
   { label: 'Section · Designer RPI Workshop', render: (p) => (
     <SectionDivider
       {...p}
-      kicker="04 情境三 · 設計師 RPI"
-      title="情境三 · 設計師 RPI"
+      kicker="04 情境三 · RPI Workflow"
+      title={
+        <>
+          <span style={{
+            display: 'block',
+            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+            fontWeight: 500,
+            textDecoration: 'line-through',
+            textDecorationThickness: '5px',
+            marginBottom: 20,
+          }}>Designer RIP</span>
+          情境三 · RPI Workflow
+        </>
+      }
       subtitle="Research → Plan → Implement — 10 分鐘把 Admin Config 批量新增功能做出來。"
       bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)"
     />
   )},
-  { label: '課程封面', render: (p) => <DesignerCourseTitle {...p} /> },
   { label: '為什麼需要 R-P-I', render: (p) => <DesignerWhyRPI {...p} /> },
   { label: '三步驟總覽', render: (p) => <DesignerThreeStepsOverview {...p} /> },
-  { label: 'Key Takeaway', render: (p) => <DesignerKeyTakeaway {...p} /> },
-  { label: '情境背景 · 批量新增', render: (p) => <DesignerCaseIntro {...p} /> },
   { label: 'STEP 1 Research', render: (p) => <DesignerStep1Research {...p} /> },
-  { label: 'Research 產出', render: (p) => <DesignerResearchOutput {...p} /> },
   { label: 'STEP 2 Plan', render: (p) => <DesignerStep2Plan {...p} /> },
   { label: 'STEP 3 Implement', render: (p) => <DesignerStep3Implement {...p} /> },
-  { label: 'Before & After', render: (p) => <DesignerBeforeAfter {...p} /> },
-  { label: '收尾 + Q&A', render: (p) => <DesignerWrapUp {...p} /> },
-  { label: 'Appendix · 安裝指南', render: (p) => <DesignerInstallAppendix {...p} /> },
+  { label: 'Appendix · 安裝指南', appendix: true, render: (p) => <DesignerInstallAppendix {...p} /> },
 ]

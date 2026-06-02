@@ -168,38 +168,58 @@ const HwBrief = ({ n, total }) => {
     {
       tag: 'Q1 · 1.5 min',
       title: '你怎麼開始？',
-      sub: '方法選擇',
       accent: C.gradientViolet,
       bullets: [
-        '為什麼挑這幾頁？簡單 / 複雜 / 有代表性 / 想挑戰？',
+        '為什麼挑這頁？簡單、複雜、還是想挑戰？',
         '怎麼跟 Claude Code 拆解？先 plan mode、還是先用 Figma MCP？',
-        '有沒有準備 CLAUDE.md 或任何前置條件？',
       ],
       star: false,
     },
     {
       tag: 'Q2 · 2 min · 最關鍵',
       title: '關鍵轉折？',
-      sub: '問題解決',
       accent: C.gradientMagenta,
       bullets: [
-        'Figma MCP 回傳的 code 跟你想的不一樣嗎？怎麼處理？',
-        '哪一個 prompt 沒效、你怎麼調整？',
-        '有沒有哪個時刻你決定「不該繼續往這方向 prompt 下去」？',
+        '用了 Figma MCP 但改的結果還是不如你的想像，怎麼處理？',
+        '互動過程碰到什麼困難，你怎麼調整？',
       ],
       star: true,
     },
     {
       tag: 'Q3 · 1.5 min',
       title: '下次怎麼做？',
-      sub: '內化反思',
       accent: C.gradientOrange,
       bullets: [
-        '哪一個環節你會用完全不同的方式處理？',
         '對 Figma MCP / Claude Code 的「能 vs. 不能」有什麼新認知？',
         '會改變你跟工程師合作的方式嗎？',
       ],
       star: false,
+    },
+  ];
+
+  const brief = [
+    {
+      label: '作業內容',
+      text: '挑自己專案在 Figma 上的 1 頁系統畫面，或想仿做的 1 頁網頁 → 透過 Claude Code 建立為可操作的 codebase 網頁',
+    },
+    {
+      label: '使用工具',
+      text: '建議 Claude Code ＋ Figma MCP；若無 Claude Code，亦可使用 Codex 或 Antigravity',
+    },
+    {
+      label: '帳號索取',
+      text: '無 Claude Code 者，可向 Sully、Alan、Annie 索取 Claude Enterprise 帳號',
+      notes: [
+        'Claude Enterprise 帳號有額度限制；若額度不足，可能需自行購買 Pro 方案（US$20 / 月）',
+        '登入時需請 Sully、Alan、Annie 協助驗證',
+      ],
+    },
+    {
+      label: '作業發表',
+      text: '6/17（三）15:00~16:30，每人 5–10 分鐘，可參考以下三個分享面向：',
+      notes: [
+        '報告順序依字母序（發會議通知時會附上報告順序）',
+      ],
     },
   ];
 
@@ -208,43 +228,98 @@ const HwBrief = ({ n, total }) => {
       <SlideHead
         kicker="課後作業｜把工具變成你的方法"
         title="不用做完美，重點是過程"
-        sub="挑自己專案在 Figma 上的 1–2 頁系統畫面 → 用 Claude Code + Figma MCP 建立為 working prototype"
       />
 
-      {/* 5 分鐘分享結構 · 小 label */}
-      <div style={{
-        marginTop: 48,
-        marginBottom: 20,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 16,
-      }}>
-        <div style={{
-          fontSize: TYPE_SCALE.tiny,
-          color: C.inkMuted,
-          letterSpacing: '0.24em',
-          textTransform: 'uppercase',
-          fontWeight: 600,
-          fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        }}>
-          6/12（五）發表 · 每人 5 分鐘 · 分享內容須包含以下三個面向
-        </div>
-        <div style={{
-          flex: 1,
-          height: 1,
-          background: C.hairline,
-        }} />
-      </div>
-
-      {/* 三欄 cards */}
+      {/* 作業 brief — 內容 / 工具 / 帳號，條列 */}
       <motion.div
         ref={ref}
         initial="hidden"
         animate={state}
         variants={STAGGER}
         style={{
+          marginTop: 36,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {brief.map((row, i) => (
+          <motion.div
+            key={i}
+            variants={FADE_UP}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '230px 1fr',
+              gap: 32,
+              alignItems: 'baseline',
+              padding: '16px 0',
+              borderBottom: i < brief.length - 1 ? `1px solid ${C.hairline}` : 'none',
+            }}
+          >
+            <div style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              gap: 14,
+            }}>
+              <span style={{
+                fontSize: TYPE_SCALE.tiny,
+                fontWeight: 700,
+                color: C.inkMuted,
+                fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
+              }}>{String(i + 1).padStart(2, '0')}</span>
+              <span style={{
+                fontSize: TYPE_SCALE.subtitle,
+                fontWeight: 600,
+                color: C.ink,
+                letterSpacing: TRACK.subtitle,
+              }}>{row.label}</span>
+            </div>
+            <div>
+              <div style={{
+                fontSize: TYPE_SCALE.small,
+                lineHeight: 1.5,
+                color: C.inkMuted,
+                letterSpacing: TRACK.small,
+              }}>{row.text}</div>
+              {row.notes && (
+                <ul style={{
+                  margin: '10px 0 0 0',
+                  padding: 0,
+                  listStyle: 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 6,
+                }}>
+                  {row.notes.map((note, k) => (
+                    <li key={k} style={{
+                      fontSize: TYPE_SCALE.tiny,
+                      lineHeight: 1.45,
+                      color: C.inkMuted,
+                      letterSpacing: TRACK.small,
+                      display: 'flex',
+                      gap: 10,
+                      alignItems: 'flex-start',
+                      opacity: 0.82,
+                    }}>
+                      <span style={{ flexShrink: 0 }}>※</span>
+                      <span>{note}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* 三欄 cards — 對應 04 作業發表的三個分享面向 */}
+      <motion.div
+        initial="hidden"
+        animate={state}
+        variants={STAGGER}
+        style={{
           flex: 1,
           minHeight: 0,
+          marginTop: 28,
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 24,
@@ -260,7 +335,7 @@ const HwBrief = ({ n, total }) => {
                 ? `1.5px solid ${card.accent}55`
                 : `1px solid ${C.hairline}`,
               borderRadius: ROUNDED.lg,
-              padding: '32px 32px 36px',
+              padding: '24px 28px 28px',
               display: 'flex',
               flexDirection: 'column',
               position: 'relative',
@@ -281,7 +356,7 @@ const HwBrief = ({ n, total }) => {
 
             {/* Title */}
             <div style={{
-              fontSize: 42,
+              fontSize: 34,
               fontWeight: 600,
               lineHeight: 1.1,
               letterSpacing: TRACK.title,
@@ -290,21 +365,10 @@ const HwBrief = ({ n, total }) => {
               {card.title}
             </div>
 
-            {/* Sub — 一句話定位 */}
-            <div style={{
-              marginTop: 8,
-              fontSize: TYPE_SCALE.tiny,
-              color: C.inkMuted,
-              letterSpacing: TRACK.small,
-              fontWeight: 400,
-            }}>
-              {card.sub}
-            </div>
-
             {/* Divider */}
             <div style={{
-              marginTop: 24,
-              marginBottom: 22,
+              marginTop: 16,
+              marginBottom: 16,
               height: 1,
               background: C.hairline,
             }} />
@@ -316,7 +380,7 @@ const HwBrief = ({ n, total }) => {
               listStyle: 'none',
               display: 'flex',
               flexDirection: 'column',
-              gap: 16,
+              gap: 12,
             }}>
               {card.bullets.map((b, j) => (
                 <li

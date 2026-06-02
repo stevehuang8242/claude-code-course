@@ -17,7 +17,11 @@ const flat = (mods) => Object.keys(mods)
   .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
   .flatMap((k) => mods[k].default || [])
 
-const slides = [...flat(cover), ...flat(agenda), ...flat(parts)]
+/* Slides flagged `appendix` float to the very end of the deck regardless of
+ * which part file defines them — keeps appendix content co-located with its
+ * chapter source while still rendering as the final page(s). */
+const assembled = [...flat(cover), ...flat(agenda), ...flat(parts)]
+const slides = [...assembled.filter((s) => !s.appendix), ...assembled.filter((s) => s.appendix)]
 
 const total = slides.length
 const stage = document.querySelector('deck-stage')
