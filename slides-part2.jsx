@@ -1,14 +1,16 @@
-/* Part 2 — 從想法 / 設計稿到可操作互動介面
- * 12 slides：Section + Agenda + Ch.01–Ch.06 + Overview + Closing
+/* Part 2 — 兩個 Case 實作：從討論 / 設計稿到 Code（0 → 1）
+ *
+ * 依 Plan/plan_part2.md 生成：開場 divider + 11 張規劃內容。
+ * 三段式：開場定位 → Case 1（討論 → PRD → Code）→ Case 2（設計源 → Code）。
+ * 本章止於「第一版跑起來（0 → 1）」；迭代（1 → N）交棒 Part 3、RPI 工作流交棒 Part 4。
  *
  * Self-contained module — design tokens / primitives inlined,
- * mirroring slides-part1.jsx. SectionDivider is reused from
- * slides_archived.jsx via props.
+ * mirroring slides-part1.jsx。SectionDivider 由 slides_archived.jsx 以 props 重用。
  *
- * Source blueprint: Slide/Slide-part2.md
- * Plan: Plan/Plan-part2.md
+ * 操作示範章節（Ch.03 / Ch.06）每步附「截圖」佔位框，供日後置換實際截圖。
  *
- * Manifest + chapter metadata live at the bottom of this file. */
+ * Source plan: Plan/plan_part2.md
+ * Manifest + chapter metadata 在檔案最底部。 */
 
 import React from 'react'
 import { motion } from 'framer-motion'
@@ -180,17 +182,127 @@ const Tag = ({ children, color = C.inkMuted, bg = C.surface2 }) => (
   }}>{children}</span>
 );
 
+/* Left-accent callout banner (會合點 / 邊界 / 常見坑 …) */
+const Callout = ({ accent = C.gradientMagenta, title, children, style = {} }) => (
+  <div style={{
+    background: `${accent}1a`,
+    borderLeft: `4px solid ${accent}`,
+    borderRadius: ROUNDED.sm,
+    padding: '20px 28px',
+    fontSize: TYPE_SCALE.small,
+    color: C.ink,
+    lineHeight: 1.45,
+    letterSpacing: TRACK.small,
+    ...style,
+  }}>
+    {title && <span style={{ color: accent, fontWeight: 600 }}>{title}</span>}
+    {children}
+  </div>
+);
+
+/* Demo step with a screenshot placeholder box (操作示範：步驟 + 截圖) */
+const ShotStep = ({ id, accent, title, shot, caption }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 14, flex: 1, minWidth: 0 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <span style={{ fontSize: 30, color: accent, fontWeight: 700, fontFamily: MONO, lineHeight: 1 }}>{id}</span>
+      <span style={{
+        fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600,
+        letterSpacing: TRACK.body, lineHeight: 1.15,
+      }}>{title}</span>
+    </div>
+    <div style={{
+      flex: 1,
+      minHeight: 190,
+      border: `1.5px dashed ${accent}66`,
+      borderRadius: ROUNDED.md,
+      background: `${accent}0d`,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 10,
+      padding: 18,
+      textAlign: 'center',
+    }}>
+      <span style={{
+        fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: accent,
+        letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 600,
+      }}>截圖</span>
+      <span style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.4 }}>{shot}</span>
+    </div>
+    <div style={{
+      fontSize: TYPE_SCALE.small, color: C.inkMuted,
+      lineHeight: 1.4, letterSpacing: TRACK.small,
+    }}>{caption}</div>
+  </div>
+);
+
+/* Vertical workflow step (number + title + detail), optional highlight */
+const VStep = ({ id, accent, title, detail, highlight = false }) => (
+  <div style={{
+    display: 'grid',
+    gridTemplateColumns: '52px 1fr',
+    alignItems: 'baseline',
+    gap: 18,
+    padding: highlight ? '16px 18px' : '0 0 14px 0',
+    borderRadius: highlight ? ROUNDED.md : 0,
+    background: highlight ? `${accent}1f` : 'transparent',
+    border: highlight ? `1px solid ${accent}66` : 'none',
+    borderBottom: highlight ? `1px solid ${accent}66` : `1px solid ${C.hairline}`,
+  }}>
+    <div style={{ fontSize: 30, color: accent, fontWeight: 700, lineHeight: 1, fontFamily: MONO }}>{id}</div>
+    <div>
+      <div style={{
+        fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600,
+        marginBottom: 6, letterSpacing: TRACK.body, lineHeight: 1.2,
+      }}>{title}</div>
+      <div style={{
+        fontSize: TYPE_SCALE.small, color: C.inkMuted,
+        lineHeight: 1.45, letterSpacing: TRACK.small,
+      }}>{detail}</div>
+    </div>
+  </div>
+);
+
+/* Standard animated content frame */
+const Slide = ({ kicker, title, sub, children, n, total, bg }) => {
+  const [ref, active] = useSlideActive();
+  const state = active ? 'show' : 'hidden';
+  return (
+    <Frame bg={bg}>
+      <SlideHead kicker={kicker} title={title} sub={sub} />
+      <motion.div
+        ref={ref}
+        initial="hidden"
+        animate={state}
+        variants={STAGGER}
+        style={{
+          marginTop: 40,
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 24,
+        }}
+      >
+        {children}
+      </motion.div>
+      <SlideNumber n={n} total={total} />
+    </Frame>
+  );
+};
+
 /* ============================================================
-   SLIDE 01 — Agenda · 兩條路徑六章地圖
+   SLIDE 01 — Agenda · Part 2（兩個 Case，六個段落）
    ============================================================ */
 
 const AGENDA_ITEMS = [
-  { n: '01', title: 'Two Starting Points', sub: '設計師的兩種起點', tag: 'Context',    accent: C.gradientViolet },
-  { n: '02', title: 'Claude Design',       sub: '工具定位與能力邊界', tag: 'Tool',       accent: C.gradientMagenta },
-  { n: '03', title: 'Reference Curation',  sub: '多方參考的整理術', tag: 'Scenario 1', accent: C.gradientViolet },
-  { n: '04', title: 'Generate & Handoff',  sub: 'Claude Design 產出到 Claude Code', tag: 'Scenario 1', accent: C.gradientMagenta },
-  { n: '05', title: 'Figma to Cursor',     sub: '已有圖稿的接軌準備', tag: 'Scenario 2', accent: C.gradientOrange },
-  { n: '06', title: 'Chatbot in Action',   sub: 'Cursor + Claude Code 從圖稿到介面', tag: 'Scenario 2', accent: C.gradientCoral },
+  { n: '01', title: 'Two Cases',        sub: '兩個 Case 的場景定位',      tag: 'Context', accent: C.gradientViolet },
+  { n: '02', title: 'Plan Mode',        sub: '先想再做的規劃模式',        tag: 'Case 1',  accent: C.gradientMagenta },
+  { n: '03', title: 'Discussion → PRD', sub: '把想法討論成 PRD',          tag: 'Case 1',  accent: C.gradientMagenta },
+  { n: '04', title: 'PRD → 第一版',      sub: 'Plan → Implement（0 → 1）', tag: 'Case 1',  accent: C.gradientOrange },
+  { n: '05', title: 'Design Sources',   sub: '三種設計源比較',            tag: 'Case 2',  accent: C.gradientOrange },
+  { n: '06', title: 'Source to Code',   sub: '設計源到 Code 的接軌',      tag: 'Case 2',  accent: C.gradientCoral },
 ];
 
 const Part2Agenda = ({ n, total }) => {
@@ -200,8 +312,8 @@ const Part2Agenda = ({ n, total }) => {
     <Frame>
       <SlideHead
         kicker="Part 2 · Agenda"
-        title="兩條路徑，六個段落"
-        sub="從場景設定，到 Scenario 1（從想法）、Scenario 2（從圖稿）。"
+        title="兩個 Case，六個段落"
+        sub="從場景定位，到 Case 1（從討論）、Case 2（從設計源）——都做到第一版跑起來。"
       />
       <motion.div
         ref={ref}
@@ -262,37 +374,37 @@ const Part2Agenda = ({ n, total }) => {
 };
 
 /* ============================================================
-   SLIDE 02 — Ch.01 Two Starting Points · Two-Column 比較
+   SLIDE 02 — Ch.01 Two Cases · Two-Column 比較
    ============================================================ */
 
-const STARTING_POINTS = [
+const CASES = [
   {
-    tag: 'Scenario 1 · From Idea',
+    tag: 'Case 1 · From Discussion',
     accent: C.gradientViolet,
-    headline: '手上只有需求與想法',
-    inputs: ['需求文字', '品牌素材', '競品參考'],
-    path: ['Reference Curation', 'Claude Design', 'Handoff'],
-    when: '探索期 · 提案期 · 初稿期',
+    headline: '腦中有需求，沒有圖稿',
+    inputs: ['需求 / 想法', '品牌素材', '競品參考'],
+    path: ['討論', 'PRD', 'Plan', '第一版'],
+    when: '探索期 · 新功能 · 手邊無圖稿',
   },
   {
-    tag: 'Scenario 2 · From Figma',
+    tag: 'Case 2 · From Design Source',
     accent: C.gradientOrange,
-    headline: '手上已有完整 UI 圖稿',
-    inputs: ['Figma file', 'Components', 'Design tokens'],
-    path: ['圖稿健檢', 'Cursor + MCP', 'Chatbot 實作'],
+    headline: '已有設計源（Figma 等）',
+    inputs: ['Figma file', 'Figma Make', 'Claude Design'],
+    path: ['健檢', '接軌', '第一版'],
     when: '落地期 · 改版期 · 既有專案延伸',
   },
 ];
 
-const Part2TwoStartingPoints = ({ n, total }) => {
+const Part2TwoCases = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const state = active ? 'show' : 'hidden';
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.01 · Two Starting Points"
+        kicker="Ch.01 · Two Cases"
         title="同一個終點，兩條路徑"
-        sub="你手邊有什麼，決定你怎麼走。"
+        sub="Case 不是技術偏好——你手邊有什麼，決定你走哪一條。"
       />
       <motion.div
         ref={ref}
@@ -318,7 +430,7 @@ const Part2TwoStartingPoints = ({ n, total }) => {
             gap: 28,
           }}
         >
-          {STARTING_POINTS.map((sp) => (
+          {CASES.map((sp) => (
             <motion.div
               key={sp.tag}
               variants={FADE_UP}
@@ -358,11 +470,7 @@ const Part2TwoStartingPoints = ({ n, total }) => {
                   textTransform: 'uppercase',
                   marginBottom: 8,
                 }}>Inputs</div>
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 10,
-                }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                   {sp.inputs.map((inp) => (
                     <div key={inp} style={{
                       fontSize: TYPE_SCALE.small,
@@ -430,21 +538,10 @@ const Part2TwoStartingPoints = ({ n, total }) => {
           ))}
         </motion.div>
 
-        <motion.div
-          variants={FADE_UP}
-          style={{
-            background: 'linear-gradient(135deg, rgba(106,76,245,0.12) 0%, rgba(255,122,61,0.12) 100%)',
-            borderLeft: `4px solid ${C.gradientMagenta}`,
-            borderRadius: ROUNDED.sm,
-            padding: '20px 28px',
-            fontSize: TYPE_SCALE.small,
-            color: C.ink,
-            lineHeight: 1.4,
-            letterSpacing: TRACK.small,
-          }}
-        >
-          <span style={{ color: C.gradientMagenta, fontWeight: 600 }}>會合點：</span>
-          兩條路徑都會走進 Claude Code 實作——Part 1 學的工作流，這裡全部派上用場。
+        <motion.div variants={FADE_UP}>
+          <Callout accent={C.gradientMagenta} title="判斷標準：">
+            圖稿完成度 / 客戶階段（探索 vs 落地）/ 是否有 brand guideline。兩個 case 共同終點＝第一版可運作介面（0 → 1），迭代與 RPI 見 Part 3 / Part 4。
+          </Callout>
         </motion.div>
       </motion.div>
       <SlideNumber n={n} total={total} />
@@ -453,36 +550,31 @@ const Part2TwoStartingPoints = ({ n, total }) => {
 };
 
 /* ============================================================
-   SLIDE 03 — Ch.02 Claude Design · Hero quote + 三點說明
+   SLIDE 04 — Ch.02 Plan Mode · 定義 + Case 1 工作流
    ============================================================ */
 
-const CLAUDE_DESIGN_POINTS = [
-  {
-    label: '能做',
-    accent: C.gradientViolet,
-    detail: '文字 + 圖片 + 品牌素材 → UI 草稿 / 變體',
-  },
-  {
-    label: '不能做',
-    accent: C.inkMuted,
-    detail: '取代 Figma 的細節打磨、取代 Claude Code 的程式實作',
-  },
-  {
-    label: '與 Figma MCP 差別',
-    accent: C.gradientOrange,
-    detail: 'Claude Design 「生成」，Figma MCP 「讀取」既有圖稿',
-  },
+const PLAN_MODE_POINTS = [
+  { label: '只規劃不動手', detail: 'AI 只產出 plan，不直接改檔。' },
+  { label: '會主動詢問',   detail: '反問、列 todo、產出 plan 文件。' },
+  { label: '何時開啟',     detail: '想法未成形 / 新增功能 / 不確定改哪些檔。' },
 ];
 
-const Part2ClaudeDesign = ({ n, total }) => {
+const CASE1_FLOW = [
+  { id: '①', accent: C.gradientViolet,  title: '討論需求',        detail: '跟 AI 對話釐清（Ch.03）。' },
+  { id: '②', accent: C.gradientMagenta, title: '整理成 PRD',      detail: '需求文件：做什麼 / 為誰 / 成功樣貌 / edge case。', highlight: true },
+  { id: '③', accent: C.gradientOrange,  title: 'PRD 進 Plan Mode', detail: '依 PRD 產出技術 plan（Ch.04）。' },
+  { id: '④', accent: C.gradientCoral,   title: 'confirm → Implement', detail: '第一版跑起來。' },
+];
+
+const Part2PlanMode = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const state = active ? 'show' : 'hidden';
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.02 · Claude Design"
-        title="從文字 + 參考，到可視化設計"
-        sub="定位在 Figma 之前、Claude Code 之後不接管。"
+        kicker="Ch.02 · Plan Mode"
+        title="先想再做，不要一句話就叫 AI 寫"
+        sub="Plan mode 把模糊想法跟 AI 一起釐清成可執行的需求書。"
       />
       <motion.div
         ref={ref}
@@ -493,91 +585,85 @@ const Part2ClaudeDesign = ({ n, total }) => {
           marginTop: 40,
           flex: 1,
           minHeight: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 32,
+          display: 'grid',
+          gridTemplateColumns: '1fr 1.05fr',
+          gap: 48,
         }}
       >
-        {/* Hero quote */}
+        {/* Left — what is Plan Mode */}
         <motion.div
           variants={FADE_UP}
           style={{
-            background: 'linear-gradient(135deg, rgba(106,76,245,0.14) 0%, rgba(212,77,240,0.14) 100%)',
+            background: C.surface1,
             border: `1px solid ${C.hairline}`,
             borderRadius: ROUNDED.lg,
-            padding: '44px 56px',
+            padding: '32px 36px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 18,
           }}
         >
+          <Tag color={C.gradientViolet}>什麼是 Plan Mode</Tag>
+          {PLAN_MODE_POINTS.map((p) => (
+            <div key={p.label} style={{
+              paddingBottom: 14,
+              borderBottom: `1px solid ${C.hairline}`,
+            }}>
+              <div style={{
+                fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600,
+                marginBottom: 6, letterSpacing: TRACK.body,
+              }}>{p.label}</div>
+              <div style={{
+                fontSize: TYPE_SCALE.small, color: C.inkMuted,
+                lineHeight: 1.45, letterSpacing: TRACK.small,
+              }}>{p.detail}</div>
+            </div>
+          ))}
+          {/* Shift+Tab highlight */}
           <div style={{
-            fontSize: 64,
-            fontWeight: 600,
-            color: C.ink,
-            lineHeight: 1.15,
-            letterSpacing: TRACK.display,
+            marginTop: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 16,
           }}>
-            接收<span style={{ color: C.gradientViolet }}>文字需求</span> + <span style={{ color: C.gradientMagenta }}>多模態參考</span>，<br/>
-            快速產出 UI 草稿與變體。
+            <div style={{
+              fontFamily: MONO,
+              fontSize: 28,
+              fontWeight: 600,
+              color: C.gradientViolet,
+              background: C.surface2,
+              border: `1px solid ${C.gradientViolet}66`,
+              borderRadius: ROUNDED.md,
+              padding: '12px 20px',
+              letterSpacing: '-0.01em',
+            }}>Shift + Tab</div>
+            <div style={{
+              fontSize: TYPE_SCALE.small, color: C.inkMuted,
+              lineHeight: 1.4, letterSpacing: TRACK.small,
+            }}>在 plan / accept edits / auto 之間切換。</div>
           </div>
         </motion.div>
 
-        {/* Three points */}
+        {/* Right — Case 1 workflow */}
         <motion.div
           variants={STAGGER_INNER}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 20,
-          }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
         >
-          {CLAUDE_DESIGN_POINTS.map((p) => (
-            <motion.div
-              key={p.label}
-              variants={FADE_UP}
-              style={{
-                background: C.surface1,
-                border: `1px solid ${C.hairline}`,
-                borderRadius: ROUNDED.lg,
-                padding: '24px 28px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 12,
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              <div style={{
-                position: 'absolute', top: 0, left: 0, bottom: 0,
-                width: 4, background: p.accent,
-              }} />
-              <Tag color={p.accent}>{p.label}</Tag>
-              <div style={{
-                fontSize: TYPE_SCALE.body,
-                color: C.ink,
-                lineHeight: 1.35,
-                letterSpacing: TRACK.body,
-                fontWeight: 500,
-              }}>{p.detail}</div>
+          <div style={{
+            fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: C.inkMuted,
+            letterSpacing: '0.16em', textTransform: 'uppercase',
+          }}>Case 1 工作流 · 討論 → PRD → 第一版</div>
+          {CASE1_FLOW.map((s) => (
+            <motion.div key={s.id} variants={FADE_UP}>
+              <VStep {...s} />
             </motion.div>
           ))}
-        </motion.div>
-
-        {/* Designer analogy callout */}
-        <motion.div
-          variants={FADE_UP}
-          style={{
-            background: 'rgba(212,77,240,0.10)',
-            borderLeft: `4px solid ${C.gradientMagenta}`,
-            borderRadius: ROUNDED.sm,
-            padding: '20px 28px',
-            fontSize: TYPE_SCALE.small,
-            color: C.ink,
-            lineHeight: 1.4,
-            letterSpacing: TRACK.small,
-            marginTop: 'auto',
-          }}
-        >
-          <span style={{ color: C.gradientMagenta, fontWeight: 600 }}>設計師類比：</span>
-          像 brainstorm 階段的快速 wireframe——但多了視覺與互動骨架。
+          <motion.div variants={FADE_UP} style={{
+            fontSize: TYPE_SCALE.small, color: C.inkMuted,
+            lineHeight: 1.4, letterSpacing: TRACK.small, fontStyle: 'italic',
+          }}>
+            Ch.03 做 ①②（產出 PRD），Ch.04 做 ③④（PRD → plan → 第一版）。
+          </motion.div>
         </motion.div>
       </motion.div>
       <SlideNumber n={n} total={total} />
@@ -586,42 +672,25 @@ const Part2ClaudeDesign = ({ n, total }) => {
 };
 
 /* ============================================================
-   SLIDE 05 — Ch.03 Reference Curation · 三張卡 + prompt 公式 banner
+   SLIDE 05 — Ch.03 Discussion → PRD · 操作示範（步驟 + 截圖）
    ============================================================ */
 
-const REFERENCE_CARDS = [
-  {
-    n: '01',
-    tag: 'Requirements',
-    accent: C.gradientViolet,
-    headline: '要做什麼、給誰用',
-    items: ['功能清單', '使用者情境', '目標裝置', '頁面層級'],
-  },
-  {
-    n: '02',
-    tag: 'Brand',
-    accent: C.gradientMagenta,
-    headline: '長什麼樣、什麼調性',
-    items: ['色票', '字體', 'tone & manner', '既有 brand guideline'],
-  },
-  {
-    n: '03',
-    tag: 'Reference & Copy',
-    accent: C.gradientOrange,
-    headline: '對標誰、寫什麼字',
-    items: ['截圖', 'Dribbble / Mobbin', '實際 copy（非 lorem）', 'empty state 文案'],
-  },
+const PRD_STEPS = [
+  { id: '①', accent: C.gradientViolet,  title: '開場 prompt', shot: 'prompt 輸入畫面', caption: '講「想做什麼 + 為什麼」，請 AI 先別寫 code。' },
+  { id: '②', accent: C.gradientMagenta, title: 'AI 反問釐清', shot: 'AI 反問對話',   caption: '使用者是誰 / 成功樣貌 / 邊界——逐一回答。' },
+  { id: '③', accent: C.gradientOrange,  title: '補 reference', shot: '加 reference 畫面', caption: '截圖、連結、品牌 token + edge case 都丟進來。' },
+  { id: '④', accent: C.gradientCoral,   title: '整理成 PRD',   shot: 'PRD 定稿',     caption: '請 AI 收斂成 PRD，設計師審過才定稿。' },
 ];
 
-const Part2ReferenceCuration = ({ n, total }) => {
+const Part2DiscussionPRD = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const state = active ? 'show' : 'hidden';
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.03 · Reference Curation"
-        title="輸出的品質，來自輸入的結構"
-        sub="亂塞 = 平庸輸出；結構化餵料 = 像樣的初稿。"
+        kicker="Ch.03 · Discussion → PRD"
+        title="把想法討論成 PRD"
+        sub="好的需求不是寫出來的，是聊出來的——聊完要落成 PRD，不要停在零散對話。"
       />
       <motion.div
         ref={ref}
@@ -634,7 +703,7 @@ const Part2ReferenceCuration = ({ n, total }) => {
           minHeight: 0,
           display: 'flex',
           flexDirection: 'column',
-          gap: 28,
+          gap: 24,
         }}
       >
         <motion.div
@@ -643,118 +712,21 @@ const Part2ReferenceCuration = ({ n, total }) => {
             flex: 1,
             minHeight: 0,
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 24,
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 20,
           }}
         >
-          {REFERENCE_CARDS.map((card) => (
-            <motion.div
-              key={card.n}
-              variants={FADE_UP}
-              style={{
-                background: C.surface1,
-                border: `1px solid ${C.hairline}`,
-                borderRadius: ROUNDED.lg,
-                padding: '32px 32px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 16,
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              <div style={{
-                position: 'absolute', top: 0, left: 0, right: 0,
-                height: 4, background: card.accent,
-              }} />
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-                <Tag color={card.accent}>{card.tag}</Tag>
-                <div style={{
-                  fontSize: TYPE_SCALE.subtitle,
-                  fontFamily: MONO,
-                  color: card.accent,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  opacity: 0.5,
-                }}>{card.n}</div>
-              </div>
-              <div style={{
-                fontSize: 30,
-                fontWeight: 600,
-                color: C.ink,
-                lineHeight: 1.2,
-                letterSpacing: TRACK.title,
-              }}>{card.headline}</div>
-              <div style={{
-                marginTop: 'auto',
-                paddingTop: 16,
-                borderTop: `1px solid ${C.hairline}`,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8,
-              }}>
-                {card.items.map((item) => (
-                  <div key={item} style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: 10,
-                    fontSize: TYPE_SCALE.small,
-                    color: C.inkMuted,
-                    letterSpacing: TRACK.small,
-                  }}>
-                    <span style={{ color: card.accent, fontFamily: MONO }}>·</span>
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
+          {PRD_STEPS.map((s) => (
+            <motion.div key={s.id} variants={FADE_UP} style={{ display: 'flex' }}>
+              <ShotStep {...s} />
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Prompt formula banner */}
-        <motion.div
-          variants={FADE_UP}
-          style={{
-            background: 'rgba(255,85,119,0.10)',
-            borderLeft: `4px solid ${C.gradientCoral}`,
-            borderRadius: ROUNDED.sm,
-            padding: '22px 28px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 24,
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{
-            fontSize: TYPE_SCALE.tiny,
-            fontFamily: MONO,
-            color: C.gradientCoral,
-            letterSpacing: '0.16em',
-            textTransform: 'uppercase',
-            fontWeight: 600,
-          }}>Prompt 組裝順序</div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            fontFamily: MONO,
-            fontSize: 26,
-            color: C.ink,
-            fontWeight: 600,
-            letterSpacing: '-0.02em',
-          }}>
-            <span style={{ color: C.gradientViolet }}>目標</span>
-            <span style={{ color: C.inkMuted }}>→</span>
-            <span style={{ color: C.gradientMagenta }}>約束</span>
-            <span style={{ color: C.inkMuted }}>→</span>
-            <span style={{ color: C.gradientOrange }}>參考</span>
-            <span style={{ color: C.inkMuted }}>→</span>
-            <span style={{ color: C.gradientCoral }}>例外</span>
-          </div>
+        <motion.div variants={FADE_UP}>
+          <Callout accent={C.gradientCoral} title="產出物：">
+            一份 PRD（目標 / 使用者與情境 / 功能清單 / 成功樣貌 / edge case / 約束），作為 Ch.04 進 Plan Mode 的 input。
+          </Callout>
         </motion.div>
       </motion.div>
       <SlideNumber n={n} total={total} />
@@ -763,45 +735,45 @@ const Part2ReferenceCuration = ({ n, total }) => {
 };
 
 /* ============================================================
-   SLIDE 06 — Ch.04 Generate & Handoff · 三段流程
+   SLIDE 06 — Ch.04 PRD → 第一版 · 四段流程
    ============================================================ */
 
-const PHASES = [
+const IMPLEMENT_PHASES = [
   {
-    step: '01 · 產出',
-    action: 'Generate',
+    step: '01 · PRD → Plan',
     accent: C.gradientViolet,
-    bg: 'rgba(106,76,245,0.14)',
-    headline: '第一輪看版型，再分頁迭代',
-    detail: '提示語用「保留 X，調整 Y」——避免整段重寫造成設計漂移。',
+    headline: '把 PRD 餵進 Plan Mode',
+    detail: '請 AI 依 PRD 產出技術 plan（步驟 / 影響範圍 / 風險）。',
   },
   {
-    step: '02 · 打包',
-    action: 'Package',
+    step: '02 · 審 plan',
     accent: C.gradientMagenta,
-    bg: 'rgba(212,77,240,0.14)',
-    headline: '截圖 + 結構 + 互動 + 約束',
-    detail: '必補 hover / focus / loading / empty / error 五種 state。',
+    headline: '對照 PRD 審一遍',
+    detail: '確認流程、互動、邊界、命名符合 UX 預期。',
   },
   {
-    step: '03 · 實作',
-    action: 'Implement',
+    step: '03 · Implement',
     accent: C.gradientOrange,
-    bg: 'rgba(255,122,61,0.14)',
-    headline: '進 Claude Code，跑 R→P→I',
-    detail: 'Research → Plan → Implement（Part 1 Ch.04 工作流派上用場）。',
+    headline: 'confirm → 退出 → 實作',
+    detail: '盯 plan 是否執行到位，不是逐行 review code。',
+  },
+  {
+    step: '04 · 跑起來',
+    accent: C.gradientCoral,
+    headline: '第一版 UI 有出來',
+    detail: '啟動 dev server 對照 plan——有跑出來即達標。',
   },
 ];
 
-const Part2GenerateHandoff = ({ n, total }) => {
+const Part2PlanToImplement = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const state = active ? 'show' : 'hidden';
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.04 · Generate & Handoff"
-        title="產出不是終點，是下一段的 input"
-        sub="handoff 的乾淨度，決定 Claude Code 寫出來的 code 品質。"
+        kicker="Ch.04 · PRD → 第一版"
+        title="把 PRD 變成第一版可運作的畫面"
+        sub="PRD 與 plan 的乾淨度，決定 implement 的速度。"
       />
       <motion.div
         ref={ref}
@@ -824,50 +796,42 @@ const Part2GenerateHandoff = ({ n, total }) => {
             minHeight: 0,
             display: 'flex',
             alignItems: 'stretch',
-            gap: 16,
+            gap: 14,
           }}
         >
-          {PHASES.map((p, i) => (
+          {IMPLEMENT_PHASES.map((p, i) => (
             <React.Fragment key={p.step}>
               <motion.div
                 variants={FADE_UP}
                 style={{
                   flex: 1,
-                  background: p.bg,
+                  background: `${p.accent}1f`,
                   border: `1px solid ${p.accent}`,
                   borderRadius: ROUNDED.lg,
-                  padding: '32px 32px',
+                  padding: '28px 26px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 16,
+                  gap: 14,
                 }}
               >
                 <div style={{
                   fontSize: TYPE_SCALE.tiny,
                   fontFamily: MONO,
                   color: p.accent,
-                  letterSpacing: '0.16em',
+                  letterSpacing: '0.12em',
                   textTransform: 'uppercase',
                   fontWeight: 600,
                 }}>{p.step}</div>
                 <div style={{
-                  fontSize: 44,
-                  fontWeight: 700,
-                  color: p.accent,
-                  fontFamily: MONO,
-                  letterSpacing: TRACK.heroLat,
-                  lineHeight: 1,
-                }}>{p.action}</div>
-                <div style={{
-                  fontSize: TYPE_SCALE.body,
-                  color: C.ink,
+                  fontSize: 30,
                   fontWeight: 600,
-                  lineHeight: 1.3,
-                  letterSpacing: TRACK.body,
+                  color: C.ink,
+                  lineHeight: 1.2,
+                  letterSpacing: TRACK.title,
                 }}>{p.headline}</div>
                 <div style={{
                   marginTop: 'auto',
-                  paddingTop: 16,
+                  paddingTop: 14,
                   borderTop: `1px solid ${C.hairline}`,
                   fontSize: TYPE_SCALE.small,
                   color: C.inkMuted,
@@ -875,14 +839,13 @@ const Part2GenerateHandoff = ({ n, total }) => {
                   letterSpacing: TRACK.small,
                 }}>{p.detail}</div>
               </motion.div>
-              {i < PHASES.length - 1 && (
+              {i < IMPLEMENT_PHASES.length - 1 && (
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   fontFamily: MONO,
-                  fontSize: 32,
+                  fontSize: 28,
                   color: C.inkMuted,
-                  fontWeight: 400,
                   flexShrink: 0,
                 }}>→</div>
               )}
@@ -890,21 +853,10 @@ const Part2GenerateHandoff = ({ n, total }) => {
           ))}
         </motion.div>
 
-        <motion.div
-          variants={FADE_UP}
-          style={{
-            background: 'rgba(255,85,119,0.12)',
-            borderLeft: `4px solid ${C.gradientCoral}`,
-            borderRadius: ROUNDED.sm,
-            padding: '20px 28px',
-            fontSize: TYPE_SCALE.small,
-            color: C.ink,
-            lineHeight: 1.45,
-            letterSpacing: TRACK.small,
-          }}
-        >
-          <span style={{ color: C.gradientCoral, fontWeight: 600 }}>常見坑：</span>
-          handoff 漏掉 hover / loading / error state，Claude Code 就補不齊——畫面跑起來但少一半互動。
+        <motion.div variants={FADE_UP}>
+          <Callout accent={C.gradientViolet} title="邊界：">
+            本章只做到「第一版跑起來」。常見坑——AI 改了 plan 外的檔案、或漏掉 plan 裡的 state。反覆微調 / 驗收（1 → N）見 Part 3，可追溯的 RPI 工作流見 Part 4。
+          </Callout>
         </motion.div>
       </motion.div>
       <SlideNumber n={n} total={total} />
@@ -913,191 +865,42 @@ const Part2GenerateHandoff = ({ n, total }) => {
 };
 
 /* ============================================================
-   SLIDE 08 — Ch.05 Figma to Cursor · Two-Column
+   SLIDE 08 — Ch.05 Design Sources · 三張比較卡
    ============================================================ */
 
-const FIGMA_CHECKLIST = [
-  { item: '圖層命名',     hint: '不要 Rectangle 24 / Frame 7' },
-  { item: 'Frame 命名',   hint: '語意化：hero / nav / card-product' },
-  { item: 'Component 用法', hint: 'instance 不亂 detach' },
-  { item: 'Auto-layout',   hint: '套用度決定 chatbot 讀得懂多少' },
-  { item: 'Variables',     hint: '色票 / 字級 / spacing 對應到 design token' },
+const DESIGN_SOURCES = [
+  {
+    n: '01',
+    tag: 'Figma',
+    accent: C.gradientViolet,
+    headline: '既有設計檔，最完整',
+    rows: [['起點', '既有圖稿'], ['產出', 'Figma file'], ['對接', 'Figma MCP 讀取']],
+  },
+  {
+    n: '02',
+    tag: 'Figma Make',
+    accent: C.gradientMagenta,
+    headline: 'Figma 內建 AI 生成',
+    rows: [['起點', 'prompt'], ['產出', 'Figma frame'], ['對接', 'export → MCP']],
+  },
+  {
+    n: '03',
+    tag: 'Claude Design',
+    accent: C.gradientOrange,
+    headline: '與 Claude Code 同生態',
+    rows: [['起點', '文字 + 多模態'], ['產出', 'web preview'], ['對接', '直接 handoff']],
+  },
 ];
 
-const MCP_STEPS = [
-  { id: '①', accent: C.gradientViolet,  title: '確認連線',       detail: 'channel 與 file 權限（Part 1 已建好，這裡複習）。' },
-  { id: '②', accent: C.gradientMagenta, title: '選擇抓取範圍',   detail: '整頁 / 單一 frame / 單一 component。' },
-  { id: '③', accent: C.gradientOrange,  title: '對應 design token', detail: '色票 / 字級 / spacing 是否能對應 code 的 token。' },
-  { id: '④', accent: C.gradientCoral,   title: '避開預設陷阱',   detail: '純圖片貼上、未 detach instance、跨檔案 component。' },
-];
-
-const Part2FigmaToCursor = ({ n, total }) => {
+const Part2DesignSources = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const state = active ? 'show' : 'hidden';
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.05 · Figma to Cursor"
-        title="MCP 不是萬能讀心術"
-        sub="命名 / Component / Auto-layout，直接決定 Claude Code 看得懂多少。"
-      />
-      <motion.div
-        ref={ref}
-        initial="hidden"
-        animate={state}
-        variants={STAGGER}
-        style={{
-          marginTop: 48,
-          flex: 1,
-          minHeight: 0,
-          display: 'grid',
-          gridTemplateColumns: '1fr 1.1fr',
-          gap: 48,
-        }}
-      >
-        {/* Left — health checklist */}
-        <motion.div
-          variants={FADE_UP}
-          style={{
-            background: C.surface1,
-            border: `1px solid ${C.hairline}`,
-            borderRadius: ROUNDED.lg,
-            padding: '32px 32px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 18,
-          }}
-        >
-          <Tag color={C.gradientOrange}>圖稿健檢清單</Tag>
-          <div style={{
-            fontSize: TYPE_SCALE.subtitle,
-            color: C.ink,
-            fontWeight: 600,
-            lineHeight: 1.2,
-            letterSpacing: TRACK.subtitle,
-          }}>準備好，再進 MCP</div>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 14,
-            marginTop: 8,
-          }}>
-            {FIGMA_CHECKLIST.map((c) => (
-              <div key={c.item} style={{
-                display: 'grid',
-                gridTemplateColumns: '32px 1fr',
-                alignItems: 'baseline',
-                gap: 14,
-                paddingBottom: 12,
-                borderBottom: `1px solid ${C.hairline}`,
-              }}>
-                <div style={{
-                  fontSize: 24,
-                  fontFamily: MONO,
-                  color: C.gradientOrange,
-                  lineHeight: 1,
-                  fontWeight: 600,
-                }}>☐</div>
-                <div>
-                  <div style={{
-                    fontSize: TYPE_SCALE.body,
-                    color: C.ink,
-                    fontWeight: 600,
-                    letterSpacing: TRACK.body,
-                  }}>{c.item}</div>
-                  <div style={{
-                    fontSize: TYPE_SCALE.small,
-                    color: C.inkMuted,
-                    marginTop: 2,
-                    letterSpacing: TRACK.small,
-                  }}>{c.hint}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Right — MCP steps */}
-        <motion.div
-          variants={STAGGER_INNER}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            gap: 20,
-          }}
-        >
-          {MCP_STEPS.map((step) => (
-            <motion.div
-              key={step.id}
-              variants={FADE_UP}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '60px 1fr',
-                alignItems: 'baseline',
-                gap: 20,
-                paddingBottom: 16,
-                borderBottom: `1px solid ${C.hairline}`,
-              }}
-            >
-              <div style={{
-                fontSize: TYPE_SCALE.subtitle,
-                color: step.accent,
-                fontWeight: 700,
-                lineHeight: 1,
-              }}>{step.id}</div>
-              <div>
-                <div style={{
-                  fontSize: TYPE_SCALE.body,
-                  color: C.ink,
-                  fontWeight: 600,
-                  marginBottom: 6,
-                  letterSpacing: TRACK.body,
-                }}>{step.title}</div>
-                <div style={{
-                  fontSize: TYPE_SCALE.small,
-                  color: C.inkMuted,
-                  lineHeight: 1.45,
-                  letterSpacing: TRACK.small,
-                }}>{step.detail}</div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </motion.div>
-      <SlideNumber n={n} total={total} />
-    </Frame>
-  );
-};
-
-/* ============================================================
-   SLIDE 09 — Ch.06 Chatbot in Action · 對話 mock + 5 點節奏
-   ============================================================ */
-
-const CHAT_BUBBLES = [
-  { role: 'designer', text: '請讀取這個 frame，產出對應的 component，使用既有 design token。' },
-  { role: 'ai',       text: '已讀取，產出 <ProductCard />，使用 token.color.bg-card、token.spacing.md…' },
-  { role: 'designer', text: '保留結構，把 padding 改成 24px、hover state 加上 elevation。' },
-  { role: 'ai',       text: '已更新，差異點：① padding 16 → 24 ② hover 加上 elevation-2 shadow。' },
-];
-
-const CHATBOT_RHYTHM = [
-  { id: '①', accent: C.gradientViolet,  title: '第一輪指令',   detail: '讀圖 + 對應 component + 沿用 token。' },
-  { id: '②', accent: C.gradientMagenta, title: '驗證',         detail: '跑起來 → 對照 Figma → 找差異 → 回報。' },
-  { id: '③', accent: C.gradientOrange,  title: '補完互動',     detail: 'hover / focus / loading / empty / error 五種 state。' },
-  { id: '④', accent: C.gradientCoral,   title: '迭代策略',     detail: '「保留結構，只改 X」——小範圍而非整頁重寫。' },
-  { id: '⑤', accent: C.gradientViolet,  title: '何時開新 session', detail: 'context 接近滿 / 議題切換 / 需要乾淨思考時。' },
-];
-
-const Part2ChatbotInAction = ({ n, total }) => {
-  const [ref, active] = useSlideActive();
-  const state = active ? 'show' : 'hidden';
-  return (
-    <Frame>
-      <SlideHead
-        kicker="Ch.06 · Chatbot in Action"
-        title="和 AI 一起看著同一張圖討論"
-        sub="chatbot 不是「貼圖等結果」——它是設計師與 AI 的共同工作介面。"
+        kicker="Ch.05 · Design Sources"
+        title="三種設計源，各有擅長的場景"
+        sub="設計源不是越多越好——選錯會多繞遠路。"
       />
       <motion.div
         ref={ref}
@@ -1108,140 +911,87 @@ const Part2ChatbotInAction = ({ n, total }) => {
           marginTop: 40,
           flex: 1,
           minHeight: 0,
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 48,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 28,
         }}
       >
-        {/* Left — chat mock */}
-        <motion.div
-          variants={FADE_UP}
-          style={{
-            background: C.surface1,
-            border: `1px solid ${C.hairline}`,
-            borderRadius: ROUNDED.lg,
-            padding: '24px 24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12,
-          }}
-        >
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingBottom: 12,
-            borderBottom: `1px solid ${C.hairline}`,
-          }}>
-            <Tag color={C.gradientCoral}>Claude Code Chat</Tag>
-            <div style={{
-              fontSize: TYPE_SCALE.tiny,
-              fontFamily: MONO,
-              color: C.inkMuted,
-              letterSpacing: '0.08em',
-            }}>session · active</div>
-          </div>
-          <div style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 10,
-            overflow: 'hidden',
-          }}>
-            {CHAT_BUBBLES.map((b, i) => {
-              const isAI = b.role === 'ai';
-              return (
-                <div key={i} style={{
-                  alignSelf: isAI ? 'flex-start' : 'flex-end',
-                  maxWidth: '88%',
-                  background: isAI ? 'rgba(106,76,245,0.18)' : C.surface2,
-                  border: isAI ? `1px solid rgba(106,76,245,0.4)` : `1px solid ${C.hairline}`,
-                  borderRadius: ROUNDED.md,
-                  padding: '12px 16px',
-                  fontSize: 18,
-                  color: C.ink,
-                  lineHeight: 1.45,
-                  letterSpacing: TRACK.small,
-                }}>
-                  <div style={{
-                    fontSize: 13,
-                    fontFamily: MONO,
-                    color: isAI ? C.gradientViolet : C.inkMuted,
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    marginBottom: 4,
-                    fontWeight: 600,
-                  }}>{isAI ? 'Claude' : 'Designer'}</div>
-                  <div>{b.text}</div>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Right — rhythm 5 points */}
         <motion.div
           variants={STAGGER_INNER}
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            gap: 14,
+            flex: 1,
+            minHeight: 0,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 24,
           }}
         >
-          {CHATBOT_RHYTHM.map((r) => (
+          {DESIGN_SOURCES.map((card) => (
             <motion.div
-              key={r.id}
+              key={card.n}
               variants={FADE_UP}
               style={{
-                display: 'grid',
-                gridTemplateColumns: '52px 1fr',
-                alignItems: 'baseline',
+                background: C.surface1,
+                border: `1px solid ${C.hairline}`,
+                borderRadius: ROUNDED.lg,
+                padding: '32px 32px',
+                display: 'flex',
+                flexDirection: 'column',
                 gap: 16,
-                paddingBottom: 12,
-                borderBottom: `1px solid ${C.hairline}`,
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
               <div style={{
-                fontSize: 32,
-                color: r.accent,
-                fontWeight: 700,
-                lineHeight: 1,
-              }}>{r.id}</div>
-              <div>
+                position: 'absolute', top: 0, left: 0, right: 0,
+                height: 4, background: card.accent,
+              }} />
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <Tag color={card.accent}>{card.tag}</Tag>
                 <div style={{
-                  fontSize: 26,
-                  color: C.ink,
-                  fontWeight: 600,
-                  marginBottom: 4,
-                  letterSpacing: TRACK.body,
-                }}>{r.title}</div>
-                <div style={{
-                  fontSize: TYPE_SCALE.small,
-                  color: C.inkMuted,
-                  lineHeight: 1.4,
-                  letterSpacing: TRACK.small,
-                }}>{r.detail}</div>
+                  fontSize: TYPE_SCALE.subtitle, fontFamily: MONO,
+                  color: card.accent, fontWeight: 700, lineHeight: 1, opacity: 0.5,
+                }}>{card.n}</div>
+              </div>
+              <div style={{
+                fontSize: 30, fontWeight: 600, color: C.ink,
+                lineHeight: 1.2, letterSpacing: TRACK.title,
+              }}>{card.headline}</div>
+              <div style={{
+                marginTop: 'auto',
+                paddingTop: 16,
+                borderTop: `1px solid ${C.hairline}`,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }}>
+                {card.rows.map(([k, v]) => (
+                  <div key={k} style={{
+                    display: 'grid',
+                    gridTemplateColumns: '64px 1fr',
+                    gap: 14,
+                    alignItems: 'baseline',
+                  }}>
+                    <span style={{
+                      fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: card.accent,
+                      letterSpacing: '0.08em',
+                    }}>{k}</span>
+                    <span style={{
+                      fontSize: TYPE_SCALE.small, color: C.ink, letterSpacing: TRACK.small,
+                    }}>{v}</span>
+                  </div>
+                ))}
               </div>
             </motion.div>
           ))}
-          <motion.div
-            variants={FADE_UP}
-            style={{
-              marginTop: 8,
-              background: 'rgba(106,76,245,0.12)',
-              borderLeft: `4px solid ${C.gradientViolet}`,
-              borderRadius: ROUNDED.sm,
-              padding: '14px 20px',
-              fontSize: TYPE_SCALE.small,
-              color: C.ink,
-              lineHeight: 1.4,
-              letterSpacing: TRACK.small,
-            }}
-          >
-            <span style={{ color: C.gradientViolet, fontWeight: 600 }}>設計師類比：</span>
-            像 Figma 的 design review——但 reviewer 同時會改 code。
-          </motion.div>
+        </motion.div>
+
+        <motion.div variants={FADE_UP}>
+          <Callout accent={C.gradientCoral} title="選擇建議：">
+            成熟專案 → Figma；探索期 → Figma Make 或 Claude Design；極短 sprint → Claude Design。
+          </Callout>
         </motion.div>
       </motion.div>
       <SlideNumber n={n} total={total} />
@@ -1250,26 +1000,89 @@ const Part2ChatbotInAction = ({ n, total }) => {
 };
 
 /* ============================================================
-   SLIDE 10 — Overview · 兩條路徑一張圖
+   SLIDE 09 — Ch.06 Source to Code · 操作示範（步驟 + 截圖）
    ============================================================ */
 
-const CONVERGENCE_POINTS = [
+const SOURCE_STEPS = [
+  { id: '①', accent: C.gradientViolet,  title: '健檢設計源',   shot: '圖層 / component / token', caption: '命名、component、token（見 Part 1 / Part 3）。' },
+  { id: '②', accent: C.gradientMagenta, title: '選接軌通道',   shot: '接軌方式選擇',  caption: 'Figma=MCP · Make=export→MCP · Design=handoff。' },
+  { id: '③', accent: C.gradientOrange,  title: '接軌指令',     shot: 'Claude Code 讀取', caption: '附 checklist：token 對應 / 互動狀態 / 技術約束。' },
+  { id: '④', accent: C.gradientCoral,   title: '產出 + 跑起來', shot: 'code 對照設計源', caption: '產出 component → 對照設計源 → 第一版達標。' },
+];
+
+const Part2SourceToCode = ({ n, total }) => {
+  const [ref, active] = useSlideActive();
+  const state = active ? 'show' : 'hidden';
+  return (
+    <Frame>
+      <SlideHead
+        kicker="Ch.06 · Source to Code"
+        title="設計源到 Code 的接軌"
+        sub="每種設計源接軌方式不同，但目標一致——把視覺轉成 AI 看得懂的 input。"
+      />
+      <motion.div
+        ref={ref}
+        initial="hidden"
+        animate={state}
+        variants={STAGGER}
+        style={{
+          marginTop: 40,
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 24,
+        }}
+      >
+        <motion.div
+          variants={STAGGER_INNER}
+          style={{
+            flex: 1,
+            minHeight: 0,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 20,
+          }}
+        >
+          {SOURCE_STEPS.map((s) => (
+            <motion.div key={s.id} variants={FADE_UP} style={{ display: 'flex' }}>
+              <ShotStep {...s} />
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <motion.div variants={FADE_UP}>
+          <Callout accent={C.gradientOrange} title="注意：">
+            設計源 ≈ PRD 的視覺部分，故略過「討論成 PRD」；若缺需求脈絡（流程 / 邊界）可補一份輕量 PRD。預設陷阱——純圖片貼上、未 detach 的 instance、跨檔案 component、漏掉 hover / loading / error。
+          </Callout>
+        </motion.div>
+      </motion.div>
+      <SlideNumber n={n} total={total} />
+    </Frame>
+  );
+};
+
+/* ============================================================
+   SLIDE 10 — Overview · 兩個 Case 一張圖
+   ============================================================ */
+
+const HANDOFF_POINTS = [
   {
-    label: '共用工作流',
-    detail: 'Research → Plan → Implement',
-    ref: 'Part 1 · Ch.04',
+    label: '迭代與驗收（1 → N）',
+    detail: 'Design from Code：三種調整方式 / 看畫面 / 存檔回復',
+    ref: 'Part 3',
     accent: C.gradientViolet,
   },
   {
-    label: '共用知識',
-    detail: 'Session / Context window 管理',
-    ref: 'Part 1 · Ch.04',
+    label: 'slash command RPI',
+    detail: 'Research → Plan → Implement（research.md / plan.md）',
+    ref: 'Part 4',
     accent: C.gradientMagenta,
   },
   {
     label: '共用工具',
     detail: 'Cursor + Claude Code + Figma MCP',
-    ref: 'Part 1 · Ch.02–03',
+    ref: 'Part 1',
     accent: C.gradientOrange,
   },
 ];
@@ -1281,8 +1094,8 @@ const Part2Overview = ({ n, total }) => {
     <Frame>
       <SlideHead
         kicker="Part 2 · Overview"
-        title="兩條路徑，一張地圖"
-        sub="走到 Claude Code 之後，兩條路完全合流。"
+        title="兩個 Case，一張地圖"
+        sub="兩條路都做到第一版完成，本章止於此——接下來交棒。"
       />
       <motion.div
         ref={ref}
@@ -1309,21 +1122,21 @@ const Part2Overview = ({ n, total }) => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            gap: 14,
+            gap: 12,
             fontFamily: MONO,
             fontSize: 20,
             color: C.inkMuted,
             lineHeight: 1.5,
           }}
         >
-          <div style={{ color: C.ink, fontWeight: 700, fontSize: 24, marginBottom: 8 }}>可操作互動介面</div>
+          <div style={{ color: C.ink, fontWeight: 700, fontSize: 24, marginBottom: 8 }}>第一版可運作介面（0 → 1）</div>
 
-          {/* Scenario 1 path */}
+          {/* Case 1 path */}
           <div style={{ color: C.gradientViolet }}>
-            <div>├─ <span style={{ fontWeight: 700 }}>Scenario 1 · From Idea</span></div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>│  └─ Reference Curation</div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>│     └─ Claude Design</div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>│        └─ Handoff <span style={{ color: C.gradientViolet }}>───┐</span></div>
+            <div>├─ <span style={{ fontWeight: 700 }}>Case 1 · From Discussion</span></div>
+            <div style={{ paddingLeft: 24, color: C.inkMuted }}>│  └─ Plan Mode（Shift+Tab）</div>
+            <div style={{ paddingLeft: 24, color: C.inkMuted }}>│     └─ 討論 → PRD</div>
+            <div style={{ paddingLeft: 24, color: C.inkMuted }}>│        └─ Plan → Implement <span style={{ color: C.gradientViolet }}>──┐</span></div>
           </div>
 
           <div style={{ color: C.inkMuted, paddingLeft: 24 }}>│                          <span style={{ color: C.ink }}>▼</span></div>
@@ -1331,19 +1144,19 @@ const Part2Overview = ({ n, total }) => {
             color: C.ink, fontWeight: 700, fontSize: 22,
             background: 'linear-gradient(90deg, rgba(106,76,245,0.18), rgba(255,122,61,0.18))',
             padding: '2px 12px', borderRadius: ROUNDED.sm,
-          }}>Claude Code · 實作 + 迭代</span></div>
+          }}>第一版完成 · 本章止於此</span></div>
           <div style={{ color: C.inkMuted, paddingLeft: 24 }}>│                          <span style={{ color: C.ink }}>▲</span></div>
 
-          {/* Scenario 2 path */}
+          {/* Case 2 path */}
           <div style={{ color: C.gradientOrange }}>
-            <div>└─ <span style={{ fontWeight: 700 }}>Scenario 2 · From Figma</span></div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>   └─ 圖稿健檢</div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>      └─ Cursor + MCP</div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>         └─ Chatbot <span style={{ color: C.gradientOrange }}>──────┘</span></div>
+            <div>└─ <span style={{ fontWeight: 700 }}>Case 2 · From Design Source</span></div>
+            <div style={{ paddingLeft: 24, color: C.inkMuted }}>   └─ 設計源（Figma / Make / Design）</div>
+            <div style={{ paddingLeft: 24, color: C.inkMuted }}>      └─ 接軌（MCP / export / handoff）</div>
+            <div style={{ paddingLeft: 24, color: C.inkMuted }}>         └─ 產出 component <span style={{ color: C.gradientOrange }}>──┘</span></div>
           </div>
         </motion.div>
 
-        {/* Right — convergence points */}
+        {/* Right — handoff points */}
         <motion.div
           variants={STAGGER_INNER}
           style={{
@@ -1354,14 +1167,10 @@ const Part2Overview = ({ n, total }) => {
           }}
         >
           <div style={{
-            fontSize: TYPE_SCALE.tiny,
-            fontFamily: MONO,
-            color: C.inkMuted,
-            letterSpacing: '0.16em',
-            textTransform: 'uppercase',
-            marginBottom: 4,
-          }}>會合點 · 共用什麼</div>
-          {CONVERGENCE_POINTS.map((cp) => (
+            fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: C.inkMuted,
+            letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4,
+          }}>第一版之後 · 交棒給</div>
+          {HANDOFF_POINTS.map((cp) => (
             <motion.div
               key={cp.label}
               variants={FADE_UP}
@@ -1377,44 +1186,26 @@ const Part2Overview = ({ n, total }) => {
               }}
             >
               <div style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                justifyContent: 'space-between',
-                gap: 12,
+                display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12,
               }}>
                 <div style={{
-                  fontSize: TYPE_SCALE.body,
-                  color: C.ink,
-                  fontWeight: 600,
-                  letterSpacing: TRACK.body,
+                  fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600, letterSpacing: TRACK.body,
                 }}>{cp.label}</div>
                 <div style={{
-                  fontSize: TYPE_SCALE.tiny,
-                  fontFamily: MONO,
-                  color: cp.accent,
-                  letterSpacing: '0.08em',
+                  fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: cp.accent, letterSpacing: '0.08em',
                 }}>{cp.ref}</div>
               </div>
               <div style={{
-                fontSize: TYPE_SCALE.small,
-                color: C.inkMuted,
-                letterSpacing: TRACK.small,
-                lineHeight: 1.4,
+                fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: TRACK.small, lineHeight: 1.4,
               }}>{cp.detail}</div>
             </motion.div>
           ))}
-          <motion.div
-            variants={FADE_UP}
-            style={{
-              marginTop: 4,
-              fontSize: TYPE_SCALE.small,
-              color: C.inkMuted,
-              lineHeight: 1.4,
-              letterSpacing: TRACK.small,
-              fontStyle: 'italic',
-            }}
-          >
-            Part 2 講的是「前半段差異」，後半段 Part 1 已經教過——這就是兩個 part 接續的點。
+          <motion.div variants={FADE_UP} style={{
+            marginTop: 4,
+            fontSize: TYPE_SCALE.small, color: C.inkMuted,
+            lineHeight: 1.4, letterSpacing: TRACK.small, fontStyle: 'italic',
+          }}>
+            本章只做 0 → 1；迭代與工作流自動化交給後面兩個 Part。
           </motion.div>
         </motion.div>
       </motion.div>
@@ -1424,21 +1215,21 @@ const Part2Overview = ({ n, total }) => {
 };
 
 /* ============================================================
-   SLIDE 11 — Closing · 動手做
+   SLIDE 11 — Closing · 收尾 + 交棒（不含動手作）
    ============================================================ */
 
-const PRACTICE_CARDS = [
+const NEXT_CARDS = [
   {
-    tag: 'Scenario 1 練習',
+    tag: 'Part 3 · 迭代（1 → N）',
     accent: C.gradientViolet,
-    headline: '找一個沒做完的提案',
-    detail: '用 Claude Design 跑一輪：整理 inputs → 產出 → handoff 到 Claude Code。',
+    headline: 'Design from Code',
+    detail: '三種調整方式（Prompt / 截圖 / Figma MCP）、看畫面、存檔與回復。',
   },
   {
-    tag: 'Scenario 2 練習',
+    tag: 'Part 4 · RPI 工作流',
     accent: C.gradientOrange,
-    headline: '挑一個既有 Figma 頁面',
-    detail: '健檢圖稿 → Cursor 接 MCP → 用 chatbot 跑出可操作介面。',
+    headline: 'Research → Plan → Implement',
+    detail: 'slash command 自動化，產出可追溯的 research.md / plan.md。',
   },
 ];
 
@@ -1473,13 +1264,13 @@ const Part2Closing = ({ n, total }) => {
           color: C.ink,
           maxWidth: 1500,
         }}>
-          你的下一個介面，
+          第一版只是起點，
           <span style={{
             background: 'rgba(0,0,0,0.32)',
             padding: '0 16px',
             borderRadius: ROUNDED.md,
             marginLeft: 8,
-          }}>從哪裡開始？</span>
+          }}>迭代讓它變好。</span>
         </motion.div>
 
         <motion.div
@@ -1490,7 +1281,7 @@ const Part2Closing = ({ n, total }) => {
             gap: 24,
           }}
         >
-          {PRACTICE_CARDS.map((p) => (
+          {NEXT_CARDS.map((p) => (
             <motion.div
               key={p.tag}
               variants={FADE_UP}
@@ -1561,58 +1352,58 @@ const Part2Closing = ({ n, total }) => {
 
 export {
   Part2Agenda,
-  Part2TwoStartingPoints,
-  Part2ClaudeDesign,
-  Part2ReferenceCuration,
-  Part2GenerateHandoff,
-  Part2FigmaToCursor,
-  Part2ChatbotInAction,
+  Part2TwoCases,
+  Part2PlanMode,
+  Part2DiscussionPRD,
+  Part2PlanToImplement,
+  Part2DesignSources,
+  Part2SourceToCode,
   Part2Overview,
   Part2Closing,
 }
 
 /* Chapter metadata — picked up by slides-agenda.jsx. */
 export const title = '情境一 · Design to Code'
-export const subtitle = '兩條路徑、一個終點——Claude Design 與 Claude Code 的接力。'
+export const subtitle = '兩個 Case：從討論或設計源出發，各自做出第一版可運作介面（0 → 1）。'
 
 export default [
   { label: 'Section · Part 2', render: (p) => (
     <SectionDivider
       {...p}
       kicker="Part 2"
-      title="從想法 / 設計稿到可操作互動介面"
-      subtitle="兩種起點，同一個終點——資源即路徑。"
-      range="Ch.01 – Ch.06 · 兩條路徑 + Claude Design"
+      title="情境一 · Design to Code"
+      subtitle="兩個 Case：從討論或設計稿出發，做出第一版可運作介面（0 → 1）。"
+      range="Ch.01 – Ch.06 · 兩個 Case · Plan Mode · 設計源接軌"
       bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)"
     />
   )},
   { label: 'Agenda', render: (p) => <Part2Agenda {...p} /> },
-  { label: 'Ch.01 · Two Starting Points', render: (p) => <Part2TwoStartingPoints {...p} /> },
-  { label: 'Ch.02 · Claude Design', render: (p) => <Part2ClaudeDesign {...p} /> },
-  { label: 'Section · Scenario 1', render: (p) => (
+  { label: 'Ch.01 · Two Cases', render: (p) => <Part2TwoCases {...p} /> },
+  { label: 'Section · Case 1', render: (p) => (
     <SectionDivider
       {...p}
-      kicker="Scenario 1 · From Idea"
+      kicker="Case 1 · From Discussion"
       title="當你只有想法"
-      subtitle="把分散的需求 + 參考素材，組裝成 AI 看得懂的 input。"
-      range="Ch.03 – Ch.04 · Reference Curation → Generate & Handoff"
+      subtitle="用 Plan Mode 跟 AI 討論成 PRD，再推進到第一版 code。"
+      range="Ch.02 – Ch.04 · Plan Mode → PRD → Implement"
       bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)"
     />
   )},
-  { label: 'Ch.03 · Reference Curation', render: (p) => <Part2ReferenceCuration {...p} /> },
-  { label: 'Ch.04 · Generate & Handoff', render: (p) => <Part2GenerateHandoff {...p} /> },
-  { label: 'Section · Scenario 2', render: (p) => (
+  { label: 'Ch.02 · Plan Mode', render: (p) => <Part2PlanMode {...p} /> },
+  { label: 'Ch.03 · Discussion → PRD', render: (p) => <Part2DiscussionPRD {...p} /> },
+  { label: 'Ch.04 · PRD → 第一版', render: (p) => <Part2PlanToImplement {...p} /> },
+  { label: 'Section · Case 2', render: (p) => (
     <SectionDivider
       {...p}
-      kicker="Scenario 2 · From Figma"
-      title="當你已經有圖稿"
-      subtitle="圖稿不會自己變 code——準備度決定 chatbot 看得懂多少。"
-      range="Ch.05 – Ch.06 · Figma to Cursor → Chatbot in Action"
+      kicker="Case 2 · From Design Source"
+      title="當你已經有設計源"
+      subtitle="依來源選對接軌通道，把視覺轉成 AI 看得懂的 input。"
+      range="Ch.05 – Ch.06 · Design Sources → Source to Code"
       bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)"
     />
   )},
-  { label: 'Ch.05 · Figma to Cursor', render: (p) => <Part2FigmaToCursor {...p} /> },
-  { label: 'Ch.06 · Chatbot in Action', render: (p) => <Part2ChatbotInAction {...p} /> },
+  { label: 'Ch.05 · Design Sources', render: (p) => <Part2DesignSources {...p} /> },
+  { label: 'Ch.06 · Source to Code', render: (p) => <Part2SourceToCode {...p} /> },
   { label: 'Overview', render: (p) => <Part2Overview {...p} /> },
   { label: 'Closing', render: (p) => <Part2Closing {...p} /> },
 ]
