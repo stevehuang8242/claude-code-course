@@ -1563,6 +1563,17 @@ const Part1FigmaMCP = ({ n, total }) => {
         title="Figma MCP — UI ⇄ Code 的雙向協定"
         sub="Claude Code 能直接讀寫 Figma 圖稿的關鍵橋樑"
       />
+      <div style={{
+        fontSize: 20,
+        color: C.ink,
+        marginTop: 16,
+        lineHeight: 1.5,
+        fontWeight: 400,
+        maxWidth: 1400,
+        letterSpacing: TRACK.subtitle,
+      }}>
+        MCP（Model Context Protocol）是一個讓 AI 能安全且標準化地連接外部工具與資料的通用協定，讓 AI 能連接並理解不同工具中的內容。
+      </div>
       {/* Jump to the install walkthrough slide */}
       <motion.button
         onClick={() => jumpToDeckRole('figma-mcp-install')}
@@ -1596,6 +1607,7 @@ const Part1FigmaMCP = ({ n, total }) => {
         variants={STAGGER}
         style={{
           marginTop: 40,
+          marginBottom: 40,
           flex: 1,
           minHeight: 0,
           display: 'flex',
@@ -2828,7 +2840,7 @@ export default [
   { label: 'Section · Part 1', render: (p) => (
     <SectionDivider
       {...p}
-      kicker="01"
+      kicker="01 UX Design work with AI"
       title="UX Design work with AI"
       subtitle="Closing the Gap Between Designers and Engineers"
       range="Ch.01 – Ch.03 · 開場 + 環境建置"
