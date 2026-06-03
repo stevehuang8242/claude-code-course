@@ -354,7 +354,7 @@ const Part2ScenariosIntro = ({ n, total }) => {
         <div style={{
           fontSize: TYPE_SCALE.small, fontWeight: 500, letterSpacing: '0.16em',
           textTransform: 'uppercase', color: 'rgba(255,255,255,0.78)', fontFamily: MONO,
-        }}>情境實作介紹</div>
+        }}>02 情境實作介紹</div>
         <h1 style={{
           fontSize: TYPE_SCALE.title, fontWeight: 500, lineHeight: 1.05,
           margin: `${SPACING.titleGap}px 0 0 0`, letterSpacing: TRACK.heroLat, color: '#ffffff',
@@ -450,19 +450,19 @@ const Part2ScenariosIntro = ({ n, total }) => {
 
 const CASES = [
   {
-    tag: 'Case 1 · From Discussion',
+    tag: 'Case 1',
     accent: C.gradientViolet,
-    headline: '只有需求，沒有圖稿',
+    headline: 'From Plan',
     inputs: ['需求 / 想法', '品牌素材', '競品參考'],
-    path: ['討論', 'PRD', 'Plan', '第一版'],
-    when: '探索期 · 新功能 · 手邊無圖稿',
+    path: ['Discussion', 'Plan PRD', 'Coding'],
+    when: '探索期 · 新功能',
   },
   {
-    tag: 'Case 2 · From Design Source',
+    tag: 'Case 2',
     accent: C.gradientOrange,
-    headline: '已有設計源（Figma 等）',
+    headline: 'From Design Source',
     inputs: ['Figma file', 'Figma Make', 'Claude Design'],
-    path: ['健檢', '接軌', '第一版'],
+    path: ['Connect Figma MCP', 'Copy link to selection', 'Coding'],
     when: '落地期 · 改版期 · 既有專案延伸',
   },
 ];
@@ -474,8 +474,8 @@ const Part2TwoCases = ({ n, total }) => {
     <Frame>
       <SlideHead
         kicker="02 情境一 · Design to Code"
-        title="同一個終點，兩條路徑"
-        sub="Case 不是技術偏好——你手邊有什麼，決定你走哪一條。"
+        title="從不同的起點出發"
+        sub="同一個目標，不同的工作流"
       />
       <motion.div
         ref={ref}
@@ -484,6 +484,7 @@ const Part2TwoCases = ({ n, total }) => {
         variants={STAGGER}
         style={{
           marginTop: 40,
+          marginBottom: 40,
           flex: 1,
           minHeight: 0,
           display: 'flex',
@@ -609,11 +610,6 @@ const Part2TwoCases = ({ n, total }) => {
           ))}
         </motion.div>
 
-        <motion.div variants={FADE_UP}>
-          <Callout accent={C.gradientMagenta} title="判斷標準：">
-            圖稿完成度 / 客戶階段（探索 vs 落地）/ 是否有 brand guideline。兩個 case 共同終點＝第一版可運作介面（0 → 1），迭代與 RPI 見 Part 3 / Part 4。
-          </Callout>
-        </motion.div>
       </motion.div>
       <SlideNumber n={n} total={total} />
     </Frame>
@@ -643,8 +639,8 @@ const Part2PlanMode = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.02 · Plan Mode"
-        title="先想再做，不要一句話就叫 AI 寫"
+        kicker="02 情境一 · Design to Code"
+        title="使用 Plan mode 討論需求"
         sub="Plan mode 把模糊想法跟 AI 一起釐清成可執行的需求書。"
       />
       <motion.div
@@ -747,13 +743,13 @@ const Part2PlanMode = ({ n, total }) => {
    ============================================================ */
 
 const PRD_STEPS = [
-  { id: '①', accent: C.gradientViolet,  title: '開場 prompt', caption: '講「想做什麼 + 為什麼」，請 AI 先別寫 code。',
+  { id: '①', accent: C.gradientViolet,  title: '開場 prompt', caption: '講「想做什麼 + 為什麼」，請 AI 先別寫 code',
     prompt: '「我想做一個線上課程的報名頁，讓使用者看完課程介紹能直接報名。先別寫 code，我們先把需求討論清楚。」' },
-  { id: '②', accent: C.gradientMagenta, title: 'AI 反問釐清', caption: '使用者是誰 / 成功樣貌 / 邊界——逐一回答。',
+  { id: '②', accent: C.gradientMagenta, title: 'AI 反問釐清', caption: '使用者是誰 / 成功樣貌 / 邊界——逐一回答',
     prompt: '「針對這個需求反問我關鍵問題：使用者是誰、成功的樣子、有哪些限制，一次問幾題就好，我來回答。」' },
-  { id: '③', accent: C.gradientOrange,  title: '補 reference', caption: '截圖、連結、品牌 token + edge case 都丟進來。',
+  { id: '③', accent: C.gradientOrange,  title: '補 reference', caption: '截圖、連結、品牌 token + edge case 都丟進來',
     prompt: '「附上競品報名頁截圖與我們的品牌色 token。另外要處理『未登入』和『課程已額滿』兩個 edge case。」' },
-  { id: '④', accent: C.gradientCoral,   title: '整理成 PRD',   caption: '請 AI 收斂成 PRD，設計師審過才定稿。',
+  { id: '④', accent: C.gradientCoral,   title: '整理成 PRD',   caption: '請 AI 收斂成 PRD，設計師審過才定稿',
     prompt: '「把剛才的討論整理成一份 PRD：目標、使用者與情境、功能清單、成功樣貌、edge case、約束。」' },
 ];
 
@@ -774,7 +770,7 @@ const Part2DiscussionPRD = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.03 · Discussion → PRD"
+        kicker="02 情境一 · Design to Code"
         title="把想法討論成 PRD"
         sub="好的需求不是寫出來的，是聊出來的——聊完要落成 PRD，不要停在零散對話。"
       />
@@ -838,7 +834,7 @@ const Part2DiscussionPRD = ({ n, total }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 22, fontWeight: 600, color: C.ink, letterSpacing: TRACK.body, lineHeight: 1.15 }}>{s.title}</span>
-                    <span style={{ fontSize: TYPE_SCALE.tiny, color: C.inkMuted, letterSpacing: TRACK.small }}>{s.caption}</span>
+                    <span style={{ fontSize: TYPE_SCALE.tiny, color: s.accent, letterSpacing: TRACK.small }}>{s.caption}</span>
                   </div>
                   <div style={{ fontSize: 22, color: C.inkMuted, lineHeight: 1.4, letterSpacing: TRACK.small }}>
                     <span style={{ fontWeight: 600 }}>Prompt：</span>{s.prompt}
@@ -943,7 +939,7 @@ const Part2PlanToImplement = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.04 · PRD → 第一版"
+        kicker="02 情境一 · Design to Code"
         title="把 PRD 變成第一版可運作的畫面"
         sub="PRD 與 plan 的乾淨度，決定 implement 的速度。"
       />
@@ -1070,7 +1066,7 @@ const Part2DesignSources = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.05 · Design Sources"
+        kicker="02 情境一 · Design to Code"
         title="三種設計源，各有擅長的場景"
         sub="設計源不是越多越好——選錯會多繞遠路。"
       />
@@ -1188,7 +1184,7 @@ const Part2SourceToCode = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.06 · Source to Code"
+        kicker="02 情境一 · Design to Code"
         title="設計源到 Code 的接軌"
         sub="每種設計源接軌方式不同，但目標一致——把視覺轉成 AI 看得懂的 input。"
       />
@@ -1265,9 +1261,9 @@ const Part2Overview = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part 2 · Overview"
+        kicker="02 情境一 · Design to Code"
         title="兩個 Case，一張地圖"
-        sub="兩條路都做到第一版完成，本章止於此——接下來交棒。"
+        sub="從不同的出發點完成 0 -> 1。"
       />
       <motion.div
         ref={ref}
@@ -1543,10 +1539,10 @@ export default [
   { label: 'Section · Part 2', render: (p) => (
     <SectionDivider
       {...p}
-      kicker="Part 2"
+      kicker="02 情境一 · Design to Code"
       title="情境一 · Design to Code"
-      subtitle="兩個 Case：從討論或設計稿出發，做出第一版可運作介面（0 → 1）。"
-      range="Ch.01 – Ch.06 · 兩個 Case · Plan Mode · 設計源接軌"
+      subtitle="0 → 1 做出第一版可互動的介面"
+      range="02 情境一 · Design to Code"
       bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)"
     />
   )},
