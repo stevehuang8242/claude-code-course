@@ -20,13 +20,16 @@ import cursorInstallPluginImg from './Slide/Image/Part1/Cursor-installClaudePlug
 import cursorOpenClaudeCodeChatImg from './Slide/Image/Part1/Cursor_openClaudeCodeChat.png'
 import cursorSetIconVisibilityImg from './Slide/Image/Part1/Cursor_setClaudeIcon_visibility.png'
 import claudeCodeLoginImg from './Slide/Image/Part1/claudeCode_login.png'
-import claudeChatImg from './Slide/Image/Part1/claudeCode_chat.png'
-import claudeChatContext from './Slide/Image/Part1/claudeCode_context.png'
-import claudeChatModel from './Slide/Image/Part1/claudeCode_model.png'
 import figmaMcpInstall01 from './Slide/Image/Part1/FigmaMCP_install_01.png'
 import figmaMcpInstall02 from './Slide/Image/Part1/FigmaMCP_install_02.png'
 import figmaMcpInstall03 from './Slide/Image/Part1/FigmaMCP_install_03.png'
 import figmaMcpInstall04 from './Slide/Image/Part1/FigmaMCP_install_04.png'
+import chatPanelShot01 from './Slide/Image/Part1/chatPanel_01_sessions.png'
+import chatPanelShot02 from './Slide/Image/Part1/chatPanel_02_sessions.png'
+import chatPanelShot03 from './Slide/Image/Part1/chatPanel_03_sessions.png'
+import chatPanelShot04 from './Slide/Image/Part1/chatPanel_04_sessions.png'
+import chatPanelShot05 from './Slide/Image/Part1/chatPanel_05_sessions.png'
+import chatPanelShot06 from './Slide/Image/Part1/chatPanel_06_sessions.png'
 
 /* ============================================================
    Design tokens — 與 slides-part4.jsx / slides-part5.jsx 同步
@@ -325,7 +328,7 @@ const Part1Ch1Combined = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · The Shift"
+        kicker="01 UX Design work with AI．The Shift"
         title="Closing the Gap"
         sub="Building an AI-powered bridge for continuous UX execution"
       />
@@ -474,7 +477,7 @@ const Part1Ch2Combined = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · Toolchain"
+        kicker="01 UX Design work with AI．Toolchain"
         title="Design to Code Toolchain"
         sub="Design Source ⇄ MCP ⇄ AI Agent"
       />
@@ -1025,7 +1028,7 @@ const Part1CursorLayout = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · Toolchain - Cursor"
+        kicker="01 UX Design work with AI．Toolchain ｜ Cursor"
         title="Cursor Workspace"
         sub="for building with AI"
       />
@@ -1326,10 +1329,10 @@ const Part1CursorLayout = ({ n, total }) => {
                       fontSize: TYPE_SCALE.tiny,
                       color: C.inkMuted,
                       letterSpacing: TRACK.tiny,
-                      lineHeight: 1,
+                      lineHeight: 1.4,
                       opacity: 0.7,
                     }}
-                  >Cursor Layout 可切換 Agent / Editor (左圖以 Editor 為例)</motion.p>
+                  >Cursor Layout 預設為 Agent，可從 Cursor 設定中切換 Editor (左圖以 Editor Layout為例)</motion.p>
                 )}
                 {items.map((item) => {
                   const linksImg = activeImg === 'plugin' && item.imgIdxs != null;
@@ -1481,8 +1484,8 @@ const Part1CursorLayout = ({ n, total }) => {
               alt="Cursor Workspace"
               style={{
                 display: 'block',
-                maxWidth: '92vw',
-                maxHeight: '80vh',
+                maxWidth: '96vw',
+                maxHeight: '96vh',
                 width: 'auto',
                 height: 'auto',
                 borderRadius: ROUNDED.md,
@@ -1521,46 +1524,25 @@ const Part1CursorLayout = ({ n, total }) => {
  * 支援客戶端：Cursor · VS Code · Claude Code · Windsurf。 */
 const MCP_CAPABILITIES = [
   {
-    tag: 'Read · 10',
+    tag: 'Design → Code',
     accent: C.gradientMagenta,
     title: '讀 Figma',
-    detail: '從 Figma 讀取設計結構、樣式與截圖，讓 AI「看懂」設計稿。',
-    tools: [
-      { name: 'get_design_context', desc: '取得圖層設計 context，輸出 React/Vue/HTML 程式碼' },
-      { name: 'get_metadata', desc: '回傳 XML 結構：layer ID、名稱、位置、尺寸' },
-      { name: 'get_variable_defs', desc: '取得選取範圍使用的 variables 與 styles' },
-      { name: 'get_screenshot', desc: '對選取範圍截圖，供 agent 視覺化檢視' },
-      { name: 'get_figjam', desc: '將 FigJam 圖表轉為 XML 結構' },
-      { name: 'get_libraries', desc: '回傳已訂閱與可用的 library 清單', remote: true },
-      { name: 'search_design_system', desc: '搜尋 library 中的 components、variables、styles', remote: true },
-      { name: 'get_code_connect_map', desc: '取得 Figma node 與 codebase 元件的對應關係' },
-      { name: 'get_context_for_code_connect', desc: '取得元件屬性、variants 結構供 Code Connect 使用', remote: true },
-      { name: 'whoami', desc: '回傳目前已驗證的使用者身份', remote: true },
-    ],
+    detail: '讓 AI「看懂」你的設計稿。',
+    example: '選取 Figma 上的畫面，Claude Code 直接生成對應的前端程式碼——間距、顏色、字級都貼齊原設計。',
   },
   {
-    tag: 'Write · 5',
+    tag: 'Code → Figma',
     accent: C.gradientViolet,
     title: '寫 Figma',
-    detail: '從 code 端建立或修改 Figma 內容（所有 Write 工具均為 Remote Only）。',
-    tools: [
-      { name: 'use_figma', desc: '通用工具：建立 / 編輯 frames、components、variables、auto layout', remote: true },
-      { name: 'create_new_file', desc: '在 Drafts 建立新的 Figma Design 或 FigJam 檔案', remote: true },
-      { name: 'generate_diagram', desc: '從 Mermaid 或自然語言生成 FigJam 圖表（流程圖、ERD、甘特圖等）', remote: true },
-      { name: 'generate_figma_design', desc: '將瀏覽器即時 UI 轉為 Figma 設計圖層（Code to Canvas）', remote: true },
-      { name: 'upload_assets', desc: '上傳 PNG、JPG、GIF、WebP 圖片資源至 Figma 檔案', remote: true },
-    ],
+    detail: '把 code 端的成果回寫進 Figma。',
+    example: '把瀏覽器上跑起來的 UI 一鍵轉成 Figma 設計圖層，或請 AI 直接在 Figma 新增 frame、生成流程圖。',
   },
   {
-    tag: 'Sync · 3',
+    tag: 'Code Connect',
     accent: C.gradientOrange,
     title: '雙向同步',
-    detail: '透過 Code Connect 對齊 Figma 與程式碼元件，設計與 code 雙向同步。',
-    tools: [
-      { name: 'add_code_connect_map', desc: '新增 Figma node ID 與 codebase 元件的對應關係' },
-      { name: 'get_code_connect_suggestions', desc: '偵測並建議 Figma 元件與 code 元件的最佳對應' },
-      { name: 'send_code_connect_mappings', desc: '確認 Code Connect 建議的元件對應（由 Figma 觸發）' },
-    ],
+    detail: '讓 Figma 元件與程式碼元件對齊。',
+    example: '把設計系統元件和 code 元件綁定，AI 生成時自動沿用你既有的元件，不必每次從頭重畫。',
   },
 ];
 
@@ -1577,7 +1559,7 @@ const Part1FigmaMCP = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · Toolchain - Figma MCP Service"
+        kicker="01 UX Design work with AI．Toolchain ｜ Figma MCP"
         title="Figma MCP — UI ⇄ Code 的雙向協定"
         sub="Claude Code 能直接讀寫 Figma 圖稿的關鍵橋樑"
       />
@@ -1727,33 +1709,28 @@ const Part1FigmaMCP = ({ n, total }) => {
                   letterSpacing: TRACK.small,
                 }}>{c.detail}</div>
                 <div style={{
-                  marginTop: 14,
-                  paddingTop: 14,
+                  marginTop: 'auto',
+                  paddingTop: 18,
                   borderTop: `1px solid ${C.hairline}`,
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 9,
-                  overflow: 'hidden',
+                  gap: 10,
                 }}>
-                  {c.tools.map((t) => (
-                    <div key={t.name} title={t.desc} style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                        <span style={{
-                          fontSize: 15,
-                          fontFamily: MONO,
-                          color: c.accent,
-                          letterSpacing: '0.01em',
-                        }}>{t.name}</span>
-                        {t.remote && <span style={{ fontSize: 12, color: C.inkMuted }}>★</span>}
-                      </div>
-                      <div style={{
-                        fontSize: 13,
-                        color: C.inkMuted,
-                        lineHeight: 1.3,
-                        letterSpacing: TRACK.small,
-                      }}>{t.desc}</div>
-                    </div>
-                  ))}
+                  <div style={{
+                    fontSize: 14,
+                    fontFamily: MONO,
+                    color: c.accent,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    fontWeight: 600,
+                  }}>情境</div>
+                  <div style={{
+                    fontSize: 20,
+                    color: C.ink,
+                    opacity: 0.9,
+                    lineHeight: 1.5,
+                    letterSpacing: TRACK.small,
+                  }}>{c.example}</div>
                 </div>
               </motion.div>
             ))}
@@ -1788,9 +1765,9 @@ const Part1FigmaMCPInstall = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · Toolchain - Figma MCP Service"
+        kicker="01 UX Design work with AI．Toolchain"
         title="如何安裝 Figma MCP plugin"
-        sub="從 Claude Code 連上 Figma MCP server"
+        sub="透過 Claude Code 連上 Figma MCP server"
       />
       {/* Back to the Figma MCP intro slide */}
       <motion.button
@@ -2018,52 +1995,93 @@ const Part1FigmaMCPInstall = ({ n, total }) => {
    SLIDE 05 — Ch.03 ③ Claude Chat · 對話框功能介紹
    ============================================================ */
 
+/* `shot` = 對應操作截圖的建議檔名，放在 ./Slide/Image/Part1/。
+ * 圖檔補上後，於檔頭 import 並把下方 CHAT_SHOTS 對應的值換成 import 變數即可。 */
 const CHAT_FEATURES = [
   {
     n: '01',
-    tag: 'Conversation',
+    tag: 'Sessions',
     accent: C.gradientViolet,
-    title: '多輪對話',
-    summary: '像跟同事討論，記得上下文',
-    detail: '可追問、修正方向、補背景；不是 Q&A，是持續協作。',
+    title: '新增 / 查看 Session',
+    summary: '開新對話、接續舊的',
+    detail: '每個 session 是一段獨立的任務脈絡；可開新 session，或從歷史清單 resume 先前的對話。',
+    shot: 'chatPanel_01_sessions.png',
   },
   {
     n: '02',
-    tag: 'Project Context',
+    tag: 'Prompt Input',
     accent: C.gradientMagenta,
-    title: '讀整個專案',
-    summary: '跨檔搜尋、跨檔修改',
-    detail: '透過 CLAUDE.md 學會專案規矩；不限於當前開啟的檔案。',
+    title: '對話輸入',
+    summary: '自然語言交辦，多輪協作',
+    detail: '打字描述要做什麼，可追問、修正方向、補背景；Enter 送出、Shift+Enter 換行。',
+    shot: 'chatPanel_02_input.png',
   },
   {
     n: '03',
-    tag: 'Attach & Reference',
+    tag: 'Attach',
     accent: C.gradientOrange,
-    title: '附圖 / @檔案',
-    summary: '截圖拖進去 ＋ @filename 精確指向',
-    detail: '圖與檔案是 Claude 的「視覺輸入」；改設計時最常用。',
+    title: '附加檔案 / 圖片',
+    summary: '拖曳截圖、貼圖、@ 指向檔案',
+    detail: '把截圖、PRD、參考檔當輸入丟進對話；用 @ 精準指向專案裡的檔案。',
+    shot: 'chatPanel_03_attach.png',
   },
   {
     n: '04',
     tag: 'Slash Commands',
     accent: C.gradientCoral,
-    title: '指令 commands',
-    summary: '/init  /clear  /help  ...',
-    detail: '以 / 開頭的 shortcut；常用操作快速完成。',
+    title: 'Slash 指令',
+    summary: '輸入 / 叫出指令選單',
+    detail: '/init、/clear、/model、/mcp、/usage、/context… 常用操作一鍵完成。',
+    shot: 'chatPanel_04_slash.png',
+  },
+  {
+    n: '05',
+    tag: 'Context',
+    accent: C.gradientViolet,
+    title: '目前參考的 context 檔案',
+    summary: '看得到 Claude 讀了哪些',
+    detail: '面板列出本次帶入的 context（@ 檔案、開啟中的檔案、CLAUDE.md）；/context 可查佔用。',
+    shot: 'chatPanel_05_context.png',
+  },
+  {
+    n: '06',
+    tag: 'Modes',
+    accent: C.gradientMagenta,
+    title: '工作模式切換',
+    summary: 'Shift+Tab 切換模式',
+    detail: 'Plan mode 只規劃不動手、Auto-accept edits 自動套用變更、normal 逐步確認。',
+    shot: 'chatPanel_06_modes.png',
   },
 ];
 
+/* 操作截圖對應表（key = 卡片 n）。補圖後於檔頭 import，再把對應值填上即可，
+ * 例如：import chatPanelSessions from './Slide/Image/Part1/chatPanel_01_sessions.png'
+ *       '01': chatPanelSessions,
+ * 未填者顯示 placeholder（檔名提示）。有圖時點擊截圖可放大檢視。 */
+const CHAT_SHOTS = {
+  '01': chatPanelShot01,
+  '02': chatPanelShot02,
+  '03': chatPanelShot03,
+  '04': chatPanelShot04,
+  '05': chatPanelShot05,
+  '06': chatPanelShot06,
+};
+
 const CHAT_TABS = [
-  { key: 'abilities', num: '①', title: '能做的事',   sub: 'Abilities',         accent: C.gradientViolet, img: claudeChatImg,      imgAlt: 'Claude Code Chat' },
-  { key: 'how',       num: '②', title: 'AI 怎麼運作', sub: '概念之間的關係',    accent: C.gradientCoral,  img: claudeChatContext,      imgAlt: 'Claude Code Context' },
-  { key: 'models',    num: '③', title: '模型選擇',    sub: '對的任務配對的模型', accent: C.gradientOrange, img: claudeChatModel, imgAlt: 'Claude Code Model' },
+  { key: 'abilities', title: 'Chat Panel 如何操作', sub: 'Claude Code Plugin',   accent: C.gradientViolet },
+  { key: 'how',       title: 'AI 怎麼運作',         sub: '運作概念 × 模型選擇', accent: C.gradientCoral },
 ];
 
 const Part1ClaudeCodeChat = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const [activeTab, setActiveTab] = React.useState('abilities');
+  const [shotKey, setShotKey] = React.useState('01');
   const [zoomed, setZoomed] = React.useState(false);
   const state = active ? 'show' : 'hidden';
+
+  React.useEffect(() => {
+    if (!active) { setActiveTab('abilities'); setShotKey('01'); setZoomed(false); }
+  }, [active]);
 
   React.useEffect(() => {
     if (!zoomed) return;
@@ -2072,16 +2090,15 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
     return () => window.removeEventListener('keydown', onKey, true);
   }, [zoomed]);
 
-  React.useEffect(() => {
-    if (!active) { setActiveTab('abilities'); setZoomed(false); }
-  }, [active]);
+  const focusedFeature = CHAT_FEATURES.find((f) => f.n === shotKey) || CHAT_FEATURES[0];
+  const focusedShot = CHAT_SHOTS[focusedFeature.n];
 
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · Toolchain - Claude Code"
-        title="Claude Chat Panel"
-        sub="能做什麼 · 怎麼運作 · 用哪顆腦——對話前該知道的三件事"
+        kicker="01 UX Design work with AI．Toolchain ｜ Claude Code"
+        title="Claude Code Plugin - Chat Panel"
+        sub="從 Chat Panel 指派任務，理解 AI 如何讀取、思考與執行"
       />
       <motion.div
         ref={ref}
@@ -2093,8 +2110,8 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
           flex: 1,
           minHeight: 0,
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr 2fr',
-          gridTemplateRows: '1fr 1fr 1fr',
+          gridTemplateColumns: activeTab === 'abilities' ? '1fr 2.4fr 1fr' : '1fr 3fr',
+          gridTemplateRows: '1fr 1fr',
           gap: 16,
         }}
       >
@@ -2120,71 +2137,18 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
               gap: 6,
             }}
           >
-            <div style={{ fontFamily: MONO, fontSize: 44, color: tab.accent, letterSpacing: '0.1em', fontWeight: 700 }}>{tab.num}</div>
+            <div style={{ width: 28, height: 4, borderRadius: 2, background: tab.accent, marginBottom: 4 }} />
             <div style={{ fontSize: 32, fontWeight: 600, color: activeTab === tab.key ? C.ink : C.inkMuted, lineHeight: 1.2, transition: 'color 0.2s' }}>{tab.title}</div>
             <div style={{ fontSize: 24, color: C.inkMuted, letterSpacing: TRACK.small }}>{tab.sub}</div>
           </motion.div>
         ))}
 
-        {/* Col 2 — Active tab screenshot (spans all rows) */}
+        {/* Col 2 — Content panel (spans all rows) */}
         <motion.div
           variants={FADE_UP}
           style={{
             gridColumn: 2,
-            gridRow: '1 / span 3',
-            background: C.surface1,
-            border: `1px solid ${CHAT_TABS.find(t => t.key === activeTab).accent}`,
-            borderRadius: ROUNDED.lg,
-            padding: 10,
-            display: 'flex',
-            alignItems: 'stretch',
-            overflow: 'hidden',
-            cursor: 'zoom-in',
-            position: 'relative',
-            transition: 'border-color 0.2s',
-          }}
-          onClick={() => setZoomed(true)}
-        >
-          <motion.img
-            key={activeTab}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
-            src={CHAT_TABS.find(t => t.key === activeTab).img}
-            alt={CHAT_TABS.find(t => t.key === activeTab).imgAlt}
-            style={{
-              display: 'block',
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'top',
-              borderRadius: ROUNDED.md,
-            }}
-          />
-          <div style={{
-            position: 'absolute',
-            bottom: 14,
-            right: 14,
-            background: 'rgba(0,0,0,0.72)',
-            border: '1px solid rgba(255,255,255,0.18)',
-            color: C.ink,
-            fontFamily: MONO,
-            fontSize: 16,
-            padding: '4px 10px',
-            borderRadius: ROUNDED.sm,
-            letterSpacing: '0.12em',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            pointerEvents: 'none',
-          }}>↗ 放大</div>
-        </motion.div>
-
-        {/* Col 3 — Content panel (spans all 3 rows) */}
-        <motion.div
-          variants={FADE_UP}
-          style={{
-            gridColumn: 3,
-            gridRow: '1 / span 3',
+            gridRow: '1 / span 2',
             background: C.surface1,
             border: `1px solid ${C.hairline}`,
             borderRadius: ROUNDED.lg,
@@ -2203,42 +2167,52 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
             style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}
           >
             {activeTab === 'abilities' && (
-              <>
-                {/* <div style={{ fontSize: 17, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 20 }}>① 能做的事 · Abilities</div> */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1, minHeight: 0 }}>
-                  {CHAT_FEATURES.map((f) => (
-                    <div key={f.n} style={{
-                      background: C.surface2,
-                      border: `1px solid ${C.hairline}`,
-                      borderTop: `3px solid ${f.accent}`,
-                      borderRadius: ROUNDED.md,
-                      padding: '14px 20px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 6,
-                      flex: 1,
-                    }}>
-                      <div style={{ fontSize: 18, fontFamily: MONO, color: f.accent, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>{f.tag}</div>
-                      <div style={{ fontSize: 24, fontWeight: 600, color: C.ink, lineHeight: 1.2, letterSpacing: TRACK.title }}>{f.title}</div>
-                      <div style={{ fontSize: 18, color: C.inkMuted, lineHeight: 1.45 }}>{f.summary}</div>
-                      <div style={{ fontSize: 20, color: C.inkMuted, lineHeight: 1.5, opacity: 0.7 }}>{f.detail}</div>
-                    </div>
-                  ))}
-                </div>
-              </>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gridTemplateRows: 'repeat(3, 1fr)',
+                gap: 16,
+                flex: 1,
+                minHeight: 0,
+              }}>
+                {CHAT_FEATURES.map((f) => (
+                  <div key={f.n} onClick={() => setShotKey(f.n)} style={{
+                    background: f.n === shotKey ? C.surface1 : C.surface2,
+                    border: `1px solid ${f.n === shotKey ? f.accent : C.hairline}`,
+                    borderTop: `3px solid ${f.accent}`,
+                    borderRadius: ROUNDED.md,
+                    padding: '16px 22px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6,
+                    minHeight: 0,
+                    cursor: 'pointer',
+                    transition: 'background 0.2s, border-color 0.2s',
+                  }}>
+                    <div style={{ fontSize: 17, fontFamily: MONO, color: f.accent, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>{f.tag}</div>
+                    <div style={{ fontSize: 26, fontWeight: 600, color: C.ink, lineHeight: 1.2, letterSpacing: TRACK.title }}>{f.title}</div>
+                    <div style={{ fontSize: 19, color: C.ink, opacity: 0.9, lineHeight: 1.4 }}>{f.summary}</div>
+                    <div style={{ fontSize: 18, color: C.inkMuted, lineHeight: 1.45 }}>{f.detail}</div>
+                  </div>
+                ))}
+              </div>
             )}
 
             {activeTab === 'how' && (
-              <>
-                {/* <div style={{ fontSize: 17, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 20 }}>② AI 怎麼運作 · 概念之間的關係</div> */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div style={{ border: `1.5px solid ${C.gradientCoral}`, borderRadius: ROUNDED.md, padding: '28px 24px 22px', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ position: 'absolute', top: -10, left: 16, background: C.surface1, padding: '0 10px', fontFamily: MONO, fontSize: 24, fontWeight: 700, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, flex: 1, minHeight: 0 }}>
+                {/* 左欄 — AI 怎麼運作（概念框 + token 示意圖） */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
+                  <div>
+                    <div style={{ fontSize: 26, fontWeight: 600, color: C.ink, letterSpacing: TRACK.title, lineHeight: 1.2 }}>AI 怎麼運作</div>
+                    <div style={{ fontSize: 16, color: C.inkMuted, marginTop: 4, letterSpacing: TRACK.small, lineHeight: 1.4 }}>對話怎麼被組成、AI 一次能看見多少。</div>
+                  </div>
+                  <div style={{ border: `1.5px solid ${C.gradientCoral}`, borderRadius: ROUNDED.md, padding: '28px 22px 20px', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ position: 'absolute', top: -10, left: 16, background: C.surface1, padding: '0 10px', fontFamily: MONO, fontSize: 22, fontWeight: 700, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
                       <span style={{ color: C.gradientCoral }}>Session</span>
                       <span style={{ color: C.inkMuted, fontWeight: 400, marginLeft: 8 }}>· 同一個任務的對話視窗</span>
                     </div>
-                    <div style={{ border: `1.5px solid ${C.gradientOrange}`, borderRadius: ROUNDED.sm, padding: '26px 20px 18px', position: 'relative' }}>
-                      <div style={{ position: 'absolute', top: -10, left: 14, background: C.surface1, padding: '0 10px', fontFamily: MONO, fontSize: 24, fontWeight: 700, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+                    <div style={{ border: `1.5px solid ${C.gradientOrange}`, borderRadius: ROUNDED.sm, padding: '24px 18px 16px', position: 'relative' }}>
+                      <div style={{ position: 'absolute', top: -10, left: 14, background: C.surface1, padding: '0 10px', fontFamily: MONO, fontSize: 22, fontWeight: 700, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
                         <span style={{ color: C.gradientOrange }}>Context Window</span>
                         <span style={{ color: C.inkMuted, fontWeight: 400, marginLeft: 8 }}>· AI 一次能看的 token 上限</span>
                       </div>
@@ -2285,129 +2259,184 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
                         ))}
                       </div>
                       <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, color: C.inkMuted, fontFamily: MONO }}>
-                        <span style={{ display: 'inline-block', padding: '2px 8px', border: `1px solid ${C.gradientViolet}`, borderRadius: ROUNDED.xs, color: C.gradientViolet, fontWeight: 700 }}>Token</span>
-                        <span> 是 AI 處理文字的最小單位。每一次的提問及AI的回覆，都會被累積進 context window</span>
+                        <span style={{ display: 'inline-block', padding: '2px 8px', border: `1px solid ${C.gradientViolet}`, borderRadius: ROUNDED.xs, color: C.gradientViolet, fontWeight: 700, flexShrink: 0 }}>Token</span>
+                        <span> 是 AI 處理文字的最小單位。每一次的提問及 AI 的回覆，都會被累積進 context window</span>
                       </div>
                     </div>
-                    <div style={{ marginTop: 16, fontSize: 18, color: C.inkMuted, fontFamily: MONO, letterSpacing: '0.03em' }}>context window 是 AI 模型在單次對話中能「看到」的所有資訊總量，包含你的提問、對話歷史、附加的程式碼檔案與系統規則等，超過 token 上限（依使用模型不同而有所差異）時 Cursor 會自動做截斷或語意篩選，優先保留最相關的內容。</div>
+                    <div style={{ marginTop: 16, fontSize: 18, color: C.inkMuted, fontFamily: MONO, letterSpacing: '0.03em', lineHeight: 1.5 }}>context window 是 AI 模型在單次對話中能「看到」的所有資訊總量，包含你的提問、對話歷史、附加的程式碼檔案與系統規則等，超過 token 上限（依使用模型不同而有所差異）時 Cursor 會自動做截斷或語意篩選，優先保留最相關的內容。</div>
                   </div>
                 </div>
-              </>
+
+                {/* 右欄 — 模型選擇 */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
+                  <div>
+                    <div style={{ fontSize: 26, fontWeight: 600, color: C.ink, letterSpacing: TRACK.title, lineHeight: 1.2 }}>模型選擇</div>
+                    <div style={{ fontSize: 16, color: C.inkMuted, marginTop: 4, letterSpacing: TRACK.small, lineHeight: 1.4 }}>對的任務，配對對的模型。</div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, fontSize: 18, color: C.inkMuted, fontFamily: MONO, letterSpacing: '0.02em' }}>
+                    <span>輸入</span>
+                    <span style={{ padding: '2px 10px', border: `1px solid ${C.gradientOrange}`, borderRadius: ROUNDED.xs, color: C.gradientOrange, fontWeight: 700, fontSize: 14 }}>/model</span>
+                    <span>切換模型</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1, minHeight: 0 }}>
+                    {MODELS.map((m) => (
+                      <div key={m.name} style={{
+                        background: C.surface2,
+                        border: `1px solid ${C.hairline}`,
+                        borderTop: `3px solid ${m.accent}`,
+                        borderRadius: ROUNDED.md,
+                        padding: '10px 16px',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        gap: 14,
+                        flex: 1,
+                        alignItems: 'stretch',
+                      }}>
+                        {/* Left: name + tag */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 88, justifyContent: 'center' }}>
+                          <div style={{ fontSize: 28, fontFamily: MONO, fontWeight: 700, color: m.accent, letterSpacing: TRACK.title, lineHeight: 1 }}>{m.name}</div>
+                          <div style={{ fontSize: 13, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', lineHeight: 1.3 }}>{m.tag}</div>
+                        </div>
+                        {/* Divider */}
+                        <div style={{ width: 1, background: C.hairline, flexShrink: 0 }} />
+                        {/* Right: info list */}
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3, justifyContent: 'center' }}>
+                          {[
+                            { label: '智慧程度', value: m.intelligence },
+                            { label: 'Context Window', value: m.contextWindow, tip: m.contextTip },
+                            { label: '回應速度', value: m.speed },
+                            { label: '額度消耗', value: m.cost },
+                            { label: '適用情境', value: m.useCase },
+                          ].map(({ label, value, tip }) => (
+                            <div key={label} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                              <div style={{ fontSize: 14, fontFamily: MONO, color: m.accent, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.85, flexShrink: 0, minWidth: 92 }}>{label}</div>
+                              <div style={{ fontSize: 14, color: C.ink, lineHeight: 1.35, opacity: 0.9 }}>
+                                {tip ? <Hint tip={tip} width={340}>{value}</Hint> : value}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 12, padding: '8px 14px', borderLeft: `3px solid ${C.gradientOrange}`, background: 'rgba(255,122,61,0.06)', borderRadius: `0 ${ROUNDED.sm} ${ROUNDED.sm} 0`, fontSize: 16, fontFamily: MONO, color: C.inkMuted, lineHeight: 1.5 }}>
+                    任務越複雜選越大的模型，追求速度與省額度則選小模型
+                  </div>
+                </div>
+              </div>
             )}
 
-            {activeTab === 'models' && (
-              <>
-                <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, fontSize: 20, color: C.inkMuted, fontFamily: MONO, letterSpacing: '0.02em' }}>
-                  <span>在 Chat panel 輸入</span>
-                  <span style={{ padding: '2px 10px', border: `1px solid ${C.gradientOrange}`, borderRadius: ROUNDED.xs, color: C.gradientOrange, fontWeight: 700, fontSize: 15 }}>/model</span>
-                  <span>選擇</span>
-                  <span style={{ padding: '2px 10px', border: `1px solid ${C.hairline}`, borderRadius: ROUNDED.xs, color: C.ink, fontSize: 15 }}>Switch model…</span>
-                  <span>切換（如左圖）</span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14, flex: 1, minHeight: 0 }}>
-                  {MODELS.map((m) => (
-                    <div key={m.name} style={{
-                      background: C.surface2,
-                      border: `1px solid ${C.hairline}`,
-                      borderTop: `3px solid ${m.accent}`,
-                      borderRadius: ROUNDED.md,
-                      padding: '12px 18px',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      gap: 18,
-                      flex: 1,
-                      alignItems: 'stretch',
-                    }}>
-                      {/* Left: name + tag */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 110, justifyContent: 'center' }}>
-                        <div style={{ fontSize: 38, fontFamily: MONO, fontWeight: 700, color: m.accent, letterSpacing: TRACK.title, lineHeight: 1 }}>{m.name}</div>
-                        <div style={{ fontSize: 16, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1.3 }}>{m.tag}</div>
-                      </div>
-                      {/* Divider */}
-                      <div style={{ width: 1, background: C.hairline, flexShrink: 0 }} />
-                      {/* Right: info list */}
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5, justifyContent: 'center' }}>
-                        {[
-                          { label: '智慧程度', value: m.intelligence },
-                          { label: 'Context Window', value: m.contextWindow, tip: m.contextTip },
-                          { label: '回應速度', value: m.speed },
-                          { label: '額度消耗', value: m.cost },
-                          { label: '適用情境', value: m.useCase },
-                        ].map(({ label, value, tip }) => (
-                          <div key={label} style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                            <div style={{ fontSize: 18, fontFamily: MONO, color: m.accent, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.85, flexShrink: 0, minWidth: 100 }}>{label}</div>
-                            <div style={{ fontSize: 18, color: C.ink, lineHeight: 1.4, opacity: 0.9 }}>
-                              {tip ? <Hint tip={tip} width={340}>{value}</Hint> : value}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ marginTop: 14, padding: '10px 16px', borderLeft: `3px solid ${C.gradientOrange}`, background: 'rgba(255,122,61,0.06)', borderRadius: `0 ${ROUNDED.sm} ${ROUNDED.sm} 0`, fontSize: 20, fontFamily: MONO, color: C.inkMuted, lineHeight: 1.6 }}>
-                  任務越複雜選越大的模型，追求速度與省額度則選小模型
-                </div>
-              </>
-            )}
           </motion.div>
         </motion.div>
-      </motion.div>
 
-      {/* Lightbox */}
-      {zoomed && (() => {
-        const tab = CHAT_TABS.find(t => t.key === activeTab);
-        return (
+        {/* Col 3 — 操作截圖（對應目前選取的卡片）— abilities tab 專用 */}
+        {activeTab === 'abilities' && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            onClick={() => setZoomed(false)}
+            variants={FADE_UP}
             style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'rgba(0,0,0,0.94)',
-              zIndex: 50,
+              gridColumn: 3,
+              gridRow: '1 / span 2',
+              background: C.surface1,
+              border: `1px solid ${focusedFeature.accent}`,
+              borderRadius: ROUNDED.lg,
+              padding: 12,
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'zoom-out',
+              flexDirection: 'column',
+              minHeight: 0,
+              transition: 'border-color 0.2s',
             }}
           >
-            <motion.div
-              initial={{ scale: 0.96 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-              style={{ position: 'relative' }}
-            >
-              <img
-                src={tab.img}
-                alt={tab.imgAlt}
+            {focusedShot ? (
+              /* 實際截圖 — 點擊放大 */
+              <div
+                onClick={() => setZoomed(true)}
                 style={{
-                  display: 'block',
-                  maxWidth: '92vw',
-                  maxHeight: '88vh',
-                  width: 'auto',
-                  height: 'auto',
+                  flex: 1,
+                  minHeight: 0,
                   borderRadius: ROUNDED.md,
-                  boxShadow: '0 30px 80px rgba(0,0,0,0.6)',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  cursor: 'zoom-in',
+                  display: 'flex',
                 }}
-              />
-            </motion.div>
-            <div style={{
-              position: 'absolute',
-              top: 36,
-              right: 48,
-              color: C.ink,
-              fontFamily: MONO,
-              fontSize: 14,
-              letterSpacing: '0.16em',
-              opacity: 0.7,
-              pointerEvents: 'none',
-              textTransform: 'uppercase',
-            }}>ESC / Click 關閉</div>
+              >
+                <motion.img
+                  key={focusedFeature.n}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                  src={focusedShot}
+                  alt={focusedFeature.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', borderRadius: ROUNDED.md }}
+                />
+                <div style={{
+                  position: 'absolute', bottom: 12, right: 12,
+                  background: 'rgba(0,0,0,0.72)', border: '1px solid rgba(255,255,255,0.18)',
+                  color: C.ink, fontFamily: MONO, fontSize: 14, padding: '4px 10px',
+                  borderRadius: ROUNDED.sm, letterSpacing: '0.12em', fontWeight: 600,
+                  textTransform: 'uppercase', pointerEvents: 'none',
+                }}>↗ 放大</div>
+              </div>
+            ) : (
+              /* placeholder — 補上圖檔前的佔位（顯示建議檔名） */
+              <div style={{
+                flex: 1,
+                minHeight: 0,
+                border: `1.5px dashed ${focusedFeature.accent}66`,
+                borderRadius: ROUNDED.md,
+                background: `${focusedFeature.accent}0d`,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 12,
+                padding: 18,
+                textAlign: 'center',
+              }}>
+                <span style={{ fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: focusedFeature.accent, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600 }}>操作截圖</span>
+                <span style={{ fontSize: 22, color: C.ink, fontWeight: 600, lineHeight: 1.3 }}>{focusedFeature.title}</span>
+                <span style={{ fontSize: 15, fontFamily: MONO, color: C.inkMuted, lineHeight: 1.4, wordBreak: 'break-all' }}>{focusedFeature.shot}</span>
+              </div>
+            )}
+            <div style={{ marginTop: 10, fontSize: TYPE_SCALE.tiny, color: C.inkMuted, textAlign: 'center', letterSpacing: TRACK.small }}>
+              ← 點左側卡片切換截圖{focusedShot ? '，點截圖可放大' : ''}
+            </div>
           </motion.div>
-        );
-      })()}
+        )}
+      </motion.div>
+
+      {/* Lightbox — 放大操作截圖 */}
+      {zoomed && focusedShot && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setZoomed(false)}
+          style={{
+            position: 'absolute', inset: 0,
+            background: 'rgba(0,0,0,0.94)', zIndex: 50,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'zoom-out',
+          }}
+        >
+          <motion.img
+            initial={{ scale: 0.96 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+            src={focusedShot}
+            alt={focusedFeature.title}
+            style={{
+              display: 'block', maxWidth: '92vw', maxHeight: '92vh',
+              width: 'auto', height: 'auto', borderRadius: ROUNDED.md,
+              boxShadow: '0 30px 80px rgba(0,0,0,0.6)',
+            }}
+          />
+          <div style={{
+            position: 'absolute', top: 36, right: 48,
+            color: C.ink, fontFamily: MONO, fontSize: 14, letterSpacing: '0.16em',
+            opacity: 0.7, pointerEvents: 'none', textTransform: 'uppercase',
+          }}>ESC / Click 關閉</div>
+        </motion.div>
+      )}
 
       <SlideNumber n={n} total={total} />
     </Frame>
@@ -2431,7 +2460,7 @@ const Part1Terminal = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.03 · ④ Terminal"
+        kicker="01 UX Design work with AI．Toolchain | Cursor - Terminal"
         title="從 Terminal 啟動 Claude Code"
         sub="四步驟，把 Claude 跑起來。"
       />
@@ -2561,7 +2590,7 @@ const Part1ProjectClaudeMd = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 ·Cursor Workspace - ① Project folder"
+        kicker="01 UX Design work with AI．Cursor Workspace | Project folder"
         title="一個資料夾 = 一個專案"
         sub="一份 CLAUDE.md = AI 在這個專案的工作守則。"
       />
@@ -2799,7 +2828,7 @@ export default [
   { label: 'Section · Part 1', render: (p) => (
     <SectionDivider
       {...p}
-      kicker="Part 1"
+      kicker="01"
       title="UX Design work with AI"
       subtitle="Closing the Gap Between Designers and Engineers"
       range="Ch.01 – Ch.03 · 開場 + 環境建置"
