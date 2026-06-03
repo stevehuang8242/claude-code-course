@@ -325,7 +325,7 @@ const Part1Ch1Combined = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · The Shift"
+        kicker="01 UX Design work with AI．The Shift"
         title="Closing the Gap"
         sub="Building an AI-powered bridge for continuous UX execution"
       />
@@ -474,7 +474,7 @@ const Part1Ch2Combined = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · Toolchain"
+        kicker="01 UX Design work with AI．Toolchain"
         title="Design to Code Toolchain"
         sub="Design Source ⇄ MCP ⇄ AI Agent"
       />
@@ -1025,7 +1025,7 @@ const Part1CursorLayout = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · Toolchain - Cursor"
+        kicker="01 UX Design work with AI．Toolchain"
         title="Cursor Workspace"
         sub="for building with AI"
       />
@@ -1577,7 +1577,7 @@ const Part1FigmaMCP = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · Toolchain - Figma MCP Service"
+        kicker="01 UX Design work with AI．Toolchain"
         title="Figma MCP — UI ⇄ Code 的雙向協定"
         sub="Claude Code 能直接讀寫 Figma 圖稿的關鍵橋樑"
       />
@@ -1788,7 +1788,7 @@ const Part1FigmaMCPInstall = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · Toolchain - Figma MCP Service"
+        kicker="01 UX Design work with AI．Toolchain"
         title="如何安裝 Figma MCP plugin"
         sub="從 Claude Code 連上 Figma MCP server"
       />
@@ -2079,7 +2079,7 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 · Toolchain - Claude Code"
+        kicker="01 UX Design work with AI．Toolchain"
         title="Claude Chat Panel"
         sub="能做什麼 · 怎麼運作 · 用哪顆腦——對話前該知道的三件事"
       />
@@ -2431,7 +2431,7 @@ const Part1Terminal = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.03 · ④ Terminal"
+        kicker="01 UX Design work with AI．Toolchain | ④ Terminal"
         title="從 Terminal 啟動 Claude Code"
         sub="四步驟，把 Claude 跑起來。"
       />
@@ -2561,7 +2561,7 @@ const Part1ProjectClaudeMd = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Part1 ·Cursor Workspace - ① Project folder"
+        kicker="01 UX Design work with AI．Cursor Workspace | ① Project folder"
         title="一個資料夾 = 一個專案"
         sub="一份 CLAUDE.md = AI 在這個專案的工作守則。"
       />
@@ -2799,7 +2799,7 @@ export default [
   { label: 'Section · Part 1', render: (p) => (
     <SectionDivider
       {...p}
-      kicker="Part 1"
+      kicker="01"
       title="UX Design work with AI"
       subtitle="Closing the Gap Between Designers and Engineers"
       range="Ch.01 – Ch.03 · 開場 + 環境建置"

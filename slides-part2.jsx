@@ -293,27 +293,43 @@ const Slide = ({ kicker, title, sub, children, n, total, bg }) => {
 };
 
 /* ============================================================
-   SLIDE 01 — Agenda · Part 2（兩個 Case，六個段落）
+   SLIDE 00 — 情境實作開場 · 三情境總覽
+   （情境一 Part 2 / 情境二 Part 3 / 情境三 Part 4，先給全局地圖）
    ============================================================ */
 
-const AGENDA_ITEMS = [
-  { n: '01', title: 'Two Cases',        sub: '兩個 Case 的場景定位',      tag: 'Context', accent: C.gradientViolet },
-  { n: '02', title: 'Plan Mode',        sub: '先想再做的規劃模式',        tag: 'Case 1',  accent: C.gradientMagenta },
-  { n: '03', title: 'Discussion → PRD', sub: '把想法討論成 PRD',          tag: 'Case 1',  accent: C.gradientMagenta },
-  { n: '04', title: 'PRD → 第一版',      sub: 'Plan → Implement（0 → 1）', tag: 'Case 1',  accent: C.gradientOrange },
-  { n: '05', title: 'Design Sources',   sub: '三種設計源比較',            tag: 'Case 2',  accent: C.gradientOrange },
-  { n: '06', title: 'Source to Code',   sub: '設計源到 Code 的接軌',      tag: 'Case 2',  accent: C.gradientCoral },
+const SCENARIOS = [
+  {
+    n: '01',
+    tag: '情境一',
+    accent: C.gradientViolet,
+    name: 'Design to Code',
+    desc: '從討論或設計源出發，做出第一版可運作介面（0 → 1）。',
+  },
+  {
+    n: '02',
+    tag: '情境二',
+    accent: C.gradientMagenta,
+    name: 'Design from Code',
+    desc: '把 AI 生成的雜亂介面，重構成具一致性的設計系統。',
+  },
+  {
+    n: '03',
+    tag: '情境三',
+    accent: C.gradientOrange,
+    name: 'RPI Workflow',
+    desc: 'Research → Plan → Implement，10 分鐘做出新功能。',
+  },
 ];
 
-const Part2Agenda = ({ n, total }) => {
+const Part2ScenariosIntro = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const state = active ? 'show' : 'hidden';
   return (
     <Frame>
       <SlideHead
-        kicker="Part 2 · Agenda"
-        title="兩個 Case，六個段落"
-        sub="從場景定位，到 Case 1（從討論）、Case 2（從設計源）——都做到第一版跑起來。"
+        kicker="情境實作介紹"
+        title="AI Design Workflow 情境實作"
+        sub="由 AI 驅動的設計與開發協作模式"
       />
       <motion.div
         ref={ref}
@@ -321,52 +337,66 @@ const Part2Agenda = ({ n, total }) => {
         animate={state}
         variants={STAGGER}
         style={{
-          marginTop: 56,
-          display: 'grid',
-          gridAutoFlow: 'column',
-          gridTemplateColumns: '1fr 1fr',
-          gridTemplateRows: 'repeat(3, auto)',
-          columnGap: 56,
-          rowGap: 20,
+          marginTop: 40,
+          marginBottom: 40,
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 28,
         }}
       >
-        {AGENDA_ITEMS.map((item) => (
-          <motion.div
-            key={item.n}
-            variants={FADE_UP}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '88px 1fr auto',
-              alignItems: 'center',
-              gap: 28,
-              padding: '20px 0',
-              borderBottom: `1px solid ${C.hairline}`,
-            }}
-          >
-            <div style={{
-              fontSize: TYPE_SCALE.subtitle,
-              fontFamily: MONO,
-              color: item.accent,
-              letterSpacing: '0.04em',
-              fontWeight: 600,
-            }}>{item.n}</div>
-            <div>
+        <motion.div
+          variants={STAGGER_INNER}
+          style={{
+            flex: 1,
+            minHeight: 0,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 24,
+          }}
+        >
+          {SCENARIOS.map((card) => (
+            <motion.div
+              key={card.n}
+              variants={FADE_UP}
+              style={{
+                background: C.surface1,
+                border: `1px solid ${C.hairline}`,
+                borderRadius: ROUNDED.lg,
+                padding: '36px 36px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 24,
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
               <div style={{
-                fontSize: TYPE_SCALE.body,
-                fontWeight: 600,
-                color: C.ink,
-                marginBottom: 6,
-                letterSpacing: TRACK.body,
-              }}>{item.title}</div>
+                position: 'absolute', top: 0, left: 0, right: 0,
+                height: 4, background: card.accent,
+              }} />
               <div style={{
-                fontSize: TYPE_SCALE.small,
-                color: C.inkMuted,
-                letterSpacing: TRACK.small,
-              }}>{item.sub}</div>
-            </div>
-            <Tag color={item.accent}>{item.tag}</Tag>
-          </motion.div>
-        ))}
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <Tag color={card.accent}>{card.tag}</Tag>
+                <div style={{
+                  fontSize: TYPE_SCALE.title, fontFamily: MONO,
+                  color: card.accent, fontWeight: 700, lineHeight: 1, opacity: 0.4,
+                }}>{card.n}</div>
+              </div>
+              <div style={{
+                fontSize: 40, fontWeight: 600, color: C.ink,
+                lineHeight: 1.15, letterSpacing: TRACK.title,
+              }}>{card.name}</div>
+              <div style={{
+                marginTop: 'auto',
+                fontSize: TYPE_SCALE.small, color: C.inkMuted,
+                lineHeight: 1.5, letterSpacing: TRACK.small,
+              }}>{card.desc}</div>
+            </motion.div>
+          ))}
+        </motion.div>
       </motion.div>
       <SlideNumber n={n} total={total} />
     </Frame>
@@ -374,14 +404,14 @@ const Part2Agenda = ({ n, total }) => {
 };
 
 /* ============================================================
-   SLIDE 02 — Ch.01 Two Cases · Two-Column 比較
+   SLIDE 01 — Ch.01 Two Cases · Two-Column 比較
    ============================================================ */
 
 const CASES = [
   {
     tag: 'Case 1 · From Discussion',
     accent: C.gradientViolet,
-    headline: '腦中有需求，沒有圖稿',
+    headline: '只有需求，沒有圖稿',
     inputs: ['需求 / 想法', '品牌素材', '競品參考'],
     path: ['討論', 'PRD', 'Plan', '第一版'],
     when: '探索期 · 新功能 · 手邊無圖稿',
@@ -402,7 +432,7 @@ const Part2TwoCases = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="Ch.01 · Two Cases"
+        kicker="02 情境一 · Design to Code"
         title="同一個終點，兩條路徑"
         sub="Case 不是技術偏好——你手邊有什麼，決定你走哪一條。"
       />
@@ -1351,7 +1381,7 @@ const Part2Closing = ({ n, total }) => {
    ============================================================ */
 
 export {
-  Part2Agenda,
+  Part2ScenariosIntro,
   Part2TwoCases,
   Part2PlanMode,
   Part2DiscussionPRD,
@@ -1367,6 +1397,7 @@ export const title = '情境一 · Design to Code'
 export const subtitle = '兩個 Case：從討論或設計源出發，各自做出第一版可運作介面（0 → 1）。'
 
 export default [
+  { label: 'Scenarios · 三情境總覽', render: (p) => <Part2ScenariosIntro {...p} /> },
   { label: 'Section · Part 2', render: (p) => (
     <SectionDivider
       {...p}
@@ -1377,7 +1408,6 @@ export default [
       bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)"
     />
   )},
-  { label: 'Agenda', render: (p) => <Part2Agenda {...p} /> },
   { label: 'Ch.01 · Two Cases', render: (p) => <Part2TwoCases {...p} /> },
   { label: 'Section · Case 1', render: (p) => (
     <SectionDivider
