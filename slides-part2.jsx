@@ -1409,29 +1409,9 @@ export default [
     />
   )},
   { label: 'Ch.01 · Two Cases', render: (p) => <Part2TwoCases {...p} /> },
-  { label: 'Section · Case 1', render: (p) => (
-    <SectionDivider
-      {...p}
-      kicker="Case 1 · From Discussion"
-      title="當你只有想法"
-      subtitle="用 Plan Mode 跟 AI 討論成 PRD，再推進到第一版 code。"
-      range="Ch.02 – Ch.04 · Plan Mode → PRD → Implement"
-      bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)"
-    />
-  )},
   { label: 'Ch.02 · Plan Mode', render: (p) => <Part2PlanMode {...p} /> },
   { label: 'Ch.03 · Discussion → PRD', render: (p) => <Part2DiscussionPRD {...p} /> },
   { label: 'Ch.04 · PRD → 第一版', render: (p) => <Part2PlanToImplement {...p} /> },
-  { label: 'Section · Case 2', render: (p) => (
-    <SectionDivider
-      {...p}
-      kicker="Case 2 · From Design Source"
-      title="當你已經有設計源"
-      subtitle="依來源選對接軌通道，把視覺轉成 AI 看得懂的 input。"
-      range="Ch.05 – Ch.06 · Design Sources → Source to Code"
-      bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)"
-    />
-  )},
   { label: 'Ch.05 · Design Sources', render: (p) => <Part2DesignSources {...p} /> },
   { label: 'Ch.06 · Source to Code', render: (p) => <Part2SourceToCode {...p} /> },
   { label: 'Overview', render: (p) => <Part2Overview {...p} /> },
