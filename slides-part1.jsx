@@ -20,12 +20,16 @@ import cursorInstallPluginImg from './Slide/Image/Part1/Cursor-installClaudePlug
 import cursorOpenClaudeCodeChatImg from './Slide/Image/Part1/Cursor_openClaudeCodeChat.png'
 import cursorSetIconVisibilityImg from './Slide/Image/Part1/Cursor_setClaudeIcon_visibility.png'
 import claudeCodeLoginImg from './Slide/Image/Part1/claudeCode_login.png'
-import claudeChatImg from './Slide/Image/Part1/claudeCode_chat.png'
-import claudeChatContext from './Slide/Image/Part1/claudeCode_context.png'
 import figmaMcpInstall01 from './Slide/Image/Part1/FigmaMCP_install_01.png'
 import figmaMcpInstall02 from './Slide/Image/Part1/FigmaMCP_install_02.png'
 import figmaMcpInstall03 from './Slide/Image/Part1/FigmaMCP_install_03.png'
 import figmaMcpInstall04 from './Slide/Image/Part1/FigmaMCP_install_04.png'
+import chatPanelShot01 from './Slide/Image/Part1/chatPanel_01_sessions.png'
+import chatPanelShot02 from './Slide/Image/Part1/chatPanel_02_sessions.png'
+import chatPanelShot03 from './Slide/Image/Part1/chatPanel_03_sessions.png'
+import chatPanelShot04 from './Slide/Image/Part1/chatPanel_04_sessions.png'
+import chatPanelShot05 from './Slide/Image/Part1/chatPanel_05_sessions.png'
+import chatPanelShot06 from './Slide/Image/Part1/chatPanel_06_sessions.png'
 
 /* ============================================================
    Design tokens — 與 slides-part4.jsx / slides-part5.jsx 同步
@@ -1991,51 +1995,93 @@ const Part1FigmaMCPInstall = ({ n, total }) => {
    SLIDE 05 — Ch.03 ③ Claude Chat · 對話框功能介紹
    ============================================================ */
 
+/* `shot` = 對應操作截圖的建議檔名，放在 ./Slide/Image/Part1/。
+ * 圖檔補上後，於檔頭 import 並把下方 CHAT_SHOTS 對應的值換成 import 變數即可。 */
 const CHAT_FEATURES = [
   {
     n: '01',
-    tag: 'Conversation',
+    tag: 'Sessions',
     accent: C.gradientViolet,
-    title: '多輪對話',
-    summary: '像跟同事討論，記得上下文',
-    detail: '可追問、修正方向、補背景；不是 Q&A，是持續協作。',
+    title: '新增 / 查看 Session',
+    summary: '開新對話、接續舊的',
+    detail: '每個 session 是一段獨立的任務脈絡；可開新 session，或從歷史清單 resume 先前的對話。',
+    shot: 'chatPanel_01_sessions.png',
   },
   {
     n: '02',
-    tag: 'Project Context',
+    tag: 'Prompt Input',
     accent: C.gradientMagenta,
-    title: '讀整個專案',
-    summary: '跨檔搜尋、跨檔修改',
-    detail: '透過 CLAUDE.md 學會專案規矩；不限於當前開啟的檔案。',
+    title: '對話輸入',
+    summary: '自然語言交辦，多輪協作',
+    detail: '打字描述要做什麼，可追問、修正方向、補背景；Enter 送出、Shift+Enter 換行。',
+    shot: 'chatPanel_02_input.png',
   },
   {
     n: '03',
-    tag: 'Attach & Reference',
+    tag: 'Attach',
     accent: C.gradientOrange,
-    title: '附圖 / @檔案',
-    summary: '截圖拖進去 ＋ @filename 精確指向',
-    detail: '圖與檔案是 Claude 的「視覺輸入」；改設計時最常用。',
+    title: '附加檔案 / 圖片',
+    summary: '拖曳截圖、貼圖、@ 指向檔案',
+    detail: '把截圖、PRD、參考檔當輸入丟進對話；用 @ 精準指向專案裡的檔案。',
+    shot: 'chatPanel_03_attach.png',
   },
   {
     n: '04',
     tag: 'Slash Commands',
     accent: C.gradientCoral,
-    title: '指令 commands',
-    summary: '/init  /clear  /help  ...',
-    detail: '以 / 開頭的 shortcut；常用操作快速完成。',
+    title: 'Slash 指令',
+    summary: '輸入 / 叫出指令選單',
+    detail: '/init、/clear、/model、/mcp、/usage、/context… 常用操作一鍵完成。',
+    shot: 'chatPanel_04_slash.png',
+  },
+  {
+    n: '05',
+    tag: 'Context',
+    accent: C.gradientViolet,
+    title: '目前參考的 context 檔案',
+    summary: '看得到 Claude 讀了哪些',
+    detail: '面板列出本次帶入的 context（@ 檔案、開啟中的檔案、CLAUDE.md）；/context 可查佔用。',
+    shot: 'chatPanel_05_context.png',
+  },
+  {
+    n: '06',
+    tag: 'Modes',
+    accent: C.gradientMagenta,
+    title: '工作模式切換',
+    summary: 'Shift+Tab 切換模式',
+    detail: 'Plan mode 只規劃不動手、Auto-accept edits 自動套用變更、normal 逐步確認。',
+    shot: 'chatPanel_06_modes.png',
   },
 ];
 
+/* 操作截圖對應表（key = 卡片 n）。補圖後於檔頭 import，再把對應值填上即可，
+ * 例如：import chatPanelSessions from './Slide/Image/Part1/chatPanel_01_sessions.png'
+ *       '01': chatPanelSessions,
+ * 未填者顯示 placeholder（檔名提示）。有圖時點擊截圖可放大檢視。 */
+const CHAT_SHOTS = {
+  '01': chatPanelShot01,
+  '02': chatPanelShot02,
+  '03': chatPanelShot03,
+  '04': chatPanelShot04,
+  '05': chatPanelShot05,
+  '06': chatPanelShot06,
+};
+
 const CHAT_TABS = [
-  { key: 'abilities', title: 'Chat Panel 如何操作',   sub: 'Claude Code Plugin',         accent: C.gradientViolet, img: claudeChatImg,      imgAlt: 'Claude Code Chat' },
-  { key: 'how',       title: 'AI 怎麼運作', sub: '運作概念 × 模型選擇', accent: C.gradientCoral,  img: claudeChatContext,      imgAlt: 'Claude Code Context' },
+  { key: 'abilities', title: 'Chat Panel 如何操作', sub: 'Claude Code Plugin',   accent: C.gradientViolet },
+  { key: 'how',       title: 'AI 怎麼運作',         sub: '運作概念 × 模型選擇', accent: C.gradientCoral },
 ];
 
 const Part1ClaudeCodeChat = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const [activeTab, setActiveTab] = React.useState('abilities');
+  const [shotKey, setShotKey] = React.useState('01');
   const [zoomed, setZoomed] = React.useState(false);
   const state = active ? 'show' : 'hidden';
+
+  React.useEffect(() => {
+    if (!active) { setActiveTab('abilities'); setShotKey('01'); setZoomed(false); }
+  }, [active]);
 
   React.useEffect(() => {
     if (!zoomed) return;
@@ -2044,9 +2090,8 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
     return () => window.removeEventListener('keydown', onKey, true);
   }, [zoomed]);
 
-  React.useEffect(() => {
-    if (!active) { setActiveTab('abilities'); setZoomed(false); }
-  }, [active]);
+  const focusedFeature = CHAT_FEATURES.find((f) => f.n === shotKey) || CHAT_FEATURES[0];
+  const focusedShot = CHAT_SHOTS[focusedFeature.n];
 
   return (
     <Frame>
@@ -2065,7 +2110,7 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
           flex: 1,
           minHeight: 0,
           display: 'grid',
-          gridTemplateColumns: activeTab === 'how' ? '1fr 3fr' : '1fr 1fr 2fr',
+          gridTemplateColumns: activeTab === 'abilities' ? '1fr 2.4fr 1fr' : '1fr 3fr',
           gridTemplateRows: '1fr 1fr',
           gap: 16,
         }}
@@ -2098,66 +2143,11 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
           </motion.div>
         ))}
 
-        {/* Col 2 — Active tab screenshot (spans all rows) — 「AI 怎麼運作」改為左右兩欄，隱藏截圖 */}
-        {activeTab !== 'how' && (
+        {/* Col 2 — Content panel (spans all rows) */}
         <motion.div
           variants={FADE_UP}
           style={{
             gridColumn: 2,
-            gridRow: '1 / span 2',
-            background: C.surface1,
-            border: `1px solid ${CHAT_TABS.find(t => t.key === activeTab).accent}`,
-            borderRadius: ROUNDED.lg,
-            padding: 10,
-            display: 'flex',
-            alignItems: 'stretch',
-            overflow: 'hidden',
-            cursor: 'zoom-in',
-            position: 'relative',
-            transition: 'border-color 0.2s',
-          }}
-          onClick={() => setZoomed(true)}
-        >
-          <motion.img
-            key={activeTab}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
-            src={CHAT_TABS.find(t => t.key === activeTab).img}
-            alt={CHAT_TABS.find(t => t.key === activeTab).imgAlt}
-            style={{
-              display: 'block',
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'top',
-              borderRadius: ROUNDED.md,
-            }}
-          />
-          <div style={{
-            position: 'absolute',
-            bottom: 14,
-            right: 14,
-            background: 'rgba(0,0,0,0.72)',
-            border: '1px solid rgba(255,255,255,0.18)',
-            color: C.ink,
-            fontFamily: MONO,
-            fontSize: 16,
-            padding: '4px 10px',
-            borderRadius: ROUNDED.sm,
-            letterSpacing: '0.12em',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            pointerEvents: 'none',
-          }}>↗ 放大</div>
-        </motion.div>
-        )}
-
-        {/* Col 3 — Content panel (spans all 3 rows) */}
-        <motion.div
-          variants={FADE_UP}
-          style={{
-            gridColumn: activeTab === 'how' ? 2 : 3,
             gridRow: '1 / span 2',
             background: C.surface1,
             border: `1px solid ${C.hairline}`,
@@ -2177,29 +2167,35 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
             style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}
           >
             {activeTab === 'abilities' && (
-              <>
-                {/* <div style={{ fontSize: 17, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 20 }}>① 能做的事 · Abilities</div> */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1, minHeight: 0 }}>
-                  {CHAT_FEATURES.map((f) => (
-                    <div key={f.n} style={{
-                      background: C.surface2,
-                      border: `1px solid ${C.hairline}`,
-                      borderTop: `3px solid ${f.accent}`,
-                      borderRadius: ROUNDED.md,
-                      padding: '14px 20px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 6,
-                      flex: 1,
-                    }}>
-                      <div style={{ fontSize: 18, fontFamily: MONO, color: f.accent, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>{f.tag}</div>
-                      <div style={{ fontSize: 24, fontWeight: 600, color: C.ink, lineHeight: 1.2, letterSpacing: TRACK.title }}>{f.title}</div>
-                      <div style={{ fontSize: 18, color: C.inkMuted, lineHeight: 1.45 }}>{f.summary}</div>
-                      <div style={{ fontSize: 20, color: C.inkMuted, lineHeight: 1.5, opacity: 0.7 }}>{f.detail}</div>
-                    </div>
-                  ))}
-                </div>
-              </>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gridTemplateRows: 'repeat(3, 1fr)',
+                gap: 16,
+                flex: 1,
+                minHeight: 0,
+              }}>
+                {CHAT_FEATURES.map((f) => (
+                  <div key={f.n} onClick={() => setShotKey(f.n)} style={{
+                    background: f.n === shotKey ? C.surface1 : C.surface2,
+                    border: `1px solid ${f.n === shotKey ? f.accent : C.hairline}`,
+                    borderTop: `3px solid ${f.accent}`,
+                    borderRadius: ROUNDED.md,
+                    padding: '16px 22px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6,
+                    minHeight: 0,
+                    cursor: 'pointer',
+                    transition: 'background 0.2s, border-color 0.2s',
+                  }}>
+                    <div style={{ fontSize: 17, fontFamily: MONO, color: f.accent, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>{f.tag}</div>
+                    <div style={{ fontSize: 26, fontWeight: 600, color: C.ink, lineHeight: 1.2, letterSpacing: TRACK.title }}>{f.title}</div>
+                    <div style={{ fontSize: 19, color: C.ink, opacity: 0.9, lineHeight: 1.4 }}>{f.summary}</div>
+                    <div style={{ fontSize: 18, color: C.inkMuted, lineHeight: 1.45 }}>{f.detail}</div>
+                  </div>
+                ))}
+              </div>
             )}
 
             {activeTab === 'how' && (
@@ -2332,62 +2328,115 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
 
           </motion.div>
         </motion.div>
-      </motion.div>
 
-      {/* Lightbox */}
-      {zoomed && (() => {
-        const tab = CHAT_TABS.find(t => t.key === activeTab);
-        return (
+        {/* Col 3 — 操作截圖（對應目前選取的卡片）— abilities tab 專用 */}
+        {activeTab === 'abilities' && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            onClick={() => setZoomed(false)}
+            variants={FADE_UP}
             style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'rgba(0,0,0,0.94)',
-              zIndex: 50,
+              gridColumn: 3,
+              gridRow: '1 / span 2',
+              background: C.surface1,
+              border: `1px solid ${focusedFeature.accent}`,
+              borderRadius: ROUNDED.lg,
+              padding: 12,
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'zoom-out',
+              flexDirection: 'column',
+              minHeight: 0,
+              transition: 'border-color 0.2s',
             }}
           >
-            <motion.div
-              initial={{ scale: 0.96 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-              style={{ position: 'relative' }}
-            >
-              <img
-                src={tab.img}
-                alt={tab.imgAlt}
+            {focusedShot ? (
+              /* 實際截圖 — 點擊放大 */
+              <div
+                onClick={() => setZoomed(true)}
                 style={{
-                  display: 'block',
-                  maxWidth: '92vw',
-                  maxHeight: '88vh',
-                  width: 'auto',
-                  height: 'auto',
+                  flex: 1,
+                  minHeight: 0,
                   borderRadius: ROUNDED.md,
-                  boxShadow: '0 30px 80px rgba(0,0,0,0.6)',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  cursor: 'zoom-in',
+                  display: 'flex',
                 }}
-              />
-            </motion.div>
-            <div style={{
-              position: 'absolute',
-              top: 36,
-              right: 48,
-              color: C.ink,
-              fontFamily: MONO,
-              fontSize: 14,
-              letterSpacing: '0.16em',
-              opacity: 0.7,
-              pointerEvents: 'none',
-              textTransform: 'uppercase',
-            }}>ESC / Click 關閉</div>
+              >
+                <motion.img
+                  key={focusedFeature.n}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                  src={focusedShot}
+                  alt={focusedFeature.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', borderRadius: ROUNDED.md }}
+                />
+                <div style={{
+                  position: 'absolute', bottom: 12, right: 12,
+                  background: 'rgba(0,0,0,0.72)', border: '1px solid rgba(255,255,255,0.18)',
+                  color: C.ink, fontFamily: MONO, fontSize: 14, padding: '4px 10px',
+                  borderRadius: ROUNDED.sm, letterSpacing: '0.12em', fontWeight: 600,
+                  textTransform: 'uppercase', pointerEvents: 'none',
+                }}>↗ 放大</div>
+              </div>
+            ) : (
+              /* placeholder — 補上圖檔前的佔位（顯示建議檔名） */
+              <div style={{
+                flex: 1,
+                minHeight: 0,
+                border: `1.5px dashed ${focusedFeature.accent}66`,
+                borderRadius: ROUNDED.md,
+                background: `${focusedFeature.accent}0d`,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 12,
+                padding: 18,
+                textAlign: 'center',
+              }}>
+                <span style={{ fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: focusedFeature.accent, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600 }}>操作截圖</span>
+                <span style={{ fontSize: 22, color: C.ink, fontWeight: 600, lineHeight: 1.3 }}>{focusedFeature.title}</span>
+                <span style={{ fontSize: 15, fontFamily: MONO, color: C.inkMuted, lineHeight: 1.4, wordBreak: 'break-all' }}>{focusedFeature.shot}</span>
+              </div>
+            )}
+            <div style={{ marginTop: 10, fontSize: TYPE_SCALE.tiny, color: C.inkMuted, textAlign: 'center', letterSpacing: TRACK.small }}>
+              ← 點左側卡片切換截圖{focusedShot ? '，點截圖可放大' : ''}
+            </div>
           </motion.div>
-        );
-      })()}
+        )}
+      </motion.div>
+
+      {/* Lightbox — 放大操作截圖 */}
+      {zoomed && focusedShot && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setZoomed(false)}
+          style={{
+            position: 'absolute', inset: 0,
+            background: 'rgba(0,0,0,0.94)', zIndex: 50,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'zoom-out',
+          }}
+        >
+          <motion.img
+            initial={{ scale: 0.96 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+            src={focusedShot}
+            alt={focusedFeature.title}
+            style={{
+              display: 'block', maxWidth: '92vw', maxHeight: '92vh',
+              width: 'auto', height: 'auto', borderRadius: ROUNDED.md,
+              boxShadow: '0 30px 80px rgba(0,0,0,0.6)',
+            }}
+          />
+          <div style={{
+            position: 'absolute', top: 36, right: 48,
+            color: C.ink, fontFamily: MONO, fontSize: 14, letterSpacing: '0.16em',
+            opacity: 0.7, pointerEvents: 'none', textTransform: 'uppercase',
+          }}>ESC / Click 關閉</div>
+        </motion.div>
+      )}
 
       <SlideNumber n={n} total={total} />
     </Frame>

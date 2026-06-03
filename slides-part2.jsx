@@ -200,8 +200,9 @@ const Callout = ({ accent = C.gradientMagenta, title, children, style = {} }) =>
   </div>
 );
 
-/* Demo step with a screenshot placeholder box (操作示範：步驟 + 截圖) */
-const ShotStep = ({ id, accent, title, shot, caption }) => (
+/* Demo step with a screenshot placeholder box (操作示範：步驟 + 截圖)。
+ * 若帶 `prompt`，中間框改顯示該步驟實際使用的提問 prompt，取代截圖佔位。 */
+const ShotStep = ({ id, accent, title, shot, caption, prompt }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 14, flex: 1, minWidth: 0 }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
       <span style={{ fontSize: 30, color: accent, fontWeight: 700, fontFamily: MONO, lineHeight: 1 }}>{id}</span>
@@ -210,26 +211,47 @@ const ShotStep = ({ id, accent, title, shot, caption }) => (
         letterSpacing: TRACK.body, lineHeight: 1.15,
       }}>{title}</span>
     </div>
-    <div style={{
-      flex: 1,
-      minHeight: 190,
-      border: `1.5px dashed ${accent}66`,
-      borderRadius: ROUNDED.md,
-      background: `${accent}0d`,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 10,
-      padding: 18,
-      textAlign: 'center',
-    }}>
-      <span style={{
-        fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: accent,
-        letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 600,
-      }}>截圖</span>
-      <span style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.4 }}>{shot}</span>
-    </div>
+    {prompt ? (
+      <div style={{
+        flex: 1,
+        minHeight: 190,
+        border: `1px solid ${accent}66`,
+        borderLeft: `4px solid ${accent}`,
+        borderRadius: ROUNDED.md,
+        background: `${accent}0d`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        padding: '18px 20px',
+      }}>
+        <span style={{
+          fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: accent,
+          letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600,
+        }}>提問 Prompt</span>
+        <span style={{ fontSize: 19, color: C.ink, lineHeight: 1.5, letterSpacing: TRACK.small }}>{prompt}</span>
+      </div>
+    ) : (
+      <div style={{
+        flex: 1,
+        minHeight: 190,
+        border: `1.5px dashed ${accent}66`,
+        borderRadius: ROUNDED.md,
+        background: `${accent}0d`,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        padding: 18,
+        textAlign: 'center',
+      }}>
+        <span style={{
+          fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: accent,
+          letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 600,
+        }}>截圖</span>
+        <span style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.4 }}>{shot}</span>
+      </div>
+    )}
     <div style={{
       fontSize: TYPE_SCALE.small, color: C.inkMuted,
       lineHeight: 1.4, letterSpacing: TRACK.small,
@@ -324,26 +346,36 @@ const SCENARIOS = [
 const Part2ScenariosIntro = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const state = active ? 'show' : 'hidden';
+  const FONT = "Inter, 'Noto Sans TC', system-ui, sans-serif";
   return (
-    <Frame>
-      <SlideHead
-        kicker="情境實作介紹"
-        title="AI Design Workflow 情境實作"
-        sub="由 AI 驅動的設計與開發協作模式"
-      />
+    <Frame bg="linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)">
+      {/* 漸層底色：標頭改用白／半透明白，與情境一 divider 同調性 */}
+      <div>
+        <div style={{
+          fontSize: TYPE_SCALE.small, fontWeight: 500, letterSpacing: '0.16em',
+          textTransform: 'uppercase', color: 'rgba(255,255,255,0.78)', fontFamily: MONO,
+        }}>情境實作介紹</div>
+        <h1 style={{
+          fontSize: TYPE_SCALE.title, fontWeight: 500, lineHeight: 1.05,
+          margin: `${SPACING.titleGap}px 0 0 0`, letterSpacing: TRACK.heroLat, color: '#ffffff',
+        }}>AI Design Workflow 情境實作</h1>
+        <div style={{
+          fontSize: TYPE_SCALE.subtitle, color: 'rgba(255,255,255,0.85)', marginTop: 20,
+          lineHeight: 1.3, fontWeight: 400, letterSpacing: TRACK.subtitle, fontFamily: FONT,
+        }}>由 AI 驅動的設計與開發協作模式</div>
+      </div>
       <motion.div
         ref={ref}
         initial="hidden"
         animate={state}
         variants={STAGGER}
         style={{
-          marginTop: 40,
-          marginBottom: 40,
+          marginTop: 48,
+          marginBottom: 24,
           flex: 1,
           minHeight: 0,
           display: 'flex',
           flexDirection: 'column',
-          gap: 28,
         }}
       >
         <motion.div
@@ -361,44 +393,53 @@ const Part2ScenariosIntro = ({ n, total }) => {
               key={card.n}
               variants={FADE_UP}
               style={{
-                background: C.surface1,
-                border: `1px solid ${C.hairline}`,
+                background: 'rgba(255,255,255,0.10)',
+                border: '1px solid rgba(255,255,255,0.24)',
                 borderRadius: ROUNDED.lg,
-                padding: '36px 36px',
+                padding: '36px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 24,
                 position: 'relative',
                 overflow: 'hidden',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
               }}
             >
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0,
-                height: 4, background: card.accent,
+                height: 4, background: 'rgba(255,255,255,0.55)',
               }} />
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>
-                <Tag color={card.accent}>{card.tag}</Tag>
+                <span style={{
+                  display: 'inline-block',
+                  fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: '#ffffff',
+                  background: 'rgba(255,255,255,0.18)',
+                  padding: '6px 14px', borderRadius: ROUNDED.sm,
+                  letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600,
+                }}>{card.tag}</span>
                 <div style={{
                   fontSize: TYPE_SCALE.title, fontFamily: MONO,
-                  color: card.accent, fontWeight: 700, lineHeight: 1, opacity: 0.4,
+                  color: '#ffffff', fontWeight: 700, lineHeight: 1, opacity: 0.5,
                 }}>{card.n}</div>
               </div>
               <div style={{
-                fontSize: 40, fontWeight: 600, color: C.ink,
+                fontSize: 40, fontWeight: 600, color: '#ffffff',
                 lineHeight: 1.15, letterSpacing: TRACK.title,
               }}>{card.name}</div>
               <div style={{
                 marginTop: 'auto',
-                fontSize: TYPE_SCALE.small, color: C.inkMuted,
+                fontSize: TYPE_SCALE.small, color: 'rgba(255,255,255,0.85)',
                 lineHeight: 1.5, letterSpacing: TRACK.small,
               }}>{card.desc}</div>
             </motion.div>
           ))}
         </motion.div>
       </motion.div>
-      <SlideNumber n={n} total={total} />
+      <SlideNumber n={n} total={total} color="rgba(255,255,255,0.7)" />
     </Frame>
   );
 };
@@ -706,10 +747,25 @@ const Part2PlanMode = ({ n, total }) => {
    ============================================================ */
 
 const PRD_STEPS = [
-  { id: '①', accent: C.gradientViolet,  title: '開場 prompt', shot: 'prompt 輸入畫面', caption: '講「想做什麼 + 為什麼」，請 AI 先別寫 code。' },
-  { id: '②', accent: C.gradientMagenta, title: 'AI 反問釐清', shot: 'AI 反問對話',   caption: '使用者是誰 / 成功樣貌 / 邊界——逐一回答。' },
-  { id: '③', accent: C.gradientOrange,  title: '補 reference', shot: '加 reference 畫面', caption: '截圖、連結、品牌 token + edge case 都丟進來。' },
-  { id: '④', accent: C.gradientCoral,   title: '整理成 PRD',   shot: 'PRD 定稿',     caption: '請 AI 收斂成 PRD，設計師審過才定稿。' },
+  { id: '①', accent: C.gradientViolet,  title: '開場 prompt', caption: '講「想做什麼 + 為什麼」，請 AI 先別寫 code。',
+    prompt: '「我想做一個線上課程的報名頁，讓使用者看完課程介紹能直接報名。先別寫 code，我們先把需求討論清楚。」' },
+  { id: '②', accent: C.gradientMagenta, title: 'AI 反問釐清', caption: '使用者是誰 / 成功樣貌 / 邊界——逐一回答。',
+    prompt: '「針對這個需求反問我關鍵問題：使用者是誰、成功的樣子、有哪些限制，一次問幾題就好，我來回答。」' },
+  { id: '③', accent: C.gradientOrange,  title: '補 reference', caption: '截圖、連結、品牌 token + edge case 都丟進來。',
+    prompt: '「附上競品報名頁截圖與我們的品牌色 token。另外要處理『未登入』和『課程已額滿』兩個 edge case。」' },
+  { id: '④', accent: C.gradientCoral,   title: '整理成 PRD',   caption: '請 AI 收斂成 PRD，設計師審過才定稿。',
+    prompt: '「把剛才的討論整理成一份 PRD：目標、使用者與情境、功能清單、成功樣貌、edge case、約束。」' },
+];
+
+/* ④ 整理後的 PRD 簡易內容檔（線上課程報名頁情境）— 作為 Ch.04 進 Plan Mode 的 input。
+ * 以 markdown 區段呈現：body = 段落、items = 條列。 */
+const PRD_MD = [
+  { h: '目標',         body: '使用者看完課程介紹後，3 步內完成報名。' },
+  { h: '使用者與情境', body: '想進修的上班族，從社群連結進入報名頁。' },
+  { h: '功能清單',     items: ['課程資訊', '報名表單', '付款入口', '報名成功確認'] },
+  { h: '成功樣貌',     body: '報名轉換率提升、表單放棄率下降。' },
+  { h: 'Edge case',    items: ['未登入 → 引導註冊', '課程額滿 → 顯示候補'] },
+  { h: '約束',         items: ['沿用品牌色 token', '手機優先 RWD'] },
 ];
 
 const Part2DiscussionPRD = ({ n, total }) => {
@@ -736,27 +792,113 @@ const Part2DiscussionPRD = ({ n, total }) => {
           gap: 24,
         }}
       >
+        <motion.div variants={FADE_UP} style={{
+          display: 'flex', alignItems: 'baseline', gap: 12,
+          padding: '12px 20px',
+          background: C.surface1,
+          border: `1px solid ${C.hairline}`,
+          borderRadius: ROUNDED.md,
+        }}>
+          <span style={{
+            fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: C.gradientViolet,
+            letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600, flexShrink: 0,
+          }}>情境</span>
+          <span style={{ fontSize: TYPE_SCALE.small, color: C.ink, letterSpacing: TRACK.small }}>
+            想做一個「線上課程報名頁」，腦中有需求、手邊還沒有任何圖稿。
+          </span>
+        </motion.div>
+
         <motion.div
           variants={STAGGER_INNER}
           style={{
             flex: 1,
             minHeight: 0,
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 20,
+            gridTemplateColumns: '1fr 1fr',
+            gap: 28,
           }}
         >
-          {PRD_STEPS.map((s) => (
-            <motion.div key={s.id} variants={FADE_UP} style={{ display: 'flex' }}>
-              <ShotStep {...s} />
-            </motion.div>
-          ))}
-        </motion.div>
+          {/* 左欄 — 四步驟提問 */}
+          <motion.div variants={FADE_UP} style={{
+            display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0,
+          }}>
+            {PRD_STEPS.map((s) => (
+              <div key={s.id} style={{
+                flex: 1,
+                background: C.surface1,
+                border: `1px solid ${C.hairline}`,
+                borderLeft: `3px solid ${s.accent}`,
+                borderRadius: ROUNDED.md,
+                padding: '12px 18px',
+                display: 'flex',
+                gap: 14,
+                minHeight: 0,
+              }}>
+                <span style={{ fontSize: 44, color: s.accent, fontWeight: 700, fontFamily: MONO, lineHeight: 1, flexShrink: 0 }}>{s.id}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 22, fontWeight: 600, color: C.ink, letterSpacing: TRACK.body, lineHeight: 1.15 }}>{s.title}</span>
+                    <span style={{ fontSize: TYPE_SCALE.tiny, color: C.inkMuted, letterSpacing: TRACK.small }}>{s.caption}</span>
+                  </div>
+                  <div style={{ fontSize: 22, color: C.inkMuted, lineHeight: 1.4, letterSpacing: TRACK.small }}>
+                    <span style={{ fontWeight: 600 }}>Prompt：</span>{s.prompt}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </motion.div>
 
-        <motion.div variants={FADE_UP}>
-          <Callout accent={C.gradientCoral} title="產出物：">
-            一份 PRD（目標 / 使用者與情境 / 功能清單 / 成功樣貌 / edge case / 約束），作為 Ch.04 進 Plan Mode 的 input。
-          </Callout>
+          {/* 右欄 — PRD.md 檔案樣式 */}
+          <motion.div variants={FADE_UP} style={{
+            display: 'flex', flexDirection: 'column', minHeight: 0,
+            background: C.canvas,
+            border: `1px solid ${C.hairline}`,
+            borderRadius: ROUNDED.md,
+            overflow: 'hidden',
+          }}>
+            {/* file title bar */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '10px 18px',
+              background: C.surface1,
+              borderBottom: `1px solid ${C.hairline}`,
+              flexShrink: 0,
+            }}>
+              <span style={{ display: 'flex', gap: 6 }}>
+                {[C.gradientCoral, C.gradientOrange, C.gradientViolet].map((c, i) => (
+                  <span key={i} style={{ width: 11, height: 11, borderRadius: '50%', background: c, opacity: 0.8 }} />
+                ))}
+              </span>
+              <span style={{ fontFamily: MONO, fontSize: 16, color: C.inkMuted, letterSpacing: '0.04em' }}>PRD.md</span>
+              <span style={{ marginLeft: 'auto', fontSize: TYPE_SCALE.tiny, color: C.inkMuted, letterSpacing: TRACK.small }}>→ Ch.04 Plan Mode 的 input</span>
+            </div>
+            {/* markdown body */}
+            <div style={{
+              flex: 1, minHeight: 0, overflow: 'auto',
+              padding: '20px 24px',
+              fontFamily: MONO,
+              display: 'flex', flexDirection: 'column', gap: 12,
+            }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: C.ink, lineHeight: 1.3 }}>
+                <span style={{ color: C.gradientCoral, marginRight: 8 }}>#</span>線上課程報名頁 PRD
+              </div>
+              {PRD_MD.map((sec) => (
+                <div key={sec.h} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 17, fontWeight: 600, color: C.gradientCoral, letterSpacing: '0.02em' }}>
+                    <span style={{ opacity: 0.7, marginRight: 8 }}>##</span>{sec.h}
+                  </div>
+                  {sec.body && (
+                    <div style={{ fontSize: 16, color: C.ink, opacity: 0.9, lineHeight: 1.5 }}>{sec.body}</div>
+                  )}
+                  {sec.items && sec.items.map((it) => (
+                    <div key={it} style={{ fontSize: 16, color: C.ink, opacity: 0.9, lineHeight: 1.5 }}>
+                      <span style={{ color: C.inkMuted, marginRight: 8 }}>-</span>{it}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </motion.div>
       </motion.div>
       <SlideNumber n={n} total={total} />
