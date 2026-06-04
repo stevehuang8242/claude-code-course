@@ -1044,12 +1044,61 @@ export const Step1ClaudeMd = ({ n, total }) => (
       style={{
         marginTop: 20,
         display: 'grid',
-        gridTemplateColumns: '1.1fr 1fr',
+        gridTemplateColumns: '1fr 1.1fr',
         gap: 40,
         alignItems: 'start',
       }}
     >
-      {/* Left — CLAUDE.md macOS preview (swapped from right) */}
+      {/* Left — /init 指令在上，CLAUDE.md 是什麼 KeyPoints 放下方 */}
+      <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        {/* /init 指令 — 第一塊 */}
+        <div style={{
+          fontSize: TYPE_SCALE.small,
+          color: C.gradientOrange,
+          letterSpacing: '0.08em', textTransform: 'uppercase',
+          fontWeight: 600,
+        }}>輸入指令</div>
+        <div style={{
+          alignSelf: 'flex-start',
+          width: 480,
+          maxWidth: '100%',
+          background: C.surface2,
+          border: `1px solid ${C.hairlineSoft}`,
+          borderRadius: ROUNDED.md,
+          padding: '24px 32px',
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontSize: TYPE_SCALE.title,
+          color: C.gradientOrange,
+          fontWeight: 500,
+          letterSpacing: TRACK.title,
+        }}>
+          /init
+        </div>
+        <div style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, lineHeight: 1.5 }}>
+          它會自動讀過整個專案，產出一份 <span style={{ color: C.ink, fontWeight: 500 }}>CLAUDE.md</span>。
+        </div>
+
+        {/* CLAUDE.md 是什麼 — 下方一塊（拉大間距與上方 /init 區塊區隔） */}
+        <div style={{
+          marginTop: 40,
+          fontSize: TYPE_SCALE.small, color: C.inkMuted,
+          letterSpacing: '0.08em', textTransform: 'uppercase',
+        }}>CLAUDE<span style={{ textTransform: 'none' }}>.md</span> 是什麼</div>
+        {[
+          { label: '角色', desc: <><span style={{ fontWeight: 700 }}>專案專屬的「開發守則」</span><br/><span style={{ fontWeight: 400 }}>— 啟動時 Claude 會自動讀過</span></> },
+          { label: '內容', desc: <><span style={{ fontWeight: 700 }}>適用通用規則</span><br/><span style={{ fontWeight: 400 }}>ex 計畫前讀檔、執行前詢問、有疑問就停</span></> },
+        ].map((kp, i) => (
+          <div key={i} style={{
+            display: 'grid', gridTemplateColumns: '80px 1fr', gap: 16, alignItems: 'baseline',
+            paddingBottom: 14, borderBottom: `1px solid ${C.hairlineSoft}`,
+          }}>
+            <div style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, fontWeight: 500 }}>{kp.label}</div>
+            <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600, lineHeight: 1.45 }}>{kp.desc}</div>
+          </div>
+        ))}
+      </motion.div>
+
+      {/* Right — CLAUDE.md macOS preview (swapped from left) */}
       <motion.div variants={FADE_UP}>
         <div style={{
           fontSize: TYPE_SCALE.small,
@@ -1072,54 +1121,6 @@ export const Step1ClaudeMd = ({ n, total }) => (
           <MdBullet>執行前要詢問</MdBullet>
           <MdBullet>有疑問停下執行</MdBullet>
         </MdWindow>
-      </motion.div>
-
-      {/* Right — CLAUDE.md 是什麼 KeyPoints 在上，/init 指令放最後一塊 */}
-      <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        <div style={{
-          fontSize: TYPE_SCALE.small, color: C.inkMuted,
-          letterSpacing: '0.08em', textTransform: 'uppercase',
-        }}>CLAUDE<span style={{ textTransform: 'none' }}>.md</span> 是什麼</div>
-        {[
-          { label: '角色', desc: <><span style={{ fontWeight: 700 }}>專案專屬的「開發守則」</span><br/><span style={{ fontWeight: 400 }}>— 啟動時 Claude 會自動讀過</span></> },
-          { label: '內容', desc: <><span style={{ fontWeight: 700 }}>適用通用規則</span><br/><span style={{ fontWeight: 400 }}>ex 計畫前讀檔、執行前詢問、有疑問就停</span></> },
-        ].map((kp, i) => (
-          <div key={i} style={{
-            display: 'grid', gridTemplateColumns: '80px 1fr', gap: 16, alignItems: 'baseline',
-            paddingBottom: 14, borderBottom: `1px solid ${C.hairlineSoft}`,
-          }}>
-            <div style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, fontWeight: 500 }}>{kp.label}</div>
-            <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600, lineHeight: 1.45 }}>{kp.desc}</div>
-          </div>
-        ))}
-
-        {/* /init 指令 — 最後一塊（拉大間距與上方「定義」區塊區隔） */}
-        <div style={{
-          marginTop: 40,
-          fontSize: TYPE_SCALE.small,
-          color: C.gradientOrange,
-          letterSpacing: '0.08em', textTransform: 'uppercase',
-          fontWeight: 600,
-        }}>怎麼產出 CLAUDE<span style={{ textTransform: 'none' }}>.md</span> ↓</div>
-        <div style={{
-          alignSelf: 'flex-start',
-          width: 480,
-          maxWidth: '100%',
-          background: C.surface2,
-          border: `1px solid ${C.hairlineSoft}`,
-          borderRadius: ROUNDED.md,
-          padding: '24px 32px',
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
-          fontSize: TYPE_SCALE.title,
-          color: C.gradientOrange,
-          fontWeight: 500,
-          letterSpacing: TRACK.title,
-        }}>
-          /init
-        </div>
-        <div style={{ fontSize: TYPE_SCALE.body, color: C.inkMuted, lineHeight: 1.5 }}>
-          它會自動讀過整個專案，產出一份 <span style={{ color: C.ink, fontWeight: 500 }}>CLAUDE.md</span>。
-        </div>
       </motion.div>
     </motion.div>
 
