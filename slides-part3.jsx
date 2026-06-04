@@ -811,7 +811,7 @@ export const Ch3Divider = ({ n, total }) => (
           情境二：Design from Code
           
           <br/>
-          如何從 Code 重構 UI 系統
+          如何從 Code 將畫面改成想像中的樣子
         </h1>
         <div style={{
           fontSize: TYPE_SCALE.subtitle,
