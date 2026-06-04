@@ -232,132 +232,177 @@ const Lightbox = ({ src, alt, onClose }) => {
   );
 };
 
-/* SLIDE 1 — 為什麼需要 R-P-I（含 HumanLayer 介紹 + 三步驟卡片）*/
-const DesignerWhyRPI = ({ n, total }) => {
-  const steps = [
-    { icon: '🔍', label: 'Research', sub: '建立認知 · 看懂現況' },
-    { icon: '📋', label: 'Plan', sub: '規劃方案 · 先想再做' },
-    { icon: '🛠', label: 'Implement', sub: '執行落地 · 按圖施工' },
-  ];
-  return (
-  <Animated>
-    <motion.div variants={FADE_UP}>
-      <SlideHead
-        kicker="04 情境三 · RPI Workflow"
-        title="為什麼需要 R-P-I"
-        sub="脈絡的延續 → 準確性的提高"
-      />
-    </motion.div>
-    <motion.div variants={STAGGER_INNER} style={{
-      marginTop: 28,
-      display: 'grid',
-      gridTemplateColumns: 'repeat(3, 1fr)',
-      gap: 16,
+/* 腦袋卡住的塗鴉 — 手繪感的纏繞螺旋（漫畫式「頭昏／當機」符號），
+ * 以多段 arc 由外向內捲成漩渦，粗筆觸 + 圓頭，緩慢搖晃脈動。 */
+const StuckScribble = ({ style, strokeWidth = 4, delay = 0, dir = 1, spinDuration = 2.4 }) => (
+  <motion.svg
+    viewBox="0 0 100 100"
+    animate={{ rotate: 360 * dir, scale: [1, 1.07, 1] }}
+    transition={{
+      rotate: { duration: spinDuration, repeat: Infinity, ease: 'linear', delay },
+      scale: { duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay },
+    }}
+    style={{ position: 'absolute', overflow: 'visible', ...style }}
+  >
+    <path
+      d="M50 10 A42 42 0 0 1 88 52 A38 38 0 0 1 50 86 A34 34 0 0 1 20 52 A30 30 0 0 1 50 26 A26 26 0 0 1 72 52 A22 22 0 0 1 50 70 A18 18 0 0 1 36 52 A14 14 0 0 1 50 42 A10 10 0 0 1 56 52 A7 7 0 0 1 50 56"
+      fill="none"
+      stroke={C.gradientCoral}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ filter: `drop-shadow(0 0 6px ${C.gradientCoral})` }}
+    />
+  </motion.svg>
+);
+
+/* 機器人 — 坐在 3D 桌面後方的吉祥物（純 div 拼裝，含天線脈動與微浮動）
+ * error=true 時切換成「腦袋卡住」的錯誤表情：X 眼、驚嚇張嘴、紅色螢幕，
+ *   並在頭頂浮現纏繞螺旋塗鴉與 💢 裝飾符號。
+ * happy=true 時切換成「開心」表情：彎月笑眼、大大的微笑，頭旁有小花轉圈。 */
+const DeskRobot = ({ error = false, happy = false }) => (
+  <motion.div
+    animate={{ y: [0, -6, 0] }}
+    transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+    style={{
+      position: 'absolute',
+      left: 690, top: 6,
+      width: 300, height: 320,
+      pointerEvents: 'none',
+    }}
+  >
+    {/* 天線 */}
+    <div style={{ position: 'absolute', left: 148, top: 6, width: 4, height: 30, background: '#9aa3af', borderRadius: 2 }} />
+    <motion.div
+      animate={
+        error
+          ? { boxShadow: [`0 0 8px ${C.gradientCoral}`, `0 0 22px ${C.gradientCoral}`, `0 0 8px ${C.gradientCoral}`] }
+          : { boxShadow: [`0 0 8px ${C.gradientMagenta}`, `0 0 22px ${C.gradientMagenta}`, `0 0 8px ${C.gradientMagenta}`] }
+      }
+      transition={{ duration: error ? 0.6 : 2, repeat: Infinity, ease: 'easeInOut' }}
+      style={{ position: 'absolute', left: 140, top: -8, width: 20, height: 20, borderRadius: '50%', background: error ? C.gradientCoral : C.gradientMagenta }}
+    />
+    {/* 耳朵 */}
+    <div style={{ position: 'absolute', left: 60, top: 84, width: 22, height: 44, background: 'linear-gradient(145deg,#c3cad4,#9aa3af)', borderRadius: 6, border: '1px solid #8a93a0' }} />
+    <div style={{ position: 'absolute', left: 218, top: 84, width: 22, height: 44, background: 'linear-gradient(145deg,#c3cad4,#9aa3af)', borderRadius: 6, border: '1px solid #8a93a0' }} />
+    {/* 頭 */}
+    <div style={{
+      position: 'absolute', left: 75, top: 38, width: 150, height: 120,
+      background: 'linear-gradient(145deg,#eef1f5 0%,#c3cad4 55%,#9aa3af 100%)',
+      borderRadius: 28, border: '1px solid #8a93a0',
+      boxShadow: '0 10px 24px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.6)',
     }}>
-      {steps.map((s, i) => (
-        <motion.div key={i} variants={FADE_UP} style={{
-          background: C.surface1,
-          border: `1px solid ${C.hairline}`,
-          borderRadius: ROUNDED.lg,
-          padding: '20px 24px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 18,
-        }}>
-          <div style={{ fontSize: 40, lineHeight: 1 }}>{s.icon}</div>
-          <div>
-            <div style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>{s.label}</div>
-            <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, marginTop: 4 }}>{s.sub}</div>
-          </div>
-        </motion.div>
-      ))}
-    </motion.div>
-    <motion.div variants={FADE_UP} style={{
-      marginTop: 28,
-      padding: '20px 28px',
-      background: C.surface1,
-      border: `1px solid ${C.hairline}`,
-      borderRadius: ROUNDED.lg,
-      borderLeft: `4px solid ${C.gradientOrange}`,
-    }}>
+      {/* 臉部螢幕 */}
       <div style={{
-        fontSize: TYPE_SCALE.tiny,
-        color: C.inkMuted,
-        letterSpacing: '0.16em',
-        textTransform: 'uppercase',
-        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        marginBottom: 12,
-      }}>方法來歷</div>
-      <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
-        由 HumanLayer 創辦人 <b style={{ fontWeight: 700 }}>Dex Horthy</b> 提出，為了解決 <b style={{ fontWeight: 700 }}>Context window</b> 的限制下仍可保持脈絡的準確性。
+        position: 'absolute', left: 18, top: 22, right: 18, bottom: 20,
+        background: error ? 'linear-gradient(160deg,#3a1414,#1a0808)' : 'linear-gradient(160deg,#23262f,#141620)',
+        borderRadius: 18, boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.6)',
+      }}>
+        {error ? (
+          <>
+            {/* X 眼 — 當機／錯誤表情 */}
+            <span style={{ position: 'absolute', left: 18, top: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.gradientCoral, textShadow: `0 0 12px ${C.gradientCoral}` }}>✕</span>
+            <span style={{ position: 'absolute', right: 18, top: 14, fontSize: 30, fontWeight: 800, lineHeight: 1, color: C.gradientCoral, textShadow: `0 0 12px ${C.gradientCoral}` }}>✕</span>
+            {/* 驚嚇張嘴 */}
+            <div style={{ position: 'absolute', left: '50%', bottom: 10, transform: 'translateX(-50%)', width: 22, height: 16, borderRadius: '50%', background: 'rgba(255,90,60,0.55)', boxShadow: 'inset 0 0 6px rgba(0,0,0,0.6)' }} />
+          </>
+        ) : happy ? (
+          <>
+            {/* 彎月笑眼 ⌒ ⌒（上下顛倒）— 開心表情 */}
+            <div style={{ position: 'absolute', left: 22, top: 26, width: 28, height: 14, borderTop: `6px solid ${C.gradientViolet}`, borderTopLeftRadius: 28, borderTopRightRadius: 28, boxShadow: `0 -6px 12px -4px ${C.gradientViolet}` }} />
+            <div style={{ position: 'absolute', right: 22, top: 26, width: 28, height: 14, borderTop: `6px solid ${C.gradientViolet}`, borderTopLeftRadius: 28, borderTopRightRadius: 28, boxShadow: `0 -6px 12px -4px ${C.gradientViolet}` }} />
+            {/* 大大的微笑（與笑眼留間距，不重疊） */}
+            <div style={{ position: 'absolute', left: '50%', bottom: 8, transform: 'translateX(-50%)', width: 52, height: 22, borderBottom: `6px solid rgba(217,204,255,0.9)`, borderBottomLeftRadius: 52, borderBottomRightRadius: 52 }} />
+          </>
+        ) : (
+          <>
+            {/* 眼睛 */}
+            <div style={{ position: 'absolute', left: 24, top: 22, width: 26, height: 26, borderRadius: '50%', background: `radial-gradient(circle at 35% 30%, #d9ccff, ${C.gradientViolet})`, boxShadow: `0 0 16px ${C.gradientViolet}` }} />
+            <div style={{ position: 'absolute', right: 24, top: 22, width: 26, height: 26, borderRadius: '50%', background: `radial-gradient(circle at 35% 30%, #d9ccff, ${C.gradientViolet})`, boxShadow: `0 0 16px ${C.gradientViolet}` }} />
+            {/* 嘴 */}
+            <div style={{ position: 'absolute', left: '50%', bottom: 14, transform: 'translateX(-50%)', width: 40, height: 6, borderRadius: 4, background: 'rgba(217,204,255,0.7)' }} />
+          </>
+        )}
       </div>
-    </motion.div>
-    <motion.div variants={FADE_UP} style={{
-      marginTop: 16,
-      padding: '20px 28px',
-      background: C.surface1,
-      border: `1px solid ${C.hairline}`,
-      borderRadius: ROUNDED.lg,
-      borderLeft: `4px solid ${C.gradientCoral}`,
+    </div>
+
+    {/* 腦袋卡住的裝飾 — 一大一小纏繞螺旋塗鴉分置頭頂左右 + 兩側 💢，只在錯誤狀態出現 */}
+    {error && (
+      <>
+        {/* 左側：大螺旋（上）＋ 💢（下，留間距不重疊） */}
+        <StuckScribble strokeWidth={4} dir={1} spinDuration={2.0} style={{ left: 8, top: -66, width: 88, height: 88 }} />
+        <motion.div
+          animate={{ scale: [1, 1.22, 1], opacity: [0.85, 1, 0.85] }}
+          transition={{ duration: 0.7, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+          style={{ position: 'absolute', left: 26, top: 46, fontSize: 26, lineHeight: 1 }}
+        >💢</motion.div>
+        {/* 右側：小螺旋（上）＋ 💢（下，留間距不重疊） */}
+        <StuckScribble strokeWidth={6} delay={0.4} dir={-1} spinDuration={1.3} style={{ left: 212, top: -50, width: 56, height: 56 }} />
+        <motion.div
+          animate={{ scale: [1, 1.28, 1], opacity: [0.85, 1, 0.85] }}
+          transition={{ duration: 0.7, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ position: 'absolute', left: 232, top: 34, fontSize: 30, lineHeight: 1 }}
+        >💢</motion.div>
+      </>
+    )}
+
+    {/* 開心的裝飾 — 頭旁轉圈的小花，只在 happy 狀態出現 */}
+    {happy && (
+      <>
+        <motion.div
+          initial={{ scale: 0, rotate: 0 }}
+          animate={{ scale: 1, rotate: 360 }}
+          transition={{ rotate: { duration: 3, repeat: Infinity, ease: 'linear' }, scale: { duration: 0.4, ease: 'backOut' } }}
+          style={{ position: 'absolute', left: 18, top: 28, fontSize: 38, lineHeight: 1 }}
+        >🌸</motion.div>
+        <motion.div
+          initial={{ scale: 0, rotate: 0 }}
+          animate={{ scale: 1, rotate: -360 }}
+          transition={{ rotate: { duration: 3.6, repeat: Infinity, ease: 'linear' }, scale: { duration: 0.4, ease: 'backOut', delay: 0.1 } }}
+          style={{ position: 'absolute', left: 236, top: 34, fontSize: 34, lineHeight: 1 }}
+        >🌸</motion.div>
+        <motion.div
+          initial={{ scale: 0, rotate: 0 }}
+          animate={{ scale: 1, rotate: 360 }}
+          transition={{ rotate: { duration: 4.2, repeat: Infinity, ease: 'linear' }, scale: { duration: 0.4, ease: 'backOut', delay: 0.2 } }}
+          style={{ position: 'absolute', left: 208, top: -10, fontSize: 26, lineHeight: 1 }}
+        >🌸</motion.div>
+      </>
+    )}
+    {/* 身體 */}
+    <div style={{
+      position: 'absolute', left: 38, top: 148, width: 224, height: 172,
+      background: 'linear-gradient(145deg,#eef1f5 0%,#c3cad4 55%,#9aa3af 100%)',
+      borderRadius: '40px 40px 24px 24px', border: '1px solid #8a93a0',
+      boxShadow: '0 14px 30px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.6)',
     }}>
+      {/* 胸口面板 */}
       <div style={{
-        fontSize: TYPE_SCALE.tiny,
-        color: C.inkMuted,
-        letterSpacing: '0.16em',
-        textTransform: 'uppercase',
-        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        marginBottom: 12,
-      }}>開始之前</div>
-      <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
-        要使用 RPI 工作流，需要先<b style={{ fontWeight: 700 }}>安裝對應的指令</b>才能執行，<span style={{ color: C.inkMuted }}>安裝方式請參考簡報最後一頁的</span>
-        <span
-          onClick={() => {
-            const deck = document.querySelector('deck-stage');
-            if (deck) deck.goTo(deck.length - 1);
-          }}
-          style={{
-            color: C.accentBlue,
-            fontWeight: 700,
-            cursor: 'pointer',
-            textDecoration: 'underline',
-            textUnderlineOffset: 3,
-          }}
-        >附錄</span>
-        <span style={{ color: C.inkMuted }}>。</span>
+        position: 'absolute', left: '50%', top: 28, transform: 'translateX(-50%)',
+        width: 124, height: 80, background: 'linear-gradient(160deg,#23262f,#141620)',
+        borderRadius: 14, boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.6)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        gap: 8, padding: 12, boxSizing: 'border-box',
+      }}>
+        <div style={{ display: 'flex', gap: 9 }}>
+          <div style={{ width: 12, height: 12, borderRadius: '50%', background: C.gradientOrange, boxShadow: `0 0 10px ${C.gradientOrange}` }} />
+          <div style={{ width: 12, height: 12, borderRadius: '50%', background: C.accentBlue, boxShadow: `0 0 10px ${C.accentBlue}` }} />
+          <div style={{ width: 12, height: 12, borderRadius: '50%', background: C.gradientViolet, boxShadow: `0 0 10px ${C.gradientViolet}` }} />
+        </div>
+        {[72, 54].map((w, i) => (
+          <div key={i} style={{ height: 5, width: w, borderRadius: 3, background: 'rgba(217,204,255,0.32)' }} />
+        ))}
       </div>
-    </motion.div>
-    <motion.div variants={FADE_UP} style={{
-      marginTop: 16,
-      padding: '20px 28px',
-      background: C.surface1,
-      border: `1px solid ${C.hairline}`,
-      borderRadius: ROUNDED.lg,
-      borderLeft: `4px solid ${C.gradientViolet}`,
-    }}>
-      <div style={{
-        fontSize: TYPE_SCALE.tiny,
-        color: C.inkMuted,
-        letterSpacing: '0.16em',
-        textTransform: 'uppercase',
-        fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-        marginBottom: 12,
-      }}>Session 接力</div>
-      <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
-        每一步都會產出 <b style={{ fontWeight: 700 }}>research.md / plan.md</b> 存進硬碟，<br />
-        <span style={{ color: C.inkMuted }}>這些檔案只在讀取時佔用少量 context window，能保留更多 token 額度。<br />
-        當 Session 撞到 token 上限時，下個 Session 直接讀檔接續，脈絡就不會斷掉。</span>
-      </div>
-    </motion.div>
-    <SlideNumber n={n} total={total} />
-  </Animated>
-  );
-};
+    </div>
+  </motion.div>
+);
 
 /* SLIDE 1b — 桌面比喻（互動動畫頁）
+ * 3D 透視桌面：機器人坐在桌子後方，桌面以 rotateX 傾斜呈現景深。
  * 三階段：
- *   phase 0 — 紙張從上方一張張飄落，堆滿桌面（slide 進場時自動觸發）
- *   phase 1 — 點擊桌面：所有紙張縮進右側抽屜，桌面清空
- *   phase 2 — 點擊抽屜：一份 .md 文件從抽屜飄回桌面中央攤平
+ *   phase 0 — 空桌面（slide 進場時的起點）
+ *   phase 1 — 點擊桌面：多份文件從上方飄落、散落堆滿桌面
+ *   phase 2 — 點擊桌面：所有文件向中央匯聚，整合成一份研究報告
  */
 const DesignerDeskMetaphor = ({ n, total }) => {
   const [ref, active] = useSlideActive();
@@ -373,85 +418,77 @@ const DesignerDeskMetaphor = ({ n, total }) => {
     }
   }, [active]);
 
+  // 機器人表情延後 0.5 秒才跟著 phase 切換（桌面動畫先發生，表情後反應）
+  const [robotPhase, setRobotPhase] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setRobotPhase(phase), 500);
+    return () => clearTimeout(t);
+  }, [phase]);
+
   // Stage 座標系 — 對應 1920×1080 設計畫布內容區
   const STAGE_W = 1680;
   const STAGE_H = 540;
   const PAPER_W = 156;
   const PAPER_H = 196;
 
-  // 桌面（左側 70%）
+  // 桌面（移除抽屜後填滿整個 stage 寬度）
   const DESK_X = 0;
   const DESK_Y = 40;
-  const DESK_W = 1180;
+  const DESK_W = STAGE_W;
   const DESK_H = 460;
 
-  // 抽屜（右側 25%）
-  const DRAWER_X = 1240;
-  const DRAWER_Y = 110;
-  const DRAWER_W = 420;
-  const DRAWER_H = 320;
-  const DRAWER_PAPER_X = DRAWER_X + DRAWER_W / 2 - PAPER_W / 2;
-  const DRAWER_PAPER_Y = DRAWER_Y + DRAWER_H / 2 - PAPER_H / 2;
-
-  // 紙張落定位置（三排散落於桌面上）
+  // 紙張落定位置（三排散落於整張桌面上）
   const papers = [
     // Row 1
-    { id: 0,  x: DESK_X + 50,   y: DESK_Y + 40,  rotate: -9,  shade: '#f4f1ea' },
-    { id: 1,  x: DESK_X + 195,  y: DESK_Y + 20,  rotate: 5,   shade: '#ede7d4' },
-    { id: 2,  x: DESK_X + 345,  y: DESK_Y + 55,  rotate: -3,  shade: '#f4f1ea' },
-    { id: 3,  x: DESK_X + 500,  y: DESK_Y + 25,  rotate: 8,   shade: '#ede7d4' },
-    { id: 4,  x: DESK_X + 660,  y: DESK_Y + 50,  rotate: -6,  shade: '#f4f1ea' },
-    { id: 5,  x: DESK_X + 820,  y: DESK_Y + 30,  rotate: 7,   shade: '#ede7d4' },
-    { id: 6,  x: DESK_X + 970,  y: DESK_Y + 55,  rotate: -10, shade: '#f4f1ea' },
+    { id: 0,  x: DESK_X + 70,   y: DESK_Y + 40,  rotate: -9,  shade: '#f4f1ea' },
+    { id: 1,  x: DESK_X + 290,  y: DESK_Y + 20,  rotate: 5,   shade: '#ede7d4' },
+    { id: 2,  x: DESK_X + 510,  y: DESK_Y + 55,  rotate: -3,  shade: '#f4f1ea' },
+    { id: 3,  x: DESK_X + 745,  y: DESK_Y + 25,  rotate: 8,   shade: '#ede7d4' },
+    { id: 4,  x: DESK_X + 985,  y: DESK_Y + 50,  rotate: -6,  shade: '#f4f1ea' },
+    { id: 5,  x: DESK_X + 1225, y: DESK_Y + 30,  rotate: 7,   shade: '#ede7d4' },
+    { id: 6,  x: DESK_X + 1450, y: DESK_Y + 55,  rotate: -10, shade: '#f4f1ea' },
     // Row 2
-    { id: 7,  x: DESK_X + 90,   y: DESK_Y + 160, rotate: 6,   shade: '#ede7d4' },
-    { id: 8,  x: DESK_X + 260,  y: DESK_Y + 140, rotate: -7,  shade: '#f4f1ea' },
-    { id: 9,  x: DESK_X + 430,  y: DESK_Y + 175, rotate: 4,   shade: '#ede7d4' },
-    { id: 10, x: DESK_X + 595,  y: DESK_Y + 150, rotate: -11, shade: '#f4f1ea' },
-    { id: 11, x: DESK_X + 760,  y: DESK_Y + 170, rotate: 9,   shade: '#ede7d4' },
-    { id: 12, x: DESK_X + 920,  y: DESK_Y + 150, rotate: -4,  shade: '#f4f1ea' },
+    { id: 7,  x: DESK_X + 130,  y: DESK_Y + 160, rotate: 6,   shade: '#ede7d4' },
+    { id: 8,  x: DESK_X + 385,  y: DESK_Y + 140, rotate: -7,  shade: '#f4f1ea' },
+    { id: 9,  x: DESK_X + 640,  y: DESK_Y + 175, rotate: 4,   shade: '#ede7d4' },
+    { id: 10, x: DESK_X + 880,  y: DESK_Y + 150, rotate: -11, shade: '#f4f1ea' },
+    { id: 11, x: DESK_X + 1120, y: DESK_Y + 170, rotate: 9,   shade: '#ede7d4' },
+    { id: 12, x: DESK_X + 1370, y: DESK_Y + 150, rotate: -4,  shade: '#f4f1ea' },
     // Row 3
-    { id: 13, x: DESK_X + 60,   y: DESK_Y + 275, rotate: 11,  shade: '#f4f1ea' },
-    { id: 14, x: DESK_X + 230,  y: DESK_Y + 255, rotate: -5,  shade: '#ede7d4' },
-    { id: 15, x: DESK_X + 400,  y: DESK_Y + 285, rotate: 3,   shade: '#f4f1ea' },
-    { id: 16, x: DESK_X + 570,  y: DESK_Y + 260, rotate: -8,  shade: '#ede7d4' },
-    { id: 17, x: DESK_X + 740,  y: DESK_Y + 290, rotate: 6,   shade: '#f4f1ea' },
-    { id: 18, x: DESK_X + 905,  y: DESK_Y + 265, rotate: -9,  shade: '#ede7d4' },
+    { id: 13, x: DESK_X + 90,   y: DESK_Y + 275, rotate: 11,  shade: '#f4f1ea' },
+    { id: 14, x: DESK_X + 340,  y: DESK_Y + 255, rotate: -5,  shade: '#ede7d4' },
+    { id: 15, x: DESK_X + 590,  y: DESK_Y + 285, rotate: 3,   shade: '#f4f1ea' },
+    { id: 16, x: DESK_X + 840,  y: DESK_Y + 260, rotate: -8,  shade: '#ede7d4' },
+    { id: 17, x: DESK_X + 1095, y: DESK_Y + 290, rotate: 6,   shade: '#f4f1ea' },
+    { id: 18, x: DESK_X + 1350, y: DESK_Y + 265, rotate: -9,  shade: '#ede7d4' },
   ];
 
-  // phase 3 攤平紙張位置（桌面中央偏左）
-  const FINAL_X = DESK_X + DESK_W / 2 - PAPER_W * 1.4 / 2;
-  const FINAL_Y = DESK_Y + DESK_H / 2 - PAPER_H * 1.4 / 2;
+  // 整合後研究報告的位置（桌面正中央）
+  const REPORT_X = DESK_X + DESK_W / 2 - PAPER_W / 2;
+  const REPORT_Y = DESK_Y + DESK_H / 2 - PAPER_H / 2;
 
-  // 四階段：0=空桌面，1=紙張堆滿，2=收進抽屜，3=取出 .md
+  // 三階段：0=空桌面，1=文件平鋪散落在桌面，2=匯聚整合成一份研究報告
   const paperAnimate = (p) => {
     if (!active)      return { x: p.x, y: -260, rotate: p.rotate, opacity: 0, scale: 1 };
     if (phase === 0)  return { x: p.x, y: -260, rotate: p.rotate, opacity: 0, scale: 1 };
     if (phase === 1)  return { x: p.x, y: p.y,  rotate: p.rotate, opacity: 1, scale: 1 };
-    // phase 2、3 → 飛進抽屜
-    return { x: DRAWER_PAPER_X, y: DRAWER_PAPER_Y, rotate: 0, opacity: 0, scale: 0.2 };
+    // phase 2 → 向中央匯聚、縮小淡出，匯整成一份報告
+    return { x: REPORT_X, y: REPORT_Y, rotate: 0, opacity: 0, scale: 0.25 };
   };
   const paperTransition = (i) => {
-    if (phase === 1) return { delay: i * 0.10, type: 'spring', stiffness: 90, damping: 14, mass: 0.8 };
-    if (phase === 2) return { delay: i * 0.035, duration: 0.5, ease: 'easeIn' };
+    if (phase === 1) return { delay: i * 0.04, type: 'spring', stiffness: 150, damping: 15, mass: 0.6 };
+    if (phase === 2) return { delay: i * 0.03, duration: 0.55, ease: 'easeIn' };
     return { duration: 0 };
   };
 
   const handleStageClick = () => {
     if (phase === 0) setPhase(1);
     else if (phase === 1) setPhase(2);
-    else if (phase === 3) {
+    else if (phase === 2) {
       // 重播：回到 phase 0（空桌面），並更新 cycleKey 讓紙張 remount 重新藏到上方
       setPhase(0);
       setCycleKey((k) => k + 1);
     }
-  };
-  const handleDrawerClick = (e) => {
-    if (phase === 2) {
-      e.stopPropagation();
-      setPhase(3);
-    }
-    // 其他 phase 讓 click 冒泡到 stage（讓 phase 0/1 點抽屜也能推進，phase 3 點抽屜也能重播）
   };
 
   return (
@@ -459,22 +496,60 @@ const DesignerDeskMetaphor = ({ n, total }) => {
       <div ref={ref} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
         <SlideHead
           kicker="04 情境三 · RPI Workflow"
-          title="為什麼要存成 .md"
-          sub="Context window = AI 當下的工作桌面"
+          title={<>AI 準確度的關鍵｜脈絡的延續 <span style={{ fontSize: '0.72em' }}>與</span> Context window 的管理</>}
+          sub="大型任務容易塞滿 Context window，一旦塞滿，準確度就下降"
         />
 
-        {/* Visual stage */}
+        {/* 步驟提示卡 — 置於動畫上方，先給文字脈絡再看動畫 */}
+        <div style={{
+          marginTop: 28,
+          padding: '20px 28px',
+          background: C.surface1,
+          border: `1px solid ${C.hairline}`,
+          borderRadius: ROUNDED.lg,
+          borderLeft: `4px solid ${C.accentBlue}`,
+        }}>
+          <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
+            {phase === 0 && (
+              <>Context Window 就像 <b style={{ fontWeight: 700 }}>AI 的工作桌面</b>，<span style={{ color: C.inkMuted }}>開啟一個新 Session 就有完整的可用空間。</span></>
+            )}
+            {phase === 1 && (
+              <>蒐集到的資料越堆越多，<b style={{ fontWeight: 700 }}>桌面塞越滿就越容易看走眼</b>。</>
+            )}
+            {phase === 2 && (
+              <>把零散資訊整合成<b style={{ fontWeight: 700 }}>一份研究報告</b>（research.md），
+                <span style={{ color: C.inkMuted }}>桌面只留下精煉後的脈絡，Context 保持清爽。</span></>
+            )}
+          </div>
+        </div>
+
+        {/* Visual stage — 3D 透視桌面場景 */}
         <div
           onClick={handleStageClick}
           style={{
-            marginTop: 28,
+            marginTop: 100,
             width: STAGE_W,
             height: STAGE_H,
             position: 'relative',
             alignSelf: 'center',
-            cursor: phase === 2 ? 'default' : 'pointer',
+            cursor: 'pointer',
+            perspective: '1500px',
+            perspectiveOrigin: '50% 32%',
           }}
         >
+          {/* 機器人 — 坐在桌子後面（先繪製，之後被傾斜桌面遮住下半身）
+              phase 1 文件堆滿桌面時切換成腦袋卡住的錯誤表情 */}
+          <DeskRobot error={robotPhase === 1} happy={robotPhase === 2} />
+
+          {/* 傾斜的桌面平面：桌面 + 紙張 + 報告整體 rotateX，營造景深 */}
+          <div style={{
+            position: 'absolute',
+            left: 0, top: 0,
+            width: STAGE_W,
+            height: DESK_Y + DESK_H,
+            transform: 'rotateX(46deg)',
+            transformOrigin: 'center bottom',
+          }}>
           {/* 桌面 */}
           <div style={{
             position: 'absolute',
@@ -482,7 +557,7 @@ const DesignerDeskMetaphor = ({ n, total }) => {
             width: DESK_W, height: DESK_H,
             background: 'linear-gradient(135deg, #a07a4f 0%, #785836 100%)',
             borderRadius: 16,
-            boxShadow: 'inset 0 0 80px rgba(0, 0, 0, 0.28)',
+            boxShadow: 'inset 0 0 80px rgba(0, 0, 0, 0.28), 0 24px 50px rgba(0, 0, 0, 0.5)',
           }} />
           <div style={{
             position: 'absolute',
@@ -495,67 +570,7 @@ const DesignerDeskMetaphor = ({ n, total }) => {
             pointerEvents: 'none',
           }}>Context window · 桌面</div>
 
-          {/* 抽屜 */}
-          <div
-            onClick={handleDrawerClick}
-            style={{
-              position: 'absolute',
-              left: DRAWER_X, top: DRAWER_Y,
-              width: DRAWER_W, height: DRAWER_H,
-              background: 'linear-gradient(135deg, #6b4f37 0%, #4a3522 100%)',
-              borderRadius: 16,
-              boxShadow: phase === 2
-                ? '0 0 0 3px rgba(77, 159, 255, 0.6), inset 0 0 40px rgba(0, 0, 0, 0.45)'
-                : 'inset 0 0 40px rgba(0, 0, 0, 0.45)',
-              cursor: phase === 2 ? 'pointer' : 'default',
-              transition: 'box-shadow 200ms ease, transform 200ms ease',
-              transform: phase === 2 ? 'translateY(-4px)' : 'translateY(0)',
-            }}
-          >
-            {/* 抽屜開口（slot） */}
-            <div style={{
-              position: 'absolute',
-              left: 28, right: 28, top: 18,
-              height: 10,
-              background: '#1f1408',
-              borderRadius: 4,
-              boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.5)',
-            }} />
-            {/* 抽屜把手 */}
-            <div style={{
-              position: 'absolute',
-              left: '50%', bottom: 36,
-              transform: 'translateX(-50%)',
-              width: 110, height: 18,
-              background: 'linear-gradient(180deg, #d4b282 0%, #a8845a 100%)',
-              borderRadius: 4,
-              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.4)',
-            }} />
-            {/* 抽屜標籤 */}
-            <div style={{
-              position: 'absolute',
-              left: 0, right: 0, top: 60,
-              textAlign: 'center',
-              fontSize: TYPE_SCALE.subtitle,
-              fontWeight: 700,
-              color: '#f4f1ea',
-              letterSpacing: '-0.012em',
-              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-              pointerEvents: 'none',
-            }}>📁 抽屜</div>
-            <div style={{
-              position: 'absolute',
-              left: 0, right: 0, top: 124,
-              textAlign: 'center',
-              fontSize: TYPE_SCALE.tiny,
-              color: 'rgba(244, 241, 234, 0.6)',
-              letterSpacing: '0.12em',
-              fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-              pointerEvents: 'none',
-            }}>.md 檔案存放處</div>
-          </div>
-
-          {/* 散落的紙張（phase 0 堆積，phase 1+ 飛進抽屜） */}
+          {/* 散落的紙張（phase 0 藏於上方，phase 1 堆滿，phase 2 匯聚整合） */}
           {papers.map((p, i) => (
             <motion.div
               key={`${p.id}-${cycleKey}`}
@@ -586,19 +601,19 @@ const DesignerDeskMetaphor = ({ n, total }) => {
             </motion.div>
           ))}
 
-          {/* phase 3 — 一份 .md 從抽屜飛回桌面攤平 */}
-          {phase === 3 && (
+          {/* phase 2 — 多份文件整合成一份研究報告，於桌面中央放大攤平 */}
+          {phase === 2 && (
             <motion.div
-              initial={{ x: DRAWER_PAPER_X, y: DRAWER_PAPER_Y, rotate: -6, opacity: 0, scale: 0.3 }}
-              animate={{ x: FINAL_X, y: FINAL_Y, rotate: 0, opacity: 1, scale: 1.4 }}
-              transition={{ duration: 1.1, ease: [0.2, 0.7, 0.3, 1] }}
+              initial={{ x: REPORT_X, y: REPORT_Y, rotate: -4, opacity: 0, scale: 0.3 }}
+              animate={{ x: REPORT_X, y: REPORT_Y, rotate: 0, opacity: 1, scale: 1.5 }}
+              transition={{ delay: 0.5, duration: 0.85, ease: [0.2, 0.7, 0.3, 1] }}
               style={{
                 position: 'absolute',
                 top: 0, left: 0,
                 width: PAPER_W, height: PAPER_H,
                 background: '#f4f1ea',
                 borderRadius: 6,
-                boxShadow: '0 16px 36px rgba(0, 0, 0, 0.5)',
+                boxShadow: '0 18px 40px rgba(0, 0, 0, 0.55)',
                 padding: '16px 14px',
                 boxSizing: 'border-box',
                 color: '#1a1a1a',
@@ -607,13 +622,13 @@ const DesignerDeskMetaphor = ({ n, total }) => {
               }}
             >
               <div style={{
-                fontSize: 16, fontWeight: 700, marginBottom: 10,
+                fontSize: 15, fontWeight: 700, marginBottom: 10,
                 letterSpacing: '-0.01em',
                 display: 'flex', alignItems: 'center', gap: 6,
               }}>
-                <span>📄</span>plan.md
+                <span>📄</span>research.md
               </div>
-              {[85, 70, 80, 60, 75, 55].map((w, j) => (
+              {[90, 72, 82, 64, 78, 58].map((w, j) => (
                 <div key={j} style={{
                   height: 4,
                   background: '#c4bca6',
@@ -624,44 +639,6 @@ const DesignerDeskMetaphor = ({ n, total }) => {
               ))}
             </motion.div>
           )}
-        </div>
-
-        {/* 步驟提示卡 */}
-        <div style={{
-          marginTop: 20,
-          padding: '20px 28px',
-          background: C.surface1,
-          border: `1px solid ${C.hairline}`,
-          borderRadius: ROUNDED.lg,
-          borderLeft: `4px solid ${C.accentBlue}`,
-        }}>
-          <div style={{
-            fontSize: TYPE_SCALE.tiny,
-            color: C.inkMuted,
-            letterSpacing: '0.16em',
-            textTransform: 'uppercase',
-            fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
-            marginBottom: 10,
-          }}>
-            {phase === 0 && '步驟 1 / 4 · 起點 — 空桌面'}
-            {phase === 1 && '步驟 2 / 4 · 紙張堆滿桌面'}
-            {phase === 2 && '步驟 3 / 4 · 收進抽屜'}
-            {phase === 3 && '步驟 4 / 4 · 取出當下用到的 .md'}
-          </div>
-          <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
-            {phase === 0 && (
-              <>AI 開啟一個新 Session，桌面是空的，<span style={{ color: C.inkMuted }}>Context window 還有完整的可用空間。</span></>
-            )}
-            {phase === 1 && (
-              <>Context window 就像 AI 當下的工作桌面，<b style={{ fontWeight: 700 }}>紙張堆越多越容易看走眼</b>。</>
-            )}
-            {phase === 2 && (
-              <>資訊都存進 .md，桌面回到清爽狀態。</>
-            )}
-            {phase === 3 && (
-              <>桌面隨時只放當下用到的 <b style={{ fontWeight: 700 }}>.md</b>，
-                <span style={{ color: C.inkMuted }}>Context 保持清爽，AI 判斷更準。</span></>
-            )}
           </div>
         </div>
 
@@ -714,10 +691,11 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
         <SlideHead
           kicker="04 情境三 · RPI Workflow"
           title="Research → Plan → Implement"
+          sub="HumanLayer 創辦人 Dex Horthy 提出，突破 Context window 的限制保持脈絡的延續"
         />
       </motion.div>
       <motion.div variants={STAGGER_INNER} style={{
-        marginTop: 48,
+        marginTop: 32,
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: 20,
@@ -727,10 +705,10 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
             background: C.surface1,
             border: `1px solid ${C.hairline}`,
             borderRadius: ROUNDED.lg,
-            padding: 32,
+            padding: 24,
             display: 'flex',
             flexDirection: 'column',
-            gap: 18,
+            gap: 14,
           }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 16 }}>
               <div style={{
@@ -768,20 +746,6 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
                   fontFamily: "Inter, 'Noto Sans TC', system-ui, sans-serif",
                 }}>AI 做什麼</div>
                 <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.45 }}>{c.ai}</div>
-                <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 9 }}>
-                  {c.tasks.map((t, ti) => (
-                    <div key={ti} style={{
-                      display: 'flex', gap: 10,
-                      fontSize: TYPE_SCALE.tiny, color: C.inkMuted, lineHeight: 1.4,
-                    }}>
-                      <span style={{
-                        width: 5, height: 5, borderRadius: '50%',
-                        background: C.gradientViolet, flexShrink: 0, marginTop: 9,
-                      }} />
-                      <span>{t}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
             <div style={{ marginTop: 'auto', borderTop: `1px solid ${C.hairline}`, paddingTop: 18 }}>
@@ -795,6 +759,46 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
           </motion.div>
         ))}
       </motion.div>
+      <motion.div variants={FADE_UP} style={{
+        marginTop: 20,
+        padding: '16px 28px',
+        background: C.surface1,
+        border: `1px solid ${C.hairline}`,
+        borderRadius: ROUNDED.lg,
+        borderLeft: `4px solid ${C.gradientViolet}`,
+      }}>
+        <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
+          每一步都會產出 <b style={{ fontWeight: 700 }}>research.md / plan.md</b> 存進硬碟，<br />
+          <span style={{ color: C.inkMuted }}>這些檔案只在讀取時佔用少量 context window，能保留更多 token 額度。<br />
+          當 Session 撞到 token 上限時，下個 Session 直接讀檔接續，脈絡就不會斷掉。</span>
+        </div>
+      </motion.div>
+      <motion.div variants={FADE_UP} style={{
+        marginTop: 12,
+        padding: '16px 28px',
+        background: C.surface1,
+        border: `1px solid ${C.hairline}`,
+        borderRadius: ROUNDED.lg,
+        borderLeft: `4px solid ${C.gradientCoral}`,
+      }}>
+        <div style={{ fontSize: TYPE_SCALE.small, color: C.ink, lineHeight: 1.55 }}>
+          要使用 RPI 工作流，需要先<b style={{ fontWeight: 700 }}>安裝對應的指令</b>才能執行，<span style={{ color: C.inkMuted }}>安裝方式請參考簡報最後一頁的</span>
+          <span
+            onClick={() => {
+              const deck = document.querySelector('deck-stage');
+              if (deck) deck.goTo(deck.length - 1);
+            }}
+            style={{
+              color: C.accentBlue,
+              fontWeight: 700,
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              textUnderlineOffset: 3,
+            }}
+          >附錄</span>
+          <span style={{ color: C.inkMuted }}>。</span>
+        </div>
+      </motion.div>
       <SlideNumber n={n} total={total} />
     </Animated>
   );
@@ -804,8 +808,8 @@ const DesignerThreeStepsOverview = ({ n, total }) => {
 const DesignerStep1Research = ({ n, total }) => {
   const points = [
     { num: '01', title: '明確指定研究對象', desc: <>是「Admin 人員管理頁面 人員新增」還是「整個 Admin 人員管理頁面」？<br />範圍越精準，報告越好用。</> },
-    { num: '02', title: '指明研究維度', desc: '列出要涵蓋的面向 : 可重用 component、API 規格、欄位驗證邏輯' },
-    { num: '03', title: '附上現況素材', desc: '現有截圖、Figma 連結、相關 ticket — 讓 AI 不只看程式碼。' },
+    { num: '02', title: '指明研究維度', desc: '列出要涵蓋的面向 : 可重用 component、欄位驗證邏輯' },
+    { num: '03', title: '附上現況素材', desc: '現有截圖、Figma 連結 — 讓 AI 不只看程式碼。' },
   ];
   const mono = "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace";
   const ui = "Inter, 'Noto Sans TC', system-ui, sans-serif";
@@ -1453,15 +1457,14 @@ const DesignerInstallAppendix = ({ n, total }) => {
           </motion.div>
         ))}
       </motion.div>
-      {/* 回到 P.40「為什麼需要 R-P-I」(0-based index 39) via deck-stage 公開 API。 */}
-      <BackButton label="回到 P.40" to={39} />
+      {/* 回到 P.41「三步驟總覽」(0-based index 40) via deck-stage 公開 API。 */}
+      <BackButton label="回到 P.41" to={40} />
       <SlideNumber n={n} total={total} />
     </Animated>
   );
 };
 
 export {
-  DesignerWhyRPI,
   DesignerDeskMetaphor,
   DesignerThreeStepsOverview,
   DesignerStep1Research,
@@ -1496,7 +1499,6 @@ export default [
       bg="linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)"
     />
   )},
-  { label: '為什麼需要 R-P-I', render: (p) => <DesignerWhyRPI {...p} /> },
   { label: '桌面比喻', render: (p) => <DesignerDeskMetaphor {...p} /> },
   { label: '三步驟總覽', render: (p) => <DesignerThreeStepsOverview {...p} /> },
   { label: 'STEP 1 Research', render: (p) => <DesignerStep1Research {...p} /> },
