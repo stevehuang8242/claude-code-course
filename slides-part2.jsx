@@ -182,83 +182,6 @@ const Tag = ({ children, color = C.inkMuted, bg = C.surface2 }) => (
   }}>{children}</span>
 );
 
-/* Left-accent callout banner (會合點 / 邊界 / 常見坑 …) */
-const Callout = ({ accent = C.gradientMagenta, title, children, style = {} }) => (
-  <div style={{
-    background: `${accent}1a`,
-    borderLeft: `4px solid ${accent}`,
-    borderRadius: ROUNDED.sm,
-    padding: '20px 28px',
-    fontSize: TYPE_SCALE.small,
-    color: C.ink,
-    lineHeight: 1.45,
-    letterSpacing: TRACK.small,
-    ...style,
-  }}>
-    {title && <span style={{ color: accent, fontWeight: 600 }}>{title}</span>}
-    {children}
-  </div>
-);
-
-/* Demo step with a screenshot placeholder box (操作示範：步驟 + 截圖)。
- * 若帶 `prompt`，中間框改顯示該步驟實際使用的提問 prompt，取代截圖佔位。 */
-const ShotStep = ({ id, accent, title, shot, caption, prompt }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: 14, flex: 1, minWidth: 0 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      <span style={{ fontSize: 30, color: accent, fontWeight: 700, fontFamily: MONO, lineHeight: 1 }}>{id}</span>
-      <span style={{
-        fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600,
-        letterSpacing: TRACK.body, lineHeight: 1.15,
-      }}>{title}</span>
-    </div>
-    {prompt ? (
-      <div style={{
-        flex: 1,
-        minHeight: 190,
-        border: `1px solid ${accent}66`,
-        borderLeft: `4px solid ${accent}`,
-        borderRadius: ROUNDED.md,
-        background: `${accent}0d`,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 12,
-        padding: '18px 20px',
-      }}>
-        <span style={{
-          fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: accent,
-          letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600,
-        }}>提問 Prompt</span>
-        <span style={{ fontSize: 19, color: C.ink, lineHeight: 1.5, letterSpacing: TRACK.small }}>{prompt}</span>
-      </div>
-    ) : (
-      <div style={{
-        flex: 1,
-        minHeight: 190,
-        border: `1.5px dashed ${accent}66`,
-        borderRadius: ROUNDED.md,
-        background: `${accent}0d`,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 10,
-        padding: 18,
-        textAlign: 'center',
-      }}>
-        <span style={{
-          fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: accent,
-          letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 600,
-        }}>截圖</span>
-        <span style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.4 }}>{shot}</span>
-      </div>
-    )}
-    <div style={{
-      fontSize: TYPE_SCALE.small, color: C.inkMuted,
-      lineHeight: 1.4, letterSpacing: TRACK.small,
-    }}>{caption}</div>
-  </div>
-);
-
 /* Standard animated content frame */
 const Slide = ({ kicker, title, sub, children, n, total, bg }) => {
   const [ref, active] = useSlideActive();
@@ -610,13 +533,6 @@ const Part2TwoCases = ({ n, total }) => {
   );
 };
 
-/* 「什麼是 Plan Mode」— 特性 + 建議使用時機，合併成一張卡片（Ch.03）。 */
-const PLAN_MODE_TRAITS = [
-  { label: '只規劃不動手', detail: 'AI 只產出 plan，不直接改檔。' },
-  { label: '會主動詢問',   detail: '反問、列 todo、產出 plan 文件。' },
-];
-const PLAN_MODE_WHEN = ['想法未成形', '新增功能', '不確定要改哪些檔'];
-
 /* ============================================================
    SLIDE 05 — Ch.03 Discussion → PRD · 操作示範（步驟 + 截圖）
    ============================================================ */
@@ -641,7 +557,22 @@ const PRD_MD = [
   { h: '成功樣貌',     body: '報名轉換率提升、表單放棄率下降。' },
   { h: 'Edge case',    items: ['未登入 → 引導註冊', '課程額滿 → 顯示候補'] },
   { h: '約束',         items: ['沿用品牌色 token', '手機優先 RWD'] },
+  { h: '任務拆解',     items: ['課程資訊區塊', '報名表單與欄位驗證', '付款流程串接', '報名成功 / 候補狀態頁'] },
+  { h: '實作步驟',     items: ['1. 頁面骨架 + 手機優先 RWD 佈局', '2. 套品牌色 token、完成課程資訊區', '3. 報名表單 + 驗證 + 兩個 edge case', '4. 串接付款、完成報名成功頁'] },
 ];
+
+/* 三欄上方流程列：討論需求 → Create PRD → 執行結果（對齊三欄）。 */
+const PRD_FLOW = [
+  { id: '1', label: '討論需求',   accent: C.gradientViolet },
+  { id: '2', label: 'Create PRD', accent: C.gradientOrange },
+  { id: '3', label: '執行結果',   accent: C.gradientCoral },
+];
+
+/* 流程列與內容三欄共用的欄寬模板（左：四步驟最寬）。 */
+const PRD_COLS = '1.25fr 36px 1fr 36px 1fr';
+
+/* ③ 執行結果：請 AI 依 PRD 產生程式並跑起來的 prompt。 */
+const RUN_PROMPT = '「依 PRD 的實作步驟逐步產生程式碼，完成後啟動本地預覽（npm run dev），讓我在瀏覽器看第一版。」';
 
 const Part2DiscussionPRD = ({ n, total }) => {
   const [ref, active] = useSlideActive();
@@ -650,8 +581,8 @@ const Part2DiscussionPRD = ({ n, total }) => {
     <Frame>
       <SlideHead
         kicker="02 情境一 · Design to Code ｜ From Requirement"
-        title="使用 Plan mode 把需求整理成 PRD"
-        sub="把模糊想法跟 AI 一起釐清成可執行的需求書"
+        title="From Requirement"
+        sub="先釐清模糊的需求情境，再動手執行"
       />
       <motion.div
         ref={ref}
@@ -662,84 +593,13 @@ const Part2DiscussionPRD = ({ n, total }) => {
           marginTop: 32,
           flex: 1,
           minHeight: 0,
-          display: 'grid',
-          gridTemplateColumns: '1fr 2fr',
-          gap: 36,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16,
         }}
       >
-        {/* 左欄 (1/3) — 什麼是 Plan Mode */}
-        <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ width: 6, height: 24, borderRadius: 3, background: C.gradientViolet, flexShrink: 0 }} />
-            <span style={{ fontSize: 26, fontWeight: 600, color: C.ink, letterSpacing: TRACK.title }}>什麼是 Plan Mode</span>
-          </div>
-          {/* 單一卡片：特性 + 建議使用時機 + Shift+Tab */}
-          <div style={{
-            flex: 1,
-            minHeight: 0,
-            background: C.surface1,
-            border: `1px solid ${C.hairline}`,
-            borderLeft: `3px solid ${C.gradientViolet}`,
-            borderRadius: ROUNDED.lg,
-            padding: '26px 28px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 22,
-          }}>
-            {/* 特性 */}
-            <div>
-              <div style={{
-                fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: C.gradientViolet,
-                letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 12,
-              }}>特性</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {PLAN_MODE_TRAITS.map((t) => (
-                  <div key={t.label}>
-                    <div style={{ fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600, marginBottom: 2, letterSpacing: TRACK.body }}>{t.label}</div>
-                    <div style={{ fontSize: TYPE_SCALE.small, color: C.inkMuted, lineHeight: 1.4, letterSpacing: TRACK.small }}>{t.detail}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ borderTop: `1px solid ${C.hairline}` }} />
-
-            {/* 建議使用時機 */}
-            <div>
-              <div style={{
-                fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: C.gradientViolet,
-                letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 12,
-              }}>建議使用時機</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                {PLAN_MODE_WHEN.map((w) => (
-                  <span key={w} style={{
-                    fontSize: TYPE_SCALE.small, color: C.ink,
-                    background: C.surface2, border: `1px solid ${C.hairline}`,
-                    padding: '8px 16px', borderRadius: ROUNDED.sm, letterSpacing: TRACK.small,
-                  }}>{w}</span>
-                ))}
-              </div>
-            </div>
-
-            {/* Shift+Tab */}
-            <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{
-                fontFamily: MONO, fontSize: TYPE_SCALE.small, fontWeight: 600, color: C.gradientViolet,
-                background: C.surface2, border: `1px solid ${C.gradientViolet}66`, borderRadius: ROUNDED.md,
-                padding: '8px 14px', letterSpacing: '-0.01em', flexShrink: 0,
-              }}>Shift + Tab</span>
-              <span style={{ fontSize: TYPE_SCALE.tiny, color: C.inkMuted, lineHeight: 1.4, letterSpacing: TRACK.small }}>在 plan / accept edits / auto 之間切換</span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* 右欄 (2/3) — 與 AI 討論並形成 PRD */}
-        <motion.div variants={FADE_UP} style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ width: 6, height: 24, borderRadius: 3, background: C.gradientOrange, flexShrink: 0 }} />
-            <span style={{ fontSize: 26, fontWeight: 600, color: C.ink, letterSpacing: TRACK.title }}>與 AI 討論並形成 PRD</span>
-          </div>
-
+        {/* 與 AI 討論並形成 PRD（全寬）*/}
+        <motion.div variants={FADE_UP} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
           {/* 情境 */}
           <div style={{
             display: 'flex', alignItems: 'baseline', gap: 12,
@@ -758,283 +618,195 @@ const Part2DiscussionPRD = ({ n, total }) => {
             </span>
           </div>
 
-          {/* 步驟提問 ｜ PRD.md */}
-          <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-            {/* 四步驟提問 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minHeight: 0 }}>
-              {PRD_STEPS.map((s) => (
-                <div key={s.id} style={{
-                  flex: 1,
+          {/* 流程列：討論需求 → Create PRD → 執行結果（欄間箭頭串成流程，對齊下方三欄）*/}
+          <div style={{ display: 'grid', gridTemplateColumns: PRD_COLS, gap: 12, flexShrink: 0 }}>
+            {PRD_FLOW.map((f, i) => (
+              <React.Fragment key={f.id}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
                   background: C.surface1,
                   border: `1px solid ${C.hairline}`,
-                  borderLeft: `3px solid ${s.accent}`,
+                  borderTop: `3px solid ${f.accent}`,
                   borderRadius: ROUNDED.md,
                   padding: '10px 16px',
-                  display: 'flex',
-                  gap: 12,
-                  minHeight: 0,
                 }}>
-                  <span style={{ fontSize: 34, color: s.accent, fontWeight: 700, fontFamily: MONO, lineHeight: 1, flexShrink: 0 }}>{s.id}</span>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+                  <span style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: `${f.accent}22`, border: `1.5px solid ${f.accent}`,
+                    color: f.accent, fontFamily: MONO, fontWeight: 700, fontSize: 20, flexShrink: 0,
+                  }}>{f.id}</span>
+                  <span style={{ fontSize: 22, fontWeight: 600, color: C.ink, letterSpacing: TRACK.small }}>{f.label}</span>
+                </div>
+                {i < PRD_FLOW.length - 1 && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: PRD_FLOW[i + 1].accent, fontSize: 28, fontWeight: 700, lineHeight: 1 }}>→</span>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          {/* 三欄：討論需求（bullet）｜ Create PRD（prompt + PRD.md）｜ 執行結果（prompt + 截圖）*/}
+          <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: PRD_COLS, gap: 12 }}>
+            {/* ① 討論需求 — 三點 bullet list（同一張卡片）*/}
+            <div style={{
+              display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0,
+              background: C.surface1,
+              border: `1px solid ${C.hairline}`,
+              borderTop: `3px solid ${C.gradientViolet}`,
+              borderRadius: ROUNDED.md,
+              padding: '20px 22px',
+              overflow: 'auto',
+            }}>
+              {PRD_STEPS.slice(0, 3).map((s) => (
+                <div key={s.id} style={{ display: 'flex', gap: 12, minWidth: 0 }}>
+                  <span style={{ color: s.accent, fontSize: 20, lineHeight: 1.4, flexShrink: 0 }}>●</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 20, fontWeight: 600, color: C.ink, letterSpacing: TRACK.body, lineHeight: 1.15 }}>{s.title}</span>
-                      <span style={{ fontSize: TYPE_SCALE.tiny, color: s.accent, letterSpacing: TRACK.small }}>{s.caption}</span>
+                      <span style={{ fontSize: 22, fontWeight: 600, color: C.ink, letterSpacing: TRACK.body, lineHeight: 1.2 }}>{s.title}</span>
+                      <span style={{ fontSize: 16, color: C.inkMuted, letterSpacing: TRACK.small }}>{s.caption}</span>
                     </div>
-                    <div style={{ fontSize: 17, color: C.inkMuted, lineHeight: 1.4, letterSpacing: TRACK.small }}>
-                      <span style={{ fontWeight: 600 }}>Prompt：</span>{s.prompt}
+                    <div style={{
+                      background: C.canvas,
+                      border: `1px solid ${C.hairline}`,
+                      borderLeft: `4px solid ${s.accent}`,
+                      borderRadius: ROUNDED.sm,
+                      padding: '12px 16px',
+                      fontFamily: MONO, fontSize: 18, color: C.inkMuted, lineHeight: 1.5, letterSpacing: TRACK.small,
+                    }}>
+                      <Tag color={s.accent}>Prompt</Tag>{' '}{s.prompt}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* PRD.md 檔案樣式 */}
-            <div style={{
-              display: 'flex', flexDirection: 'column', minHeight: 0,
-              background: C.canvas,
-              border: `1px solid ${C.hairline}`,
-              borderRadius: ROUNDED.md,
-              overflow: 'hidden',
-            }}>
+            {/* 流程箭頭 → Create PRD */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: C.gradientOrange, fontSize: 34, fontWeight: 700, lineHeight: 1 }}>→</span>
+            </div>
+
+            {/* ② Create PRD — 整理成 PRD 的 prompt + PRD.md */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                padding: '10px 18px',
-                background: C.surface1,
-                borderBottom: `1px solid ${C.hairline}`,
                 flexShrink: 0,
+                background: C.canvas,
+                border: `1px solid ${C.hairline}`,
+                borderLeft: `4px solid ${C.gradientOrange}`,
+                borderRadius: ROUNDED.sm,
+                padding: '12px 16px',
+                fontFamily: MONO, fontSize: 18, color: C.inkMuted, lineHeight: 1.5, letterSpacing: TRACK.small,
               }}>
-                <span style={{ display: 'flex', gap: 6 }}>
-                  {[C.gradientCoral, C.gradientOrange, C.gradientViolet].map((c, i) => (
-                    <span key={i} style={{ width: 11, height: 11, borderRadius: '50%', background: c, opacity: 0.8 }} />
-                  ))}
-                </span>
-                <span style={{ fontFamily: MONO, fontSize: 16, color: C.inkMuted, letterSpacing: '0.04em' }}>PRD.md</span>
+                <Tag color={C.gradientOrange}>Prompt</Tag>{' '}{PRD_STEPS[3].prompt}
               </div>
+              {/* PRD.md 檔案樣式（macOS 視窗 mockup）*/}
               <div style={{
-                flex: 1, minHeight: 0, overflow: 'auto',
-                padding: '18px 22px',
+                flex: 1, minHeight: 0,
+                display: 'flex', flexDirection: 'column',
+                background: C.surface2,
+                border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: ROUNDED.lg,
+                overflow: 'hidden',
                 fontFamily: MONO,
-                display: 'flex', flexDirection: 'column', gap: 10,
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
               }}>
-                <div style={{ fontSize: 20, fontWeight: 700, color: C.ink, lineHeight: 1.3 }}>
-                  <span style={{ color: C.gradientCoral, marginRight: 8 }}>#</span>線上課程報名頁 PRD
-                </div>
-                {PRD_MD.map((sec) => (
-                  <div key={sec.h} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <div style={{ fontSize: 16, fontWeight: 600, color: C.gradientCoral, letterSpacing: '0.02em' }}>
-                      <span style={{ opacity: 0.7, marginRight: 8 }}>##</span>{sec.h}
-                    </div>
-                    {sec.body && (
-                      <div style={{ fontSize: 15, color: C.ink, opacity: 0.9, lineHeight: 1.5 }}>{sec.body}</div>
-                    )}
-                    {sec.items && sec.items.map((it) => (
-                      <div key={it} style={{ fontSize: 15, color: C.ink, opacity: 0.9, lineHeight: 1.5 }}>
-                        <span style={{ color: C.inkMuted, marginRight: 8 }}>-</span>{it}
-                      </div>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 20px',
+                  borderBottom: '1px solid rgba(255,255,255,0.04)',
+                  flexShrink: 0,
+                }}>
+                  <span style={{ display: 'inline-flex', gap: 8 }}>
+                    {['#ff5f57', '#febc2e', '#28c840'].map((c, i) => (
+                      <span key={i} style={{ width: 12, height: 12, borderRadius: '50%', background: c }} />
                     ))}
-                  </div>
-                ))}
+                  </span>
+                  <span style={{ fontSize: 16, color: C.ink, marginLeft: 8, fontWeight: 500 }}>PRD.md</span>
+                </div>
+                <div style={{
+                  flex: 1, minHeight: 0, overflow: 'auto',
+                  padding: '20px 24px',
+                  lineHeight: 1.6,
+                  color: C.ink,
+                  display: 'flex', flexDirection: 'column', gap: 12,
+                }}>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: C.ink, lineHeight: 1.3 }}># 線上課程報名頁 PRD</div>
+                  {PRD_MD.map((sec) => (
+                    <div key={sec.h} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: C.ink }}>## {sec.h}</div>
+                      {sec.body && (
+                        <div style={{ fontSize: 15, color: C.inkMuted, lineHeight: 1.5 }}>{sec.body}</div>
+                      )}
+                      {sec.items && sec.items.map((it) => (
+                        <div key={it} style={{ fontSize: 15, color: C.inkMuted, lineHeight: 1.5 }}>- {it}</div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 流程箭頭 → 執行結果 */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: C.gradientCoral, fontSize: 34, fontWeight: 700, lineHeight: 1 }}>→</span>
+            </div>
+
+            {/* ③ 執行結果 — 產生程式並跑起來的 prompt + 截圖（截圖待補）*/}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
+              <div style={{
+                flexShrink: 0,
+                background: C.canvas,
+                border: `1px solid ${C.hairline}`,
+                borderLeft: `4px solid ${C.gradientCoral}`,
+                borderRadius: ROUNDED.sm,
+                padding: '12px 16px',
+                fontFamily: MONO, fontSize: 18, color: C.inkMuted, lineHeight: 1.5, letterSpacing: TRACK.small,
+              }}>
+                <Tag color={C.gradientCoral}>Prompt</Tag>{' '}{RUN_PROMPT}
+              </div>
+              {/* 瀏覽器視窗 mockup */}
+              <div style={{
+                flex: 1, minHeight: 0,
+                display: 'flex', flexDirection: 'column',
+                background: C.surface2,
+                border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: ROUNDED.lg,
+                overflow: 'hidden',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+              }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 16px',
+                  borderBottom: '1px solid rgba(255,255,255,0.04)',
+                  flexShrink: 0,
+                }}>
+                  <span style={{ display: 'inline-flex', gap: 8 }}>
+                    {['#ff5f57', '#febc2e', '#28c840'].map((c, i) => (
+                      <span key={i} style={{ width: 12, height: 12, borderRadius: '50%', background: c }} />
+                    ))}
+                  </span>
+                  <span style={{
+                    flex: 1, marginLeft: 8,
+                    fontFamily: MONO, fontSize: 13, color: C.inkMuted,
+                    background: C.canvas, border: `1px solid ${C.hairline}`,
+                    borderRadius: ROUNDED.pill, padding: '4px 14px', textAlign: 'center',
+                  }}>localhost:5173</span>
+                </div>
+                <div style={{
+                  flex: 1, minHeight: 0,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  gap: 12, padding: 24, textAlign: 'center',
+                  background: C.canvas,
+                  border: `1.5px dashed ${C.hairline}`, margin: 12, borderRadius: ROUNDED.md,
+                }}>
+                  <span style={{ fontSize: 30, opacity: 0.5 }}>🖼</span>
+                  <span style={{ fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 600, letterSpacing: TRACK.small }}>執行結果截圖待補</span>
+                  <span style={{ fontFamily: MONO, fontSize: 14, color: C.inkMuted }}>npm run dev 跑起來的畫面</span>
+                </div>
               </div>
             </div>
           </div>
-        </motion.div>
-      </motion.div>
-      <SlideNumber n={n} total={total} />
-    </Frame>
-  );
-};
-
-/* ============================================================
-   SLIDE 06 — Ch.04 PRD → 第一版 · 四段流程
-   ============================================================ */
-
-/* Ch.04 — 產出物演進：同一份需求，PRD → Plan → 第一版畫面 一路變形。
- * ① PRD.md（承接 Ch.03 產出）→ ② 技術 Plan（設計師唯一審查點）→ ③ 跑起來的畫面（線框）。 */
-const PRD_RECAP = [
-  { k: '目標',  v: '3 步內完成報名' },
-  { k: '功能',  v: '資訊 / 表單 / 付款 / 確認' },
-  { k: 'Edge',  v: '未登入、課程額滿' },
-  { k: '約束',  v: '品牌 token、手機優先' },
-];
-
-const PLAN_STEPS = [
-  '建立報名頁 layout + 課程資訊區',
-  '報名表單 component（含欄位驗證）',
-  '串付款入口 → 報名成功確認',
-  '接 edge case：未登入導註冊 / 額滿候補',
-];
-
-/* 產出物卡外框 — 視窗樣式，呼應 Ch.03 的 PRD.md mockup */
-const evoCard = (accent) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  minHeight: 0,
-  background: C.canvas,
-  border: `1px solid ${C.hairline}`,
-  borderTop: `3px solid ${accent}`,
-  borderRadius: ROUNDED.md,
-  overflow: 'hidden',
-});
-
-const EvoBar = ({ name, note, noteColor }) => (
-  <div style={{
-    display: 'flex', alignItems: 'center', gap: 10,
-    padding: '10px 16px',
-    background: C.surface1,
-    borderBottom: `1px solid ${C.hairline}`,
-    flexShrink: 0,
-  }}>
-    <span style={{ display: 'flex', gap: 5 }}>
-      {[C.gradientCoral, C.gradientOrange, C.gradientViolet].map((c, i) => (
-        <span key={i} style={{ width: 9, height: 9, borderRadius: '50%', background: c, opacity: 0.8 }} />
-      ))}
-    </span>
-    <span style={{ fontFamily: MONO, fontSize: 16, color: C.inkMuted, letterSpacing: '0.04em' }}>{name}</span>
-    {note && (
-      <span style={{ marginLeft: 'auto', fontSize: 15, color: noteColor || C.inkMuted, letterSpacing: TRACK.small }}>{note}</span>
-    )}
-  </div>
-);
-
-/* 卡與卡之間的轉換箭頭，帶動作標籤（把 implement 的 how-to 收進這裡） */
-const EvoArrow = ({ label, sub }) => (
-  <motion.div variants={FADE_UP} style={{
-    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-    gap: 8, padding: '0 16px', flexShrink: 0, width: 170,
-  }}>
-    <div style={{ fontFamily: MONO, fontSize: 34, color: C.inkMuted, lineHeight: 1 }}>→</div>
-    <div style={{ textAlign: 'center' }}>
-      <div style={{ fontSize: 17, fontFamily: MONO, color: C.ink, fontWeight: 600, lineHeight: 1.3 }}>{label}</div>
-      <div style={{ fontSize: 15, color: C.inkMuted, marginTop: 4, lineHeight: 1.3, letterSpacing: TRACK.small }}>{sub}</div>
-    </div>
-  </motion.div>
-);
-
-/* 線框 skeleton bar */
-const Sk = ({ w = '100%', h = 12 }) => (
-  <div style={{ width: w, height: h, borderRadius: 4, background: C.surface2 }} />
-);
-
-const Part2PlanToImplement = ({ n, total }) => {
-  const [ref, active] = useSlideActive();
-  const state = active ? 'show' : 'hidden';
-  return (
-    <Frame>
-      <SlideHead
-        kicker="02 情境一 · Design to Code ｜ From Requirement"
-        title="把 PRD 變成第一版可操作的畫面"
-        sub="PRD 與 plan 的乾淨度，決定 implement 的速度。"
-      />
-      <motion.div
-        ref={ref}
-        initial="hidden"
-        animate={state}
-        variants={STAGGER}
-        style={{
-          marginTop: 36,
-          flex: 1,
-          minHeight: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 24,
-        }}
-      >
-        {/* 產出物演進流：PRD → Plan → 畫面 */}
-        <motion.div
-          variants={STAGGER_INNER}
-          style={{
-            flex: 1,
-            minHeight: 0,
-            display: 'grid',
-            gridTemplateColumns: '1fr auto 1fr auto 1fr',
-            alignItems: 'stretch',
-          }}
-        >
-          {/* ① PRD.md — 承接 Ch.03 */}
-          <motion.div variants={FADE_UP} style={evoCard(C.gradientViolet)}>
-            <EvoBar name="PRD.md" note="與 AI 討論後產出" noteColor={C.gradientViolet} />
-            <div style={{ flex: 1, minHeight: 0, padding: '20px 22px', fontFamily: MONO, display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: C.ink, lineHeight: 1.3 }}>
-                <span style={{ color: C.gradientViolet, marginRight: 8 }}>#</span>線上課程報名頁
-              </div>
-              {PRD_RECAP.map((r) => (
-                <div key={r.k} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: C.gradientViolet }}>
-                    <span style={{ opacity: 0.6, marginRight: 8 }}>##</span>{r.k}
-                  </div>
-                  <div style={{ fontSize: 17, color: C.ink, opacity: 0.9, lineHeight: 1.5, paddingLeft: 4 }}>{r.v}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          <EvoArrow label="餵進 Plan Mode" sub="請 AI 產出技術 plan" />
-
-          {/* ② Plan — 設計師唯一審查點 */}
-          <motion.div variants={FADE_UP} style={evoCard(C.gradientMagenta)}>
-            <EvoBar name="技術 Plan" note="Plan Mode 產出" noteColor={C.gradientMagenta} />
-            <div style={{ flex: 1, minHeight: 0, padding: '18px 22px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ fontSize: 15, color: C.inkMuted, letterSpacing: TRACK.small }}>AI 依 PRD 拆出的步驟：</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                {PLAN_STEPS.map((s, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 10, fontSize: 17, color: C.ink, lineHeight: 1.4 }}>
-                    <span style={{ fontFamily: MONO, color: C.gradientMagenta, fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
-                    <span style={{ opacity: 0.92 }}>{s}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ paddingTop: 10, borderTop: `1px solid ${C.hairline}`, fontSize: 15, color: C.inkMuted, lineHeight: 1.45 }}>
-                影響範圍：報名相關 component + 路由　·　風險：付款串接、edge case 漏接
-              </div>
-              <div style={{
-                marginTop: 'auto',
-                background: `${C.gradientMagenta}1a`,
-                border: `1px solid ${C.gradientMagenta}66`,
-                borderRadius: ROUNDED.sm,
-                padding: '12px 14px',
-                fontSize: 16, lineHeight: 1.45,
-              }}>
-                <span style={{ color: C.gradientMagenta, fontWeight: 700 }}>👁 設計師審查點　</span>
-                <span style={{ color: C.ink }}>對照 PRD 看流程 / 互動 / 邊界 / 命名——唯一動手介入的地方</span>
-              </div>
-            </div>
-          </motion.div>
-
-          <EvoArrow label="confirm → implement" sub="退出 plan · 啟動 dev server" />
-
-          {/* ③ 第一版畫面 — 跑起來的線框 */}
-          <motion.div variants={FADE_UP} style={evoCard(C.gradientCoral)}>
-            <EvoBar name="localhost:5173" note="將結果顯示在瀏覽器中" noteColor={C.gradientCoral} />
-            <div style={{ flex: 1, minHeight: 0, padding: '22px 22px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {/* 課程 banner skeleton */}
-              <div style={{ background: C.surface1, border: `1px solid ${C.hairline}`, borderRadius: ROUNDED.sm, padding: '16px 16px', display: 'flex', flexDirection: 'column', gap: 9 }}>
-                <Sk w="62%" h={16} />
-                <Sk w="88%" />
-                <Sk w="70%" />
-              </div>
-              {/* 報名表單 */}
-              <div style={{ fontSize: 15, color: C.inkMuted, letterSpacing: TRACK.small }}>報名表單</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {['姓名', 'Email'].map((ph) => (
-                  <div key={ph} style={{
-                    height: 40, borderRadius: ROUNDED.sm,
-                    border: `1px solid ${C.hairline}`, background: C.surface1,
-                    display: 'flex', alignItems: 'center', padding: '0 14px',
-                    fontSize: 16, color: C.inkMuted,
-                  }}>{ph}</div>
-                ))}
-              </div>
-              {/* CTA 按鈕 */}
-              <div style={{
-                marginTop: 'auto',
-                height: 48, borderRadius: ROUNDED.sm,
-                background: C.gradientCoral,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 18, fontWeight: 700, color: C.inverseInk,
-                letterSpacing: TRACK.body,
-              }}>立即報名</div>
-            </div>
-          </motion.div>
         </motion.div>
       </motion.div>
       <SlideNumber n={n} total={total} />
@@ -1052,6 +824,7 @@ const DESIGN_SOURCES = [
     tag: 'Figma',
     accent: C.gradientViolet,
     headline: '既有設計檔，最完整',
+    fit: '成熟專案',
     rows: [['起點', '既有圖稿'], ['產出', 'Figma file'], ['對接', 'Figma MCP 讀取']],
     path: ['Connect Figma MCP', 'Copy link to selection', 'AI Coding'],
   },
@@ -1060,6 +833,7 @@ const DESIGN_SOURCES = [
     tag: 'Figma Make',
     accent: C.gradientMagenta,
     headline: 'Figma 內建 AI 生成',
+    fit: '探索期',
     rows: [['起點', 'prompt'], ['產出', 'Figma frame'], ['對接', 'export → MCP']],
     path: ['Prompt 生成', 'Export to MCP', 'AI Coding'],
   },
@@ -1068,6 +842,7 @@ const DESIGN_SOURCES = [
     tag: 'Claude Design',
     accent: C.gradientOrange,
     headline: '與 Claude Code 同生態',
+    fit: '探索期 · 極短 sprint',
     rows: [['起點', '文字 + 多模態'], ['產出', 'web preview'], ['對接', '直接 handoff']],
     path: ['Prompt 生成', 'Web preview', '直接 handoff', 'AI Coding'],
   },
@@ -1079,9 +854,9 @@ const Part2DesignSources = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="02 情境一 · Design to Code"
-        title="三種設計源，各有擅長的場景"
-        sub="設計源不是越多越好——選錯會多繞遠路。"
+        kicker="02 情境一 · Design to Code ｜ From Design Source"
+        title="From Design Source"
+        sub="不同的設計來源對應不同的場景需求"
       />
       <motion.div
         ref={ref}
@@ -1140,6 +915,16 @@ const Part2DesignSources = ({ n, total }) => {
                 fontSize: 30, fontWeight: 600, color: C.ink,
                 lineHeight: 1.2, letterSpacing: TRACK.title,
               }}>{card.headline}</div>
+
+              {/* 選擇建議 — 此設計源最適合的場景 */}
+              <div style={{
+                display: 'inline-flex', alignItems: 'baseline', gap: 8, alignSelf: 'flex-start',
+                padding: '6px 14px', borderRadius: ROUNDED.pill,
+                background: `${card.accent}1a`, border: `1px solid ${card.accent}55`,
+              }}>
+                <span style={{ fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: card.accent, letterSpacing: '0.1em', textTransform: 'uppercase' }}>適用</span>
+                <span style={{ fontSize: TYPE_SCALE.small, color: C.ink, letterSpacing: TRACK.small }}>{card.fit}</span>
+              </div>
 
               {/* Path — 各設計源各自的接軌工作流 */}
               <div>
@@ -1207,226 +992,6 @@ const Part2DesignSources = ({ n, total }) => {
           ))}
         </motion.div>
 
-        <motion.div variants={FADE_UP}>
-          <Callout accent={C.gradientCoral} title="選擇建議：">
-            成熟專案 → Figma；探索期 → Figma Make 或 Claude Design；極短 sprint → Claude Design。
-          </Callout>
-        </motion.div>
-      </motion.div>
-      <SlideNumber n={n} total={total} />
-    </Frame>
-  );
-};
-
-/* ============================================================
-   SLIDE 09 — Ch.06 Source to Code · 操作示範（步驟 + 截圖）
-   ============================================================ */
-
-const SOURCE_STEPS = [
-  { id: '①', accent: C.gradientViolet,  title: '健檢設計源',   shot: '圖層 / component / token', caption: '命名、component、token（見 Part 1 / Part 3）。' },
-  { id: '②', accent: C.gradientMagenta, title: '選接軌通道',   shot: '接軌方式選擇',  caption: 'Figma=MCP · Make=export→MCP · Design=handoff。' },
-  { id: '③', accent: C.gradientOrange,  title: '接軌指令',     shot: 'Claude Code 讀取', caption: '附 checklist：token 對應 / 互動狀態 / 技術約束。' },
-  { id: '④', accent: C.gradientCoral,   title: '產出 + 跑起來', shot: 'code 對照設計源', caption: '產出 component → 對照設計源 → 第一版達標。' },
-];
-
-const Part2SourceToCode = ({ n, total }) => {
-  const [ref, active] = useSlideActive();
-  const state = active ? 'show' : 'hidden';
-  return (
-    <Frame>
-      <SlideHead
-        kicker="02 情境一 · Design to Code"
-        title="設計源到 Code 的接軌"
-        sub="每種設計源接軌方式不同，但目標一致——把視覺轉成 AI 看得懂的 input。"
-      />
-      <motion.div
-        ref={ref}
-        initial="hidden"
-        animate={state}
-        variants={STAGGER}
-        style={{
-          marginTop: 40,
-          flex: 1,
-          minHeight: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 24,
-        }}
-      >
-        <motion.div
-          variants={STAGGER_INNER}
-          style={{
-            flex: 1,
-            minHeight: 0,
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 20,
-          }}
-        >
-          {SOURCE_STEPS.map((s) => (
-            <motion.div key={s.id} variants={FADE_UP} style={{ display: 'flex' }}>
-              <ShotStep {...s} />
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <motion.div variants={FADE_UP}>
-          <Callout accent={C.gradientOrange} title="注意：">
-            設計源 ≈ PRD 的視覺部分，故略過「討論成 PRD」；若缺需求脈絡（流程 / 邊界）可補一份輕量 PRD。預設陷阱——純圖片貼上、未 detach 的 instance、跨檔案 component、漏掉 hover / loading / error。
-          </Callout>
-        </motion.div>
-      </motion.div>
-      <SlideNumber n={n} total={total} />
-    </Frame>
-  );
-};
-
-/* ============================================================
-   SLIDE 10 — Overview · 兩個 Case 一張圖
-   ============================================================ */
-
-const HANDOFF_POINTS = [
-  {
-    label: '迭代與驗收（1 → N）',
-    detail: 'Design from Code：三種調整方式 / 看畫面 / 存檔回復',
-    ref: 'Part 3',
-    accent: C.gradientViolet,
-  },
-  {
-    label: 'slash command RPI',
-    detail: 'Research → Plan → Implement（research.md / plan.md）',
-    ref: 'Part 4',
-    accent: C.gradientMagenta,
-  },
-  {
-    label: '共用工具',
-    detail: 'Cursor + Claude Code + Figma MCP',
-    ref: 'Part 1',
-    accent: C.gradientOrange,
-  },
-];
-
-const Part2Overview = ({ n, total }) => {
-  const [ref, active] = useSlideActive();
-  const state = active ? 'show' : 'hidden';
-  return (
-    <Frame>
-      <SlideHead
-        kicker="02 情境一 · Design to Code"
-        title="兩個 Case，一張地圖"
-        sub="從不同的出發點完成 0 -> 1。"
-      />
-      <motion.div
-        ref={ref}
-        initial="hidden"
-        animate={state}
-        variants={STAGGER}
-        style={{
-          marginTop: 40,
-          flex: 1,
-          minHeight: 0,
-          display: 'grid',
-          gridTemplateColumns: '1.1fr 1fr',
-          gap: 48,
-        }}
-      >
-        {/* Left — convergence tree */}
-        <motion.div
-          variants={FADE_UP}
-          style={{
-            background: C.surface1,
-            border: `1px solid ${C.hairline}`,
-            borderRadius: ROUNDED.lg,
-            padding: '32px 36px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            gap: 12,
-            fontFamily: MONO,
-            fontSize: 20,
-            color: C.inkMuted,
-            lineHeight: 1.5,
-          }}
-        >
-          <div style={{ color: C.ink, fontWeight: 700, fontSize: 24, marginBottom: 8 }}>第一版可運作介面（0 → 1）</div>
-
-          {/* Case 1 path */}
-          <div style={{ color: C.gradientViolet }}>
-            <div>├─ <span style={{ fontWeight: 700 }}>Case 1 · From Discussion</span></div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>│  └─ Plan Mode（Shift+Tab）</div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>│     └─ 討論 → PRD</div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>│        └─ Plan → Implement <span style={{ color: C.gradientViolet }}>──┐</span></div>
-          </div>
-
-          <div style={{ color: C.inkMuted, paddingLeft: 24 }}>│                          <span style={{ color: C.ink }}>▼</span></div>
-          <div style={{ paddingLeft: 24 }}>│         <span style={{
-            color: C.ink, fontWeight: 700, fontSize: 22,
-            background: 'linear-gradient(90deg, rgba(106,76,245,0.18), rgba(255,122,61,0.18))',
-            padding: '2px 12px', borderRadius: ROUNDED.sm,
-          }}>第一版完成 · 本章止於此</span></div>
-          <div style={{ color: C.inkMuted, paddingLeft: 24 }}>│                          <span style={{ color: C.ink }}>▲</span></div>
-
-          {/* Case 2 path */}
-          <div style={{ color: C.gradientOrange }}>
-            <div>└─ <span style={{ fontWeight: 700 }}>Case 2 · From Design Source</span></div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>   └─ 設計源（Figma / Make / Design）</div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>      └─ 接軌（MCP / export / handoff）</div>
-            <div style={{ paddingLeft: 24, color: C.inkMuted }}>         └─ 產出 component <span style={{ color: C.gradientOrange }}>──┘</span></div>
-          </div>
-        </motion.div>
-
-        {/* Right — handoff points */}
-        <motion.div
-          variants={STAGGER_INNER}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            gap: 18,
-          }}
-        >
-          <div style={{
-            fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: C.inkMuted,
-            letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4,
-          }}>第一版之後 · 交棒給</div>
-          {HANDOFF_POINTS.map((cp) => (
-            <motion.div
-              key={cp.label}
-              variants={FADE_UP}
-              style={{
-                background: C.surface1,
-                border: `1px solid ${C.hairline}`,
-                borderRadius: ROUNDED.md,
-                padding: '18px 22px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-                borderLeft: `4px solid ${cp.accent}`,
-              }}
-            >
-              <div style={{
-                display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12,
-              }}>
-                <div style={{
-                  fontSize: TYPE_SCALE.body, color: C.ink, fontWeight: 600, letterSpacing: TRACK.body,
-                }}>{cp.label}</div>
-                <div style={{
-                  fontSize: TYPE_SCALE.tiny, fontFamily: MONO, color: cp.accent, letterSpacing: '0.08em',
-                }}>{cp.ref}</div>
-              </div>
-              <div style={{
-                fontSize: TYPE_SCALE.small, color: C.inkMuted, letterSpacing: TRACK.small, lineHeight: 1.4,
-              }}>{cp.detail}</div>
-            </motion.div>
-          ))}
-          <motion.div variants={FADE_UP} style={{
-            marginTop: 4,
-            fontSize: TYPE_SCALE.small, color: C.inkMuted,
-            lineHeight: 1.4, letterSpacing: TRACK.small, fontStyle: 'italic',
-          }}>
-            本章只做 0 → 1；迭代與工作流自動化交給後面兩個 Part。
-          </motion.div>
-        </motion.div>
       </motion.div>
       <SlideNumber n={n} total={total} />
     </Frame>
@@ -1559,10 +1124,7 @@ export {
   Part2ScenariosIntro,
   Part2TwoCases,
   Part2DiscussionPRD,
-  Part2PlanToImplement,
   Part2DesignSources,
-  Part2SourceToCode,
-  Part2Overview,
   Part2Closing,
 }
 
@@ -1584,9 +1146,6 @@ export default [
   )},
   { label: 'Ch.01 · Two Cases', render: (p) => <Part2TwoCases {...p} /> },
   { label: 'Ch.03 · Discussion → PRD', render: (p) => <Part2DiscussionPRD {...p} /> },
-  { label: 'Ch.04 · PRD → 第一版', render: (p) => <Part2PlanToImplement {...p} /> },
   { label: 'Ch.05 · Design Sources', render: (p) => <Part2DesignSources {...p} /> },
-  { label: 'Ch.06 · Source to Code', render: (p) => <Part2SourceToCode {...p} /> },
-  { label: 'Overview', render: (p) => <Part2Overview {...p} /> },
   { label: 'Closing', render: (p) => <Part2Closing {...p} /> },
 ]
