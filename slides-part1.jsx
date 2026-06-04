@@ -479,7 +479,7 @@ const Part1Ch2Combined = ({ n, total }) => {
       <SlideHead
         kicker="01 UX Design work with AI．Toolchain"
         title="Design to Code Toolchain"
-        sub="Design Source ⇄ MCP ⇄ AI Agent"
+        sub="建立 AI 與設計協作的基礎環境，讓設計資訊有效轉化為可執行程式碼"
       />
       <motion.div
         ref={ref}
@@ -1632,20 +1632,19 @@ const Part1FigmaMCP = ({ n, total }) => {
           >
             <div style={{
               padding: '12px 20px',
-              border: `1.5px solid ${C.gradientMagenta}`,
+              border: `1.5px dashed ${C.inkMuted}`,
               borderRadius: ROUNDED.md,
-              background: 'rgba(212,77,240,0.08)',
               textAlign: 'center',
               minWidth: 160,
             }}>
-              <div style={{ fontSize: 20, fontFamily: MONO, fontWeight: 700, color: C.gradientMagenta, lineHeight: 1.1 }}>Cursor</div>
-              <div style={{ fontSize: 18, color: C.inkMuted, marginTop: 4, fontFamily: MONO }}>+ Claude Code</div>
+              <div style={{ fontSize: 20, fontFamily: MONO, fontWeight: 700, color: C.ink, lineHeight: 1.1 }}>Figma</div>
+              <div style={{ fontSize: 18, color: C.inkMuted, marginTop: 4 }}>設計檔來源</div>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <div style={{ fontSize: 16, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em' }}>讀取設計 →</div>
+              <div style={{ fontSize: 16, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em' }}>讀取設計</div>
               <div style={{ fontSize: 44, color: C.gradientViolet, fontFamily: MONO, lineHeight: 1 }}>⇄</div>
-              <div style={{ fontSize: 16, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em' }}>← 寫回設計</div>
+              <div style={{ fontSize: 16, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em' }}>更新圖稿</div>
             </div>
 
             <div style={{
@@ -1661,20 +1660,21 @@ const Part1FigmaMCP = ({ n, total }) => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <div style={{ fontSize: 16, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em' }}>取得結構 →</div>
-              <div style={{ fontSize: 44, color: C.inkMuted, fontFamily: MONO, lineHeight: 1 }}>⇄</div>
-              <div style={{ fontSize: 16, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em' }}>← 更新圖稿</div>
+              <div style={{ fontSize: 16, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em' }}>取得結構</div>
+              <div style={{ fontSize: 44, color: C.gradientViolet, fontFamily: MONO, lineHeight: 1 }}>⇄</div>
+              <div style={{ fontSize: 16, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em' }}>寫回設計</div>
             </div>
 
             <div style={{
               padding: '12px 20px',
-              border: `1.5px dashed ${C.inkMuted}`,
+              border: `1.5px solid ${C.gradientMagenta}`,
               borderRadius: ROUNDED.md,
+              background: 'rgba(212,77,240,0.08)',
               textAlign: 'center',
               minWidth: 160,
             }}>
-              <div style={{ fontSize: 20, fontFamily: MONO, fontWeight: 700, color: C.ink, lineHeight: 1.1 }}>Figma</div>
-              <div style={{ fontSize: 18, color: C.inkMuted, marginTop: 4 }}>設計檔來源</div>
+              <div style={{ fontSize: 20, fontFamily: MONO, fontWeight: 700, color: C.gradientMagenta, lineHeight: 1.1 }}>Cursor</div>
+              <div style={{ fontSize: 18, color: C.inkMuted, marginTop: 4, fontFamily: MONO }}>+ Claude Code</div>
             </div>
           </motion.div>
 
@@ -2109,7 +2109,7 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
     <Frame>
       <SlideHead
         kicker="01 UX Design work with AI．Toolchain ｜ Claude Code"
-        title="Claude Code Plugin - Chat Panel"
+        title="Claude Code"
         sub="從 Chat Panel 指派任務，理解 AI 如何讀取、思考與執行"
       />
       <motion.div
