@@ -200,11 +200,11 @@ const HwBrief = ({ n, total }) => {
   const brief = [
     {
       label: '作業內容',
-      text: '挑自己專案在 Figma 上的 1 頁系統畫面，或想仿做的 1 頁網頁 → 透過 Claude Code 建立為可操作的 codebase 網頁',
+      text: '透過 Figma MCP、Figma Make 或 Claude Design 結合 Claude Code，產出一頁可操作的系統頁面、網頁或 App 畫面',
     },
     {
       label: '使用工具',
-      text: '建議 Claude Code ＋ Figma MCP；若無 Claude Code，亦可使用 Codex 或 Antigravity',
+      text: '建議使用 Claude Code；若無 Claude Code，亦可使用 Codex 或 Antigravity',
     },
     {
       label: '帳號索取',
@@ -226,7 +226,7 @@ const HwBrief = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="課後作業｜把工具變成你的方法"
+        kicker="06 課後作業｜把工具變成你的方法"
         title="不用做完美，重點是過程"
       />
 

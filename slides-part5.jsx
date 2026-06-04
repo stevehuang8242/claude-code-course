@@ -180,7 +180,7 @@ const Part5ThreeTakeaways = ({ n, total }) => {
   return (
     <Frame>
       <SlideHead
-        kicker="AI 時代設計師的價值"
+        kicker="05 AI 時代設計師的價值"
         title="重新定義設計師價值的三個轉變"
         sub="The three shifts that redefine a designer's value."
       />
