@@ -24,12 +24,20 @@ import figmaMcpInstall01 from './Slide/Image/Part1/FigmaMCP_install_01.png'
 import figmaMcpInstall02 from './Slide/Image/Part1/FigmaMCP_install_02.png'
 import figmaMcpInstall03 from './Slide/Image/Part1/FigmaMCP_install_03.png'
 import figmaMcpInstall04 from './Slide/Image/Part1/FigmaMCP_install_04.png'
+import chatPanelShot00 from './Slide/Image/Part1/chatPanel_00_sessions.png'
 import chatPanelShot01 from './Slide/Image/Part1/chatPanel_01_sessions.png'
 import chatPanelShot02 from './Slide/Image/Part1/chatPanel_02_sessions.png'
 import chatPanelShot03 from './Slide/Image/Part1/chatPanel_03_sessions.png'
 import chatPanelShot04 from './Slide/Image/Part1/chatPanel_04_sessions.png'
 import chatPanelShot05 from './Slide/Image/Part1/chatPanel_05_sessions.png'
 import chatPanelShot06 from './Slide/Image/Part1/chatPanel_06_sessions.png'
+// Primary Side Bar 四個功能截圖
+import sidebarExplorerImg from './Slide/Image/Part1/sidebar_explorer.png'
+import sidebarSearchImg from './Slide/Image/Part1/sidebar_search.png'
+import sidebarSourceControlImg from './Slide/Image/Part1/sidebar_sourceControl.png'
+import sidebarExtensionsImg from './Slide/Image/Part1/sidebar_extensions.png'
+// Terminal 面板截圖
+import cursorTerminalImg from './Slide/Image/Part1/cursorTerminal.png'
 
 /* ============================================================
    Design tokens — 與 slides-part4.jsx / slides-part5.jsx 同步
@@ -249,10 +257,11 @@ const Hint = ({ children, tip, width = 280 }) => {
 };
 
 /* Back-to-hub button — used on Ch.03 detail slides to return to the
- * Cursor Layout hub. Targets the slide tagged role="cursor-hub". */
+ * Cursor Layout hub, landing on step 2 (init·進入專案工作區) where the
+ * four-region layout is shown. Targets the slide tagged role="cursor-hub". */
 const BackToHub = () => (
   <motion.button
-    onClick={() => jumpToDeckRole('cursor-hub')}
+    onClick={() => jumpToCursorStep('init')}
     whileHover={{ x: -4, color: C.ink }}
     style={{
       position: 'absolute',
@@ -275,7 +284,7 @@ const BackToHub = () => (
     }}
   >
     <span style={{ fontSize: 18, lineHeight: 1 }}>←</span>
-    <span>返回 Cursor 工作桌</span>
+    <span>返回 Cursor Workspace</span>
   </motion.button>
 );
 
@@ -288,37 +297,40 @@ const SHIFT_PHASES = [
     phase: 'BEFORE',
     sub: 'Why · 問題與現況',
     accent: C.gradientViolet,
-    headline: '非連續的設計 × 工程系統',
+    headline: '請工程師照稿製作',
     bullets: [
-      '設計到程式碼的轉譯流失',
-      'UI ≠ 最終實作',
-      '迭代速度緩慢',
+      '設計師提供 Figma 畫面',
+      '工程師手動查看樣式與規格',
+      '設計意圖透過文件與會議傳遞',
+      'UI 細節容易在實作過程中偏離',
     ],
-    footer: '產品開發仍然處於斷裂狀態',
+    footer: '設計稿 ≠ 最終產品',
   },
   {
     phase: 'BRIDGE',
     sub: 'How · 實現方式',
     accent: C.gradientOrange,
-    headline: 'AI 驅動轉換機制',
+    headline: '讓 AI 理解設計意圖',
     bullets: [
-      'UI → Code（透過 Figma MCP / Cursor / Claude Code）',
-      'Code → UI（即時迭代循環）',
-      '共用 Design System + AI 規則',
+      '直接讀取 Figma 設計資訊',
+      '將設計轉換為程式碼',
+      '從程式碼還原與驗證 UI',
+      '依據設計規範持續迭代',
     ],
-    footer: '建構一個可持續運作的系統',
+    footer: '減少人工轉譯與溝通成本',
   },
   {
     phase: 'AFTER',
     sub: 'What · AI 帶來的轉變',
     accent: C.gradientCoral,
-    headline: '一致性的產品設計循環',
+    headline: '讓設計直接走向產品',
     bullets: [
-      '設計變為可執行結果',
-      'UI 與程式碼開始融合',
-      '迭代進入即時循環',
+      '設計快速轉換為可執行介面',
+      'UI 與實際產品更加一致',
+      '設計師可直接參與產品驗證',
+      '迭代從週期制變成即時循環',
     ],
-    footer: '產品建構轉變為可持續運作的系統',
+    footer: '設計成果更快成為真實產品',
   },
 ];
 
@@ -377,7 +389,7 @@ const Part1Ch1Combined = ({ n, total }) => {
                 marginTop: 6,
               }}>
                 <div style={{
-                  fontSize: 24,
+                  fontSize: 28,
                   fontFamily: MONO,
                   color: p.accent,
                   letterSpacing: '0.22em',
@@ -385,7 +397,7 @@ const Part1Ch1Combined = ({ n, total }) => {
                   fontWeight: 700,
                 }}>{p.phase}</div>
                 <div style={{
-                  fontSize: 20,
+                  fontSize: 22,
                   fontFamily: MONO,
                   color: C.inkMuted,
                   letterSpacing: '0.08em',
@@ -394,7 +406,7 @@ const Part1Ch1Combined = ({ n, total }) => {
 
               {/* Headline */}
               <div style={{
-                fontSize: 36,
+                fontSize: 40,
                 fontWeight: 700,
                 color: C.ink,
                 lineHeight: 2,
@@ -421,7 +433,7 @@ const Part1Ch1Combined = ({ n, total }) => {
                       flexShrink: 0,
                     }}>·</span>
                     <span style={{
-                      fontSize: 18,
+                      fontSize: 24,
                       color: C.ink,
                       opacity: 0.92,
                       lineHeight: 1.4,
@@ -439,7 +451,7 @@ const Part1Ch1Combined = ({ n, total }) => {
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: 10,
-                fontSize: 17,
+                fontSize: 24,
                 color: p.accent,
                 fontWeight: 600,
                 lineHeight: 1.4,
@@ -479,7 +491,7 @@ const Part1Ch2Combined = ({ n, total }) => {
       <SlideHead
         kicker="01 UX Design work with AI．Toolchain"
         title="Design to Code Toolchain"
-        sub="建立 AI 與設計協作的基礎環境，讓設計資訊有效轉化為可執行程式碼"
+        sub="建立 AI 與設計協作的工作環境"
       />
       <motion.div
         ref={ref}
@@ -572,7 +584,7 @@ const Part1Ch2Combined = ({ n, total }) => {
                   lineHeight: 1,
                 }}>Cursor</div>
                 <div style={{
-                  fontSize: 18,
+                  fontSize: 20,
                   color: C.inkMuted,
                   lineHeight: 1.4,
                   marginTop: 4,
@@ -634,11 +646,11 @@ const Part1Ch2Combined = ({ n, total }) => {
             </div>
 
             <div style={{
-              fontSize: 15,
+              fontSize: 20,
               color: C.ink,
               opacity: 0.88,
               lineHeight: 1.45,
-            }}>在 Cursor 中跟 Claude Code 對話，完成設計到程式的工作。</div>
+            }}>在 Cursor 中跟 Claude Code 對話，完成設計到程式的工作</div>
           </motion.div>
 
           {/* Arrow ⇄ */}
@@ -717,7 +729,7 @@ const Part1Ch2Combined = ({ n, total }) => {
                 lineHeight: 1.1,
               }}>Figma MCP</div>
               <div style={{
-                fontSize: 18,
+                fontSize: 20,
                 color: C.inkMuted,
                 fontFamily: MONO,
                 lineHeight: 1.8,
@@ -734,11 +746,11 @@ const Part1Ch2Combined = ({ n, total }) => {
             </div>
 
             <div style={{
-              fontSize: 15,
+              fontSize: 20,
               color: C.ink,
               opacity: 0.88,
               lineHeight: 1.45,
-            }}>讓 Claude Code 能讀寫 Figma 圖稿的協定；UI ⇄ Code 雙向橋樑。</div>
+            }}>讓 Claude Code 能讀寫 Figma 圖稿的協定；UI ⇄ Code 雙向橋樑</div>
           </motion.div>
 
           {/* Arrow ⇄ */}
@@ -793,7 +805,7 @@ const Part1Ch2Combined = ({ n, total }) => {
                 lineHeight: 1.1,
               }}>Figma</div>
               <div style={{
-                fontSize: 18,
+                fontSize: 22,
                 color: C.inkMuted,
                 fontFamily: MONO,
                 lineHeight: 1.4,
@@ -801,11 +813,11 @@ const Part1Ch2Combined = ({ n, total }) => {
             </div>
 
             <div style={{
-              fontSize: 15,
+              fontSize: 20,
               color: C.ink,
               opacity: 0.88,
               lineHeight: 1.45,
-            }}>原本的設計來源；圖稿經 MCP 流向 Cursor，code 也能回流。</div>
+            }}>原本的設計來源；圖稿經 MCP 流向 Cursor，code 也能回流</div>
           </div>
         </motion.div>
 
@@ -872,7 +884,7 @@ const Part1Ch2Combined = ({ n, total }) => {
    ============================================================ */
 
 const CURSOR_REGIONS = [
-  { id: 'A', label: 'Folder',   accent: C.gradientViolet,  top: 2.3, left: 2, w: 12, h: 93 },
+  { id: 'A', label: 'Primary Side Bar',   accent: C.gradientViolet,  top: 2.3, left: 2, w: 12, h: 93 },
   { id: 'B', label: 'Editor',   accent: C.gradientMagenta, top: 2.3, left: 14.5,  w: 38, h: 71 },
   { id: 'C', label: 'Chat',     accent: C.gradientOrange,  top: 2.3, left: 53,  w: 45.3,   h: 71 },
   { id: 'D', label: 'Terminal', accent: C.gradientCoral,   top: 74,  left: 14.5,  w: 84,   h: 21.5   },
@@ -929,9 +941,9 @@ const CursorOverlays = () => CURSOR_REGIONS.map((r) => (
 ));
 
 const CURSOR_AREAS = [
-  { id: 'A', accent: C.gradientViolet,  title: 'Project Folder（左側）',     detail: 'File Explorer，列出整個專案的檔案與資料夾。', role: 'cursor-folder' },
+  { id: 'A', accent: C.gradientViolet,  title: 'Primary Side Bar（左側）',     detail: 'File Explorer，列出整個專案的檔案與資料夾。', role: 'cursor-folder' },
   { id: 'B', accent: C.gradientMagenta, title: '編輯區（中央）',           detail: '點擊檔案即可在編輯區檢視／編輯檔案內容' },
-  { id: 'C', accent: C.gradientOrange,  title: 'Claude Chat Panel（右側）', detail: '跟 AI 對話的主要介面。', role: 'cursor-chat' },
+  { id: 'C', accent: C.gradientOrange,  title: 'Claude Code Chat Panel（右側）', detail: '跟 AI 對話的主要介面。', role: 'cursor-chat' },
   { id: 'D', accent: C.gradientCoral,   title: 'Terminal（底部）',         detail: '執行指令、看 Claude 跑的結果。', role: 'cursor-terminal' },
 ];
 
@@ -952,10 +964,10 @@ const STEP_RIGHT = {
     note: '首次使用 Cursor 需登入帳號（支援 Google / GitHub）',
   },
   plugin: {
-    intro: '在 Cursor 中使用 Claude Code Chat Panel 需先安裝 Plugin：(只需於安裝一次)',
+    intro: '在 Cursor 中使用 Claude Code Chat Panel 需先安裝 Plugin：(只需於首次使用安裝)',
     items: [
-      { id: '①', accent: C.gradientViolet,  imgIdxs: [0],       title: '安裝 Plugin',     detail: '按 ⌘⇧X（Mac）/ Ctrl⇧X（Win）開啟 Extensions 面板，搜尋「Claude」，找到 Anthropic 官方套件後按 Install 進行安裝。' },
-      { id: '②', accent: C.gradientMagenta, imgIdxs: [1],       title: '開啟 Claude Code Chat Panel', detail: '點擊 Cursor 視窗右上角的 Toggle Agents 顯示 Cursor Agent 對話視窗，點擊 Claude 圖示開啟 Claude Code Chat Panel。' },
+      { id: '①', accent: C.gradientViolet,  imgIdxs: [0],       title: '安裝 Plugin', kbd: '⌘⇧X（Mac）/ Ctrl⇧X（Win）', detail: '開啟 Extensions 面板，搜尋「Claude」，找到 Anthropic 官方套件後按 Install 進行安裝。' },
+      { id: '②', accent: C.gradientMagenta, imgIdxs: [1],       title: '開啟 Claude Code Chat Panel', kbd: 'Ctrl + Shift + ESC', detail: '點擊 Cursor 視窗右上角的 Toggle Agents 顯示 Cursor Agent 對話視窗，點擊 Claude 圖示開啟 Claude Code Chat Panel。' },
       { id: '③', accent: C.gradientOrange,  imgIdxs: [2],       title: '將 Claude Icon 設定常駐顯示', detail: '若 Cursor Agent 對話視窗右上角未顯示 Claude 圖示，可點擊視窗中的「...」選擇「Configure Icon Visibility」勾選 Claude Code:Open 讓圖示常駐。' },
     ],
   },
@@ -979,6 +991,14 @@ const jumpToDeckRole = (role) => {
   if (idx < 0) return false;
   stage.goTo(idx);
   return true;
+};
+
+/* Jump to the Cursor Layout hub and pre-select a specific step (e.g. 'plugin').
+ * Part1CursorLayout reads this pending value when it becomes the active slide. */
+let pendingCursorStep = null;
+const jumpToCursorStep = (stepKey) => {
+  pendingCursorStep = stepKey;
+  if (!jumpToDeckRole('cursor-hub')) pendingCursorStep = null;
 };
 
 const CURSOR_STEPS = [
@@ -1023,6 +1043,15 @@ const Part1CursorLayout = ({ n, total }) => {
 
   React.useEffect(() => {
     if (!active) setZoomed(false);
+  }, [active]);
+
+  // When navigated here via a deep-link (e.g. from the Claude Code slide's note),
+  // open the requested step instead of the default 開啟 Cursor.
+  React.useEffect(() => {
+    if (active && pendingCursorStep) {
+      setActiveImg(pendingCursorStep);
+      pendingCursorStep = null;
+    }
   }, [active]);
 
   return (
@@ -1381,12 +1410,26 @@ const Part1CursorLayout = ({ n, total }) => {
                       }}>{item.id}</div>
                       <div>
                         <div style={{
-                          fontSize: TYPE_SCALE.body,
-                          color: C.ink,
-                          fontWeight: 600,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 10,
+                          flexWrap: 'wrap',
                           marginBottom: 6,
-                          letterSpacing: TRACK.body,
-                        }}>{item.title}</div>
+                        }}>
+                          <span style={{
+                            fontSize: TYPE_SCALE.body,
+                            color: C.ink,
+                            fontWeight: 600,
+                            letterSpacing: TRACK.body,
+                          }}>{item.title}</span>
+                          {item.kbd && (
+                            <span style={{
+                              fontFamily: MONO, fontSize: TYPE_SCALE.tiny, fontWeight: 600, color: item.accent,
+                              background: C.surface2, border: `1px solid ${item.accent}66`, borderRadius: ROUNDED.md,
+                              padding: '4px 10px', letterSpacing: '-0.01em', flexShrink: 0,
+                            }}>{item.kbd}</span>
+                          )}
+                        </div>
                         <div style={{
                           fontSize: TYPE_SCALE.tiny,
                           color: C.inkMuted,
@@ -1501,7 +1544,7 @@ const Part1CursorLayout = ({ n, total }) => {
             right: 48,
             color: C.ink,
             fontFamily: MONO,
-            fontSize: 14,
+            fontSize: 1,
             letterSpacing: '0.16em',
             opacity: 0.7,
             pointerEvents: 'none',
@@ -1527,21 +1570,21 @@ const MCP_CAPABILITIES = [
     tag: 'Design → Code',
     accent: C.gradientMagenta,
     title: '讀 Figma',
-    detail: '讓 AI「看懂」你的設計稿。',
+    detail: '讓 AI「看懂」你的設計稿',
     example: '選取 Figma 上的畫面，Claude Code 直接生成對應的前端程式碼——間距、顏色、字級都貼齊原設計。',
   },
   {
     tag: 'Code → Figma',
     accent: C.gradientViolet,
     title: '寫 Figma',
-    detail: '把 code 端的成果回寫進 Figma。',
+    detail: '把 code 端的成果回寫進 Figma',
     example: '把瀏覽器上跑起來的 UI 一鍵轉成 Figma 設計圖層，或請 AI 直接在 Figma 新增 frame、生成流程圖。',
   },
   {
     tag: 'Code Connect',
     accent: C.gradientOrange,
     title: '雙向同步',
-    detail: '讓 Figma 元件與程式碼元件對齊。',
+    detail: '讓 Figma 元件與程式碼元件對齊',
     example: '把設計系統元件和 code 元件綁定，AI 生成時自動沿用你既有的元件，不必每次從頭重畫。',
   },
 ];
@@ -1564,7 +1607,7 @@ const Part1FigmaMCP = ({ n, total }) => {
         sub="Claude Code 能直接讀寫 Figma 圖稿的關鍵橋樑"
       />
       <div style={{
-        fontSize: 20,
+        fontSize: 22,
         color: C.ink,
         marginTop: 16,
         lineHeight: 1.5,
@@ -2011,6 +2054,15 @@ const Part1FigmaMCPInstall = ({ n, total }) => {
  * 圖檔補上後，於檔頭 import 並把下方 CHAT_SHOTS 對應的值換成 import 變數即可。 */
 const CHAT_FEATURES = [
   {
+    n: '02',
+    tag: 'Prompt Input',
+    accent: C.gradientMagenta,
+    title: '對話輸入',
+    summary: '用自然語言交辦任務與協作',
+    detail: '打字描述要做什麼，可追問、修正方向、補背景；Enter 送出、Shift+Enter 換行。',
+    shot: 'chatPanel_02_input.png',
+  },
+  {
     n: '01',
     tag: 'Sessions',
     accent: C.gradientViolet,
@@ -2020,21 +2072,12 @@ const CHAT_FEATURES = [
     shot: 'chatPanel_01_sessions.png',
   },
   {
-    n: '02',
-    tag: 'Prompt Input',
-    accent: C.gradientMagenta,
-    title: '對話輸入',
-    summary: '自然語言交辦，多輪協作',
-    detail: '打字描述要做什麼，可追問、修正方向、補背景；Enter 送出、Shift+Enter 換行。',
-    shot: 'chatPanel_02_input.png',
-  },
-  {
     n: '03',
     tag: 'Attach',
     accent: C.gradientOrange,
     title: '附加檔案 / 圖片',
     summary: '拖曳截圖、貼圖、@ 指向檔案',
-    detail: '把截圖、PRD、參考檔當輸入丟進對話；用 @ 精準指向專案裡的檔案。',
+    detail: '按住 Shift 把截圖或參考檔案丟進對話框；用 @ 精準指向專案裡的檔案。',
     shot: 'chatPanel_03_attach.png',
   },
   {
@@ -2071,6 +2114,7 @@ const CHAT_FEATURES = [
  *       '01': chatPanelSessions,
  * 未填者顯示 placeholder（檔名提示）。有圖時點擊截圖可放大檢視。 */
 const CHAT_SHOTS = {
+  '00': chatPanelShot00,
   '01': chatPanelShot01,
   '02': chatPanelShot02,
   '03': chatPanelShot03,
@@ -2080,19 +2124,19 @@ const CHAT_SHOTS = {
 };
 
 const CHAT_TABS = [
-  { key: 'abilities', title: 'Chat Panel 如何操作', sub: 'Claude Code Plugin',   accent: C.gradientViolet },
+  { key: 'abilities', title: 'Chat Panel 如何操作', sub: '討論規劃 × 指派任務',   accent: C.gradientViolet },
   { key: 'how',       title: 'AI 怎麼運作',         sub: '運作概念 × 模型選擇', accent: C.gradientCoral },
 ];
 
 const Part1ClaudeCodeChat = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const [activeTab, setActiveTab] = React.useState('abilities');
-  const [shotKey, setShotKey] = React.useState('01');
+  const [shotKey, setShotKey] = React.useState('00');
   const [zoomed, setZoomed] = React.useState(false);
   const state = active ? 'show' : 'hidden';
 
   React.useEffect(() => {
-    if (!active) { setActiveTab('abilities'); setShotKey('01'); setZoomed(false); }
+    if (!active) { setActiveTab('abilities'); setShotKey('00'); setZoomed(false); }
   }, [active]);
 
   React.useEffect(() => {
@@ -2103,7 +2147,7 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
   }, [zoomed]);
 
   const focusedFeature = CHAT_FEATURES.find((f) => f.n === shotKey) || CHAT_FEATURES[0];
-  const focusedShot = CHAT_SHOTS[focusedFeature.n];
+  const focusedShot = CHAT_SHOTS[shotKey];
 
   return (
     <Frame>
@@ -2211,25 +2255,50 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
             )}
 
             {activeTab === 'how' && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, flex: 1, minHeight: 0 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, flex: 1, minHeight: 0 }}>
                 {/* 左欄 — AI 怎麼運作（概念框 + token 示意圖） */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
                   <div>
                     <div style={{ fontSize: 26, fontWeight: 600, color: C.ink, letterSpacing: TRACK.title, lineHeight: 1.2 }}>AI 怎麼運作</div>
-                    <div style={{ fontSize: 16, color: C.inkMuted, marginTop: 4, letterSpacing: TRACK.small, lineHeight: 1.4 }}>對話怎麼被組成、AI 一次能看見多少。</div>
                   </div>
-                  <div style={{ border: `1.5px solid ${C.gradientCoral}`, borderRadius: ROUNDED.md, padding: '28px 22px 20px', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ border: `1.5px solid ${C.gradientCoral}`, borderRadius: ROUNDED.md, padding: '28px 22px 20px', position: 'relative', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
                     <div style={{ position: 'absolute', top: -10, left: 16, background: C.surface1, padding: '0 10px', fontFamily: MONO, fontSize: 22, fontWeight: 700, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
                       <span style={{ color: C.gradientCoral }}>Session</span>
-                      <span style={{ color: C.inkMuted, fontWeight: 400, marginLeft: 8 }}>· 同一個任務的對話視窗</span>
+                      <span style={{ color: C.inkMuted, fontWeight: 400, marginLeft: 8 }}>· 一個對話視窗</span>
+                    </div>
+                    {/* 已被拋出 context window 的舊對話 — 灰階，AI 不會再參考 */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12, opacity: 0.5 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, alignSelf: 'flex-end' }}>
+                        <div style={{ border: `1.5px dashed ${C.inkMuted}`, borderRadius: ROUNDED.sm, padding: '6px 14px', color: C.inkMuted, fontFamily: MONO, fontWeight: 600, fontSize: 15, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <span>舊 Prompt</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                            {Array.from({ length: 5 }).map((_, t) => (
+                              <span key={t} style={{ width: 10, height: 10, borderRadius: 2, background: 'rgba(153,153,153,0.18)', border: `1px solid ${C.inkMuted}` }} />
+                            ))}
+                          </div>
+                        </div>
+                        <span style={{ fontFamily: MONO, fontSize: 18, fontWeight: 700, color: C.inkMuted, letterSpacing: '0.1em', textTransform: 'uppercase', minWidth: 20 }}>P</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start' }}>
+                        <span style={{ fontFamily: MONO, fontSize: 18, fontWeight: 700, color: C.inkMuted, letterSpacing: '0.1em', textTransform: 'uppercase', minWidth: 20 }}>AI</span>
+                        <div style={{ border: `1.5px dashed ${C.inkMuted}`, borderRadius: ROUNDED.sm, padding: '6px 14px', color: C.inkMuted, fontFamily: MONO, fontWeight: 600, fontSize: 15, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <span>舊回應</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                            {Array.from({ length: 8 }).map((_, t) => (
+                              <span key={t} style={{ width: 10, height: 10, borderRadius: 2, background: 'rgba(153,153,153,0.18)', border: `1px solid ${C.inkMuted}` }} />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 13, color: C.inkMuted, fontFamily: MONO, letterSpacing: '0.04em', textAlign: 'center', marginTop: 2 }}>↑ 已超出 context window，AI 不會再參考</div>
                     </div>
                     <div style={{ border: `1.5px solid ${C.gradientOrange}`, borderRadius: ROUNDED.sm, padding: '24px 18px 16px', position: 'relative' }}>
                       <div style={{ position: 'absolute', top: -10, left: 14, background: C.surface1, padding: '0 10px', fontFamily: MONO, fontSize: 22, fontWeight: 700, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
-                        <span style={{ color: C.gradientOrange }}>Context Window</span>
-                        <span style={{ color: C.inkMuted, fontWeight: 400, marginLeft: 8 }}>· AI 一次能看的 token 上限</span>
+                        <Hint tip="context window 是 AI 模型在單次對話中能「看到」的所有資訊總量，包含你的提問、對話歷史、附加的程式碼檔案與系統規則等，超過 token 上限（依使用模型不同而有所差異）時 Cursor 會自動做截斷或語意篩選，優先保留最相關的內容。" width={360}><span style={{ color: C.gradientOrange }}>Context Window</span></Hint>
+                        <span style={{ color: C.inkMuted, fontWeight: 400, marginLeft: 8 }}>· AI 一次能看的token上限</span>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {[1, 2, 3].map((i) => (
+                        {[1, 2].map((i) => (
                           <React.Fragment key={i}>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
                               {i === 2 && (
@@ -2255,7 +2324,7 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
                                 <span style={{ fontFamily: MONO, fontSize: 18, fontWeight: 700, color: C.gradientMagenta, letterSpacing: '0.1em', textTransform: 'uppercase', minWidth: 20 }}>P</span>
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start', marginBottom: i < 3 ? 4 : 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start', marginBottom: i < 2 ? 4 : 0 }}>
                               <span style={{ fontFamily: MONO, fontSize: 18, fontWeight: 700, color: C.gradientOrange, letterSpacing: '0.1em', textTransform: 'uppercase', minWidth: 20 }}>AI</span>
                               <div style={{ border: `1.5px solid ${C.gradientOrange}`, background: 'rgba(255,122,61,0.08)', borderRadius: ROUNDED.sm, padding: '6px 14px', color: C.gradientOrange, fontFamily: MONO, fontWeight: 600, fontSize: 15, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 10 }}>
                                 <span>回應 {i}</span>
@@ -2270,12 +2339,17 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
                           </React.Fragment>
                         ))}
                       </div>
-                      <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, color: C.inkMuted, fontFamily: MONO }}>
-                        <span style={{ display: 'inline-block', padding: '2px 8px', border: `1px solid ${C.gradientViolet}`, borderRadius: ROUNDED.xs, color: C.gradientViolet, fontWeight: 700, flexShrink: 0 }}>Token</span>
-                        <span> 是 AI 處理文字的最小單位。每一次的提問及 AI 的回覆，都會被累積進 context window</span>
-                      </div>
                     </div>
-                    <div style={{ marginTop: 16, fontSize: 18, color: C.inkMuted, fontFamily: MONO, letterSpacing: '0.03em', lineHeight: 1.5 }}>context window 是 AI 模型在單次對話中能「看到」的所有資訊總量，包含你的提問、對話歷史、附加的程式碼檔案與系統規則等，超過 token 上限（依使用模型不同而有所差異）時 Cursor 會自動做截斷或語意篩選，優先保留最相關的內容。</div>
+                    {/* 對話框 + 送出鈕示意 — 在 Session 內、Context Window 框外（尚未送出，灰色） */}
+                    <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 10, border: `1.5px solid ${C.inkMuted}`, borderRadius: ROUNDED.sm, padding: '8px 8px 8px 14px', background: 'rgba(153,153,153,0.06)' }}>
+                      <span style={{ flex: 1, fontFamily: MONO, fontSize: 15, color: C.inkMuted, letterSpacing: '0.02em' }}>輸入下一個 Prompt…</span>
+                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: ROUNDED.xs, background: C.inkMuted, color: C.surface1, fontSize: 18, fontWeight: 700, flexShrink: 0 }}>↑</span>
+                    </div>
+                  </div>
+                  {/* Token 說明 — 置於 Session 框外下方 */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, color: C.inkMuted, fontFamily: MONO }}>
+                    <span style={{ display: 'inline-block', padding: '2px 8px', border: `1px solid ${C.gradientViolet}`, borderRadius: ROUNDED.xs, color: C.gradientViolet, fontWeight: 700, flexShrink: 0 }}>Token</span>
+                    <span> 是 AI 處理文字的最小單位。每一次的提問及 AI 的回覆，都會被累積進 context window</span>
                   </div>
                 </div>
 
@@ -2283,50 +2357,38 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
                   <div>
                     <div style={{ fontSize: 26, fontWeight: 600, color: C.ink, letterSpacing: TRACK.title, lineHeight: 1.2 }}>模型選擇</div>
-                    <div style={{ fontSize: 16, color: C.inkMuted, marginTop: 4, letterSpacing: TRACK.small, lineHeight: 1.4 }}>對的任務，配對對的模型。</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, fontSize: 18, color: C.inkMuted, fontFamily: MONO, letterSpacing: '0.02em' }}>
                     <span>輸入</span>
                     <span style={{ padding: '2px 10px', border: `1px solid ${C.gradientOrange}`, borderRadius: ROUNDED.xs, color: C.gradientOrange, fontWeight: 700, fontSize: 14 }}>/model</span>
                     <span>切換模型</span>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1, minHeight: 0 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1, minHeight: 0 }}>
                     {MODELS.map((m) => (
                       <div key={m.name} style={{
                         background: C.surface2,
                         border: `1px solid ${C.hairline}`,
                         borderTop: `3px solid ${m.accent}`,
                         borderRadius: ROUNDED.md,
-                        padding: '10px 16px',
+                        padding: '14px 18px',
                         display: 'flex',
-                        flexDirection: 'row',
-                        gap: 14,
+                        flexDirection: 'column',
+                        gap: 8,
                         flex: 1,
-                        alignItems: 'stretch',
+                        justifyContent: 'center',
                       }}>
-                        {/* Left: name + tag */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 88, justifyContent: 'center' }}>
-                          <div style={{ fontSize: 28, fontFamily: MONO, fontWeight: 700, color: m.accent, letterSpacing: TRACK.title, lineHeight: 1 }}>{m.name}</div>
-                          <div style={{ fontSize: 13, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase', lineHeight: 1.3 }}>{m.tag}</div>
+                        {/* 名稱 + 定位 */}
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+                          <div style={{ fontSize: 30, fontFamily: MONO, fontWeight: 700, color: m.accent, letterSpacing: TRACK.title, lineHeight: 1 }}>{m.name}</div>
+                          <div style={{ fontSize: 14, fontFamily: MONO, color: C.inkMuted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{m.tag}</div>
                         </div>
-                        {/* Divider */}
-                        <div style={{ width: 1, background: C.hairline, flexShrink: 0 }} />
-                        {/* Right: info list */}
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3, justifyContent: 'center' }}>
-                          {[
-                            { label: '智慧程度', value: m.intelligence },
-                            { label: 'Context Window', value: m.contextWindow, tip: m.contextTip },
-                            { label: '回應速度', value: m.speed },
-                            { label: '額度消耗', value: m.cost },
-                            { label: '適用情境', value: m.useCase },
-                          ].map(({ label, value, tip }) => (
-                            <div key={label} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                              <div style={{ fontSize: 14, fontFamily: MONO, color: m.accent, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.85, flexShrink: 0, minWidth: 92 }}>{label}</div>
-                              <div style={{ fontSize: 14, color: C.ink, lineHeight: 1.35, opacity: 0.9 }}>
-                                {tip ? <Hint tip={tip} width={340}>{value}</Hint> : value}
-                              </div>
-                            </div>
-                          ))}
+                        {/* 一句話 */}
+                        <div style={{ fontSize: 19, color: C.ink, lineHeight: 1.35, letterSpacing: TRACK.small }}>{m.oneLiner}</div>
+                        {/* 速度 · 額度 · token 上限 */}
+                        <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', fontSize: 18, fontFamily: MONO, color: C.inkMuted }}>
+                          <span>速度 <b style={{ color: C.ink, fontWeight: 700 }}>{m.speed}</b></span>
+                          <span>額度 <b style={{ color: C.ink, fontWeight: 700 }}>{m.cost}</b></span>
+                          <span>上限 <b style={{ color: C.ink, fontWeight: 700 }}>{m.tokens}</b></span>
                         </div>
                       </div>
                     ))}
@@ -2417,6 +2479,37 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
         )}
       </motion.div>
 
+      {/* 備註 — 前置條件：需先安裝 Plugin（連結至 Cursor Workspace 第三步驟）*/}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: active ? 1 : 0 }}
+        transition={{ duration: 0.3, delay: 0.25 }}
+        style={{
+          flexShrink: 0,
+          marginTop: 16,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          fontSize: TYPE_SCALE.tiny,
+          fontFamily: MONO,
+          color: C.inkMuted,
+          letterSpacing: TRACK.small,
+        }}
+      >
+        <span style={{
+          flexShrink: 0, padding: '2px 8px', borderRadius: ROUNDED.xs,
+          border: `1px solid ${C.hairline}`, color: C.inkMuted,
+          textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600,
+        }}>備註</span>
+        <span style={{ lineHeight: 1.4 }}>
+          要在 Cursor 中使用 Chat Panel，需先安裝 Claude Code Plugin（只需安裝一次）。{' '}
+          <span
+            onClick={() => jumpToCursorStep('plugin')}
+            style={{ color: C.gradientOrange, fontWeight: 700, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}
+          >安裝及開啟 Claude code plugin (Chat panel) ↗</span>
+        </span>
+      </motion.div>
+
       {/* Lightbox — 放大操作截圖 */}
       {zoomed && focusedShot && (
         <motion.div
@@ -2459,22 +2552,29 @@ const Part1ClaudeCodeChat = ({ n, total }) => {
    SLIDE 05b — Ch.03 ④ Terminal · 啟用步驟
    ============================================================ */
 
-const TERMINAL_STEPS = [
-  { n: '01', cmd: '$ claude',           detail: '在 Cursor terminal 輸入 claude 啟動 Claude Code。' },
-  { n: '02', cmd: '→ opening browser…', detail: '第一次啟動會引導登入 Anthropic 帳號。' },
-  { n: '03', cmd: '✓ ready',            detail: '啟動後對話框出現在右側 / 底部，可以開始對話。' },
-  { n: '04', cmd: '⌘+L  /  ⌘+K',        detail: '隨時用快捷鍵切換 Chat / Inline 模式。' },
+/* prompt：在 Claude Code Chat Panel 改用一句白話，等同左欄的終端機指令。 */
+const TERMINAL_OPS = [
+  { cmd: 'claude',       detail: '啟動 Claude Code，開始對話。', prompt: '點側欄 Claude 圖示開對話（免指令）' },
+  { cmd: 'npm run dev',  detail: '啟動本地預覽，在瀏覽器看成果。', prompt: '幫我啟動本地預覽，開好 dev server' },
+  { cmd: 'Ctrl + C',     detail: '中止正在跑的指令（跑錯了按這個）。', prompt: '停掉剛剛在跑的程序' },
+  { cmd: '↑ / ↓',        detail: '叫回剛打過的指令，不用重打。', prompt: '剛剛那個指令再跑一次' },
+  { cmd: 'clear',        detail: '清空畫面，整理視線。', prompt: '/clear 清空對話' },
+  { cmd: 'cd / ls',      detail: '切換資料夾 / 看資料夾內容。', prompt: '這個專案有哪些檔案？' },
 ];
+
+// null 時顯示「截圖待補」placeholder。
+const terminalImg = cursorTerminalImg;
 
 const Part1Terminal = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const state = active ? 'show' : 'hidden';
+  const [zoom, setZoom] = React.useState(false);
   return (
     <Frame>
       <SlideHead
-        kicker="01 UX Design work with AI．Toolchain | Cursor - Terminal"
-        title="從 Terminal 啟動 Claude Code"
-        sub="四步驟，把 Claude 跑起來。"
+        kicker="01 UX Design work with AI．Cursor Workspace | Terminal"
+        title="Terminal：用文字指令操作專案"
+        sub="記不住指令也沒關係——改在 Claude Code Chat Panel 用一句 Prompt 就行"
       />
       <motion.div
         ref={ref}
@@ -2490,96 +2590,196 @@ const Part1Terminal = ({ n, total }) => {
           gap: 48,
         }}
       >
-        {/* Left — terminal mock */}
+        {/* Left — 概念 + 開啟方式 + 終端機 mock */}
         <motion.div variants={FADE_UP} style={{
-          background: C.canvas,
-          border: `2px solid ${C.gradientCoral}`,
-          borderRadius: ROUNDED.lg,
-          padding: '28px 32px',
           display: 'flex',
           flexDirection: 'column',
-          gap: 10,
-          fontFamily: MONO,
-          fontSize: 20,
-          lineHeight: 1.65,
+          gap: 24,
         }}>
-          <Tag color={C.gradientCoral}>Terminal</Tag>
-          <div style={{ color: C.inkMuted, marginTop: 12 }}>
-            <div>
-              <span style={{ color: C.gradientOrange }}>~/my-project</span>
-              <span style={{ color: C.inkMuted }}> $ </span>
-              <span style={{ color: C.ink }}>claude</span>
-            </div>
-            <div style={{ color: C.gradientViolet, marginTop: 14 }}>Welcome to Claude Code!</div>
-            <div style={{ marginTop: 4 }}>
-              Login required <span style={{ color: C.gradientOrange }}>→ opening browser…</span>
-            </div>
-            <div style={{ color: C.gradientCoral, marginTop: 14 }}>✓ Logged in as designer@example.com</div>
-            <div style={{ marginTop: 14, color: C.ink }}>
-              &gt; <span style={{ color: C.gradientMagenta }}>你想做什麼？</span>
+          <div>
+            <Tag color={C.gradientCoral}>Terminal</Tag>
+            <div style={{
+              fontSize: TYPE_SCALE.body,
+              color: C.ink,
+              lineHeight: 1.5,
+              letterSpacing: TRACK.body,
+              marginTop: 18,
+            }}>
+              用<span style={{ color: C.gradientCoral, fontWeight: 600 }}>打字下指令</span>代替點滑鼠，對專案下達命令的視窗。
             </div>
             <div style={{
-              marginTop: 12,
-              fontSize: 16,
+              fontSize: TYPE_SCALE.small,
               color: C.inkMuted,
+              lineHeight: 1.5,
+              letterSpacing: TRACK.small,
+              marginTop: 14,
             }}>
-              <span style={{ color: C.gradientOrange }}>⌘+L</span> Chat
-              <span style={{ margin: '0 12px' }}>·</span>
-              <span style={{ color: C.gradientOrange }}>⌘+K</span> Inline
+              位於 Cursor 底部面板，從視窗右上角的 Toggle Panel
+              <span style={{ fontFamily: MONO, color: C.gradientOrange, margin: '0 4px' }}>⌘+J / Ctrl+J</span>
+              開啟。
             </div>
+          </div>
+
+          {/* 終端機面板截圖 — 有圖才可點擊放大；無圖顯示 placeholder */}
+          <div
+            onClick={terminalImg ? () => setZoom(true) : undefined}
+            style={{
+              position: 'relative',
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: ROUNDED.lg,
+              overflow: 'hidden',
+              cursor: terminalImg ? 'zoom-in' : 'default',
+              background: C.canvas,
+              border: terminalImg ? `2px solid ${C.gradientCoral}` : `1.5px dashed ${C.hairline}`,
+            }}
+          >
+            {terminalImg ? (
+              <>
+                <img
+                  src={terminalImg}
+                  alt="Cursor Terminal 面板"
+                  style={{
+                    display: 'block',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    width: 'auto',
+                    height: 'auto',
+                    objectFit: 'contain',
+                  }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  bottom: 10,
+                  right: 10,
+                  background: 'rgba(0,0,0,0.72)',
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  color: C.ink,
+                  fontFamily: MONO,
+                  fontSize: 12,
+                  padding: '6px 12px',
+                  borderRadius: ROUNDED.sm,
+                  letterSpacing: '0.12em',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  pointerEvents: 'none',
+                }}>↗ 點擊放大</div>
+              </>
+            ) : (
+              <div style={{ textAlign: 'center', color: C.inkMuted, padding: 16 }}>
+                <div style={{ fontSize: 28, opacity: 0.5, marginBottom: 8 }}>🖼</div>
+                <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: TRACK.small }}>截圖待補</div>
+                <div style={{ fontFamily: MONO, fontSize: 12, marginTop: 6, opacity: 0.7 }}>cursorTerminal.png</div>
+              </div>
+            )}
           </div>
         </motion.div>
 
-        {/* Right — steps */}
+        {/* Right — 常用操作清單 */}
         <motion.div
           variants={STAGGER_INNER}
           style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            gap: 20,
+            gap: 16,
           }}
         >
-          {TERMINAL_STEPS.map((step) => (
+          {TERMINAL_OPS.map((op) => (
             <motion.div
-              key={step.n}
+              key={op.cmd}
               variants={FADE_UP}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '60px 1fr',
+                gridTemplateColumns: '230px 1fr',
                 alignItems: 'baseline',
-                gap: 20,
-                paddingBottom: 18,
+                gap: 24,
+                paddingBottom: 14,
                 borderBottom: `1px solid ${C.hairline}`,
               }}
             >
               <div style={{
-                fontSize: TYPE_SCALE.subtitle,
+                fontSize: TYPE_SCALE.body,
                 color: C.gradientCoral,
                 fontFamily: MONO,
                 fontWeight: 700,
-                lineHeight: 1,
-              }}>{step.n}</div>
+                letterSpacing: '0.02em',
+                lineHeight: 1.2,
+              }}>{op.cmd}</div>
               <div>
-                <div style={{
-                  fontSize: TYPE_SCALE.body,
-                  color: C.ink,
-                  fontFamily: MONO,
-                  fontWeight: 600,
-                  marginBottom: 6,
-                  letterSpacing: '0.02em',
-                }}>{step.cmd}</div>
                 <div style={{
                   fontSize: TYPE_SCALE.small,
                   color: C.inkMuted,
                   lineHeight: 1.4,
                   letterSpacing: TRACK.small,
-                }}>{step.detail}</div>
+                }}>{op.detail}</div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  gap: 10,
+                  marginTop: 8,
+                  fontSize: TYPE_SCALE.tiny,
+                  color: C.gradientOrange,
+                  lineHeight: 1.4,
+                  letterSpacing: TRACK.small,
+                }}>
+                  <Tag color={C.gradientOrange}>Prompt</Tag>
+                  <span>「{op.prompt}」</span>
+                </div>
               </div>
             </motion.div>
           ))}
         </motion.div>
       </motion.div>
+
+      {/* 放大 lightbox */}
+      {zoom && terminalImg && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setZoom(false)}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(0,0,0,0.94)',
+            zIndex: 50,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'zoom-out',
+          }}
+        >
+          <motion.img
+            initial={{ scale: 0.96 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+            src={terminalImg}
+            alt="Cursor Terminal 面板"
+            style={{
+              display: 'block',
+              maxWidth: '92vw',
+              maxHeight: '88vh',
+              width: 'auto',
+              height: 'auto',
+              borderRadius: ROUNDED.md,
+              boxShadow: '0 30px 80px rgba(0,0,0,0.6)',
+            }}
+          />
+          <div style={{
+            position: 'absolute',
+            top: 36,
+            right: 48,
+            color: C.ink,
+            fontFamily: MONO,
+            fontSize: 14,
+            letterSpacing: '0.16em',
+            opacity: 0.7,
+          }}>✕ 點擊關閉</div>
+        </motion.div>
+      )}
       <BackToHub />
       <SlideNumber n={n} total={total} />
     </Frame>
@@ -2587,24 +2787,73 @@ const Part1Terminal = ({ n, total }) => {
 };
 
 /* ============================================================
-   SLIDE 06 — Ch.03 Project & CLAUDE.md · Two-Column
+   SLIDE 06 — Ch.03 Primary Side Bar · Four Feature Cards
    ============================================================ */
 
-const CLAUDEMD_POINTS = [
-  { tag: '是什麼', detail: '專案級的 AI 指令檔，每次 Claude 開啟對話都會自動讀。' },
-  { tag: '寫什麼', detail: '專案目標、檔案結構、設計規範、禁止事項。' },
-  { tag: '不寫什麼', detail: '每次任務的細節（那是 prompt 的工作）。' },
+/* Activity Bar icons rendered as inline strokes (codicon-flavoured).
+ * size scales the 24×24 viewBox; colour comes from the card accent. */
+const SidebarIcon = ({ name, size = 44, color }) => {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: color,
+    strokeWidth: 1.6,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+  };
+  if (name === 'explorer') return (
+    <svg {...common}>
+      <rect x="9" y="9" width="13" height="13" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+  if (name === 'search') return (
+    <svg {...common}>
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+  if (name === 'source-control') return (
+    <svg {...common}>
+      <line x1="6" y1="3" x2="6" y2="15" />
+      <circle cx="18" cy="6" r="3" />
+      <circle cx="6" cy="18" r="3" />
+      <path d="M18 9a9 9 0 0 1-9 9" />
+    </svg>
+  );
+  // extensions — grid of four squares
+  return (
+    <svg {...common}>
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+    </svg>
+  );
+};
+
+/* img: 補圖後改成對應的 import 變數（見檔案頂部註解）。
+ * 維持 null 時，截圖區會顯示「截圖待補」placeholder（不可點擊）。
+ * file 僅作為 placeholder 上顯示的預期檔名提示。 */
+const SIDEBAR_FUNCS = [
+  { icon: 'explorer',       accent: C.gradientViolet,  en: 'Explorer',       zh: '檔案總管', detail: '瀏覽專案的檔案與資料夾結構，點擊檔案即可開啟編輯', img: sidebarExplorerImg, file: 'sidebar_explorer.png' },
+  { icon: 'search',         accent: C.gradientMagenta, en: 'Search',         zh: '搜尋',     detail: '跨整個專案搜尋文字或檔名，並可批次取代', img: sidebarSearchImg, file: 'sidebar_search.png' },
+  { icon: 'source-control', accent: C.gradientOrange,  en: 'Source Control', zh: '原始碼控制', detail: '整合 Git：檢視變更、commit、切換分支', img: sidebarSourceControlImg, file: 'sidebar_sourceControl.png' },
+  { icon: 'extensions',     accent: C.gradientCoral,   en: 'Extensions',     zh: '擴充功能', detail: '安裝與管理外掛，例如 Claude Code Plugin', img: sidebarExtensionsImg, file: 'sidebar_extensions.png' },
 ];
 
 const Part1ProjectClaudeMd = ({ n, total }) => {
   const [ref, active] = useSlideActive();
   const state = active ? 'show' : 'hidden';
+  const [zoom, setZoom] = React.useState(null); // 放大的功能物件，null = 關閉
   return (
     <Frame>
       <SlideHead
-        kicker="01 UX Design work with AI．Cursor Workspace | Project folder"
-        title="一個資料夾 = 一個專案"
-        sub="一份 CLAUDE.md = AI 在這個專案的工作守則。"
+        kicker="01 UX Design work with AI．Cursor Workspace | Primary Side Bar"
+        title="Primary Side Bar"
+        sub="Activity Bar 四大功能"
       />
       <motion.div
         ref={ref}
@@ -2616,93 +2865,163 @@ const Part1ProjectClaudeMd = ({ n, total }) => {
           flex: 1,
           minHeight: 0,
           display: 'grid',
-          gridTemplateColumns: '0.9fr 1.1fr',
-          gap: 48,
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: 28,
         }}
       >
-        {/* Left — folder tree */}
-        <motion.div variants={FADE_UP} style={{
-          background: C.surface1,
-          border: `1px solid ${C.hairline}`,
-          borderRadius: ROUNDED.lg,
-          padding: '36px 36px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 18,
-        }}>
-          <Tag color={C.gradientViolet}>專案資料夾</Tag>
-          <div style={{
-            fontFamily: MONO,
-            fontSize: 24,
-            color: C.inkMuted,
-            lineHeight: 1.8,
-          }}>
-            <div style={{ color: C.ink }}>my-project/</div>
-            <div style={{
-              color: C.gradientViolet,
-              fontWeight: 700,
-              background: 'rgba(106,76,245,0.12)',
-              borderRadius: ROUNDED.sm,
-              padding: '4px 8px',
-              margin: '4px 0',
-            }}>├─ CLAUDE.md          <span style={{ color: C.inkMuted, fontWeight: 400 }}>← AI 工作守則</span></div>
-            <div style={{ paddingLeft: 8 }}>├─ package.json       <span style={{ fontSize: 18 }}>← 專案描述</span></div>
-            <div style={{ paddingLeft: 8 }}>├─ src/               <span style={{ fontSize: 18 }}>← 程式碼</span></div>
-            <div style={{ paddingLeft: 8 }}>├─ assets/            <span style={{ fontSize: 18 }}>← 圖片、字型</span></div>
-            <div style={{ paddingLeft: 8 }}>└─ README.md          <span style={{ fontSize: 18 }}>← 給人看的說明</span></div>
-          </div>
-        </motion.div>
-
-        {/* Right — CLAUDE.md role */}
-        <motion.div
-          variants={STAGGER_INNER}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 20,
-          }}
-        >
-          {CLAUDEMD_POINTS.map((point, i) => (
-            <motion.div
-              key={point.tag}
-              variants={FADE_UP}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '160px 1fr',
-                alignItems: 'baseline',
-                gap: 24,
-                padding: '18px 0',
-                borderBottom: `1px solid ${C.hairline}`,
-              }}
-            >
-              <Tag color={[C.gradientViolet, C.gradientMagenta, C.gradientOrange][i]}>{point.tag}</Tag>
-              <div style={{
-                fontSize: TYPE_SCALE.body,
-                color: C.ink,
-                lineHeight: 1.4,
-                letterSpacing: TRACK.body,
-              }}>{point.detail}</div>
-            </motion.div>
-          ))}
+        {SIDEBAR_FUNCS.map((f) => (
           <motion.div
+            key={f.en}
             variants={FADE_UP}
             style={{
-              marginTop: 12,
-              background: 'rgba(106,76,245,0.12)',
-              borderLeft: `4px solid ${C.gradientViolet}`,
-              borderRadius: ROUNDED.sm,
-              padding: '20px 24px',
-              fontSize: TYPE_SCALE.body,
-              color: C.ink,
-              lineHeight: 1.4,
-              letterSpacing: TRACK.body,
+              background: C.surface1,
+              border: `1px solid ${C.hairline}`,
+              borderTop: `3px solid ${f.accent}`,
+              borderRadius: ROUNDED.lg,
+              padding: '32px 28px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 20,
+              minHeight: 0,
             }}
           >
-            <span style={{ color: C.gradientViolet, fontWeight: 600 }}>設計師類比：</span>
-            CLAUDE.md ≈ 給新人的 onboarding 文件 + design spec。
+            {/* Header — icon + 標題 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <SidebarIcon name={f.icon} color={f.accent} size={36} />
+              <div>
+                <div style={{
+                  fontSize: TYPE_SCALE.subtitle,
+                  fontWeight: 600,
+                  color: C.ink,
+                  letterSpacing: TRACK.subtitle,
+                  lineHeight: 1.1,
+                }}>{f.en}</div>
+                <div style={{
+                  fontSize: TYPE_SCALE.small,
+                  color: f.accent,
+                  fontWeight: 600,
+                  marginTop: 4,
+                }}>{f.zh}</div>
+              </div>
+            </div>
+
+            {/* 截圖區 — 有圖才可點擊放大；無圖顯示 placeholder */}
+            <div
+              onClick={f.img ? () => setZoom(f) : undefined}
+              style={{
+                position: 'relative',
+                flex: 1,
+                minHeight: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: ROUNDED.md,
+                overflow: 'hidden',
+                cursor: f.img ? 'zoom-in' : 'default',
+                background: f.img ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.02)',
+                border: f.img ? `1px solid ${C.hairline}` : `1.5px dashed ${C.hairline}`,
+              }}
+            >
+              {f.img ? (
+                <>
+                  <img
+                    src={f.img}
+                    alt={`${f.en} — ${f.zh}`}
+                    style={{
+                      display: 'block',
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      width: 'auto',
+                      height: 'auto',
+                      objectFit: 'contain',
+                    }}
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 8,
+                    right: 8,
+                    background: 'rgba(0,0,0,0.72)',
+                    border: '1px solid rgba(255,255,255,0.18)',
+                    color: C.ink,
+                    fontFamily: MONO,
+                    fontSize: 11,
+                    padding: '5px 10px',
+                    borderRadius: ROUNDED.sm,
+                    letterSpacing: '0.1em',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    pointerEvents: 'none',
+                  }}>↗ 點擊放大</div>
+                </>
+              ) : (
+                <div style={{
+                  textAlign: 'center',
+                  color: C.inkMuted,
+                  padding: 16,
+                }}>
+                  <div style={{ fontSize: 28, opacity: 0.5, marginBottom: 8 }}>🖼</div>
+                  <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: TRACK.small }}>截圖待補</div>
+                  <div style={{ fontFamily: MONO, fontSize: 12, marginTop: 6, opacity: 0.7, wordBreak: 'break-all' }}>{f.file}</div>
+                </div>
+              )}
+            </div>
+
+            {/* 說明 */}
+            <div style={{
+              fontSize: TYPE_SCALE.small,
+              color: C.inkMuted,
+              lineHeight: 1.5,
+              letterSpacing: TRACK.small,
+            }}>{f.detail}</div>
           </motion.div>
-        </motion.div>
+        ))}
       </motion.div>
+
+      {/* 放大 lightbox */}
+      {zoom && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setZoom(null)}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(0,0,0,0.94)',
+            zIndex: 50,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'zoom-out',
+          }}
+        >
+          <motion.img
+            initial={{ scale: 0.96 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+            src={zoom.img}
+            alt={`${zoom.en} — ${zoom.zh}`}
+            style={{
+              display: 'block',
+              maxWidth: '92vw',
+              maxHeight: '88vh',
+              width: 'auto',
+              height: 'auto',
+              borderRadius: ROUNDED.md,
+              boxShadow: '0 30px 80px rgba(0,0,0,0.6)',
+            }}
+          />
+          <div style={{
+            position: 'absolute',
+            top: 36,
+            right: 48,
+            color: C.ink,
+            fontFamily: MONO,
+            fontSize: 14,
+            letterSpacing: '0.16em',
+            opacity: 0.7,
+          }}>✕ 點擊關閉</div>
+        </motion.div>
+      )}
       <BackToHub />
       <SlideNumber n={n} total={total} />
     </Frame>
@@ -2785,34 +3104,28 @@ const MODELS = [
     name: 'Opus',
     tag: 'Heavy · 重型任務',
     accent: C.gradientViolet,
-    intelligence: '★★★★★  最強推理，複雜多步驟任務',
-    contextWindow: '100萬 tokens',
-    contextTip: 'Claude Opus 4.8 / 4.7 / 4.6 皆擁有 100 萬 token 的 context window，可一次容納大量程式碼與對話。',
-    speed: '較慢',
-    cost: '最高（約 Sonnet 5×）',
-    useCase: '架構規劃、跨檔 refactor、產品決策對話',
+    oneLiner: '最強推理，難題交給它。',
+    speed: '慢',
+    cost: '最高',
+    tokens: '100萬',
   },
   {
     name: 'Sonnet',
     tag: 'Balanced · 日常主力',
     accent: C.gradientMagenta,
-    intelligence: '★★★★☆  高品質，速度與智慧平衡',
-    contextWindow: '100萬 tokens',
-    contextTip: 'Sonnet 4.6 擁有 100 萬 token 的 context window；較舊的 Sonnet 4.5 則為 20 萬 token。',
+    oneLiner: '日常主力，快又夠聰明。',
     speed: '快',
-    cost: '中（預設模型）',
-    useCase: '寫元件、修 bug、一般 UI to code 任務',
+    cost: '中（預設）',
+    tokens: '100萬',
   },
   {
     name: 'Haiku',
     tag: 'Light · 輕量快速',
     accent: C.gradientOrange,
-    intelligence: '★★★☆☆  輕量，適合明確指令',
-    contextWindow: '20萬 tokens',
-    contextTip: '其他模型（如 Sonnet 4.5、Haiku）為 20 萬 token 的 context window。',
+    oneLiner: '輕量快速，適合明確指令。',
     speed: '最快',
-    cost: '最低（約 Sonnet 1/5）',
-    useCase: '簡單問答、批次處理、格式轉換',
+    cost: '最低',
+    tokens: '20萬',
   },
 ];
 
@@ -2853,6 +3166,6 @@ export default [
   { label: 'Ch.03 · ③ Claude Chat Panel', role: 'cursor-chat', render: (p) => <Part1ClaudeCodeChat {...p} /> },
   { label: 'Ch.02 · Figma MCP',     role: 'figma-mcp',   render: (p) => <Part1FigmaMCP {...p} /> },
   { label: 'Ch.02 · Figma MCP 安裝', role: 'figma-mcp-install', skip: true, render: (p) => <Part1FigmaMCPInstall {...p} /> },
-  { label: 'Ch.03 · ① Project & CLAUDE.md', role: 'cursor-folder',   skip: true, render: (p) => <Part1ProjectClaudeMd {...p} /> },
+  { label: 'Ch.03 · ① Primary Side Bar', role: 'cursor-folder',   skip: true, render: (p) => <Part1ProjectClaudeMd {...p} /> },
   { label: 'Ch.03 · ④ Terminal',            role: 'cursor-terminal', skip: true, render: (p) => <Part1Terminal {...p} /> },
 ]
