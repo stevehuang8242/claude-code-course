@@ -60,8 +60,8 @@ import imgSave1      from './Slide/Image/Part3/情境二_存檔_01.jpg'
 import imgSave2      from './Slide/Image/Part3/情境二_存檔_02.jpg'
 import imgSave3      from './Slide/Image/Part3/情境二_存檔_03.jpg'
 
-const KICKER       = '情境二：Design from Code'
-const KICKER_STEP2 = '情境二：Design from Code．Step 2｜重構設計規範'
+const KICKER       = '03 情境二：Design from Code'
+const KICKER_STEP2 = '03 情境二：Design from Code．Step 2｜重構設計樣式'
 
 /* ============================================================
    Figma MCP cross-slide gallery
@@ -790,14 +790,14 @@ export const Ch3Divider = ({ n, total }) => (
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
     }}>
       <div>
-        {/* Reserve kicker slot (no content) — keeps title baseline aligned with other slides. */}
-        <div aria-hidden style={{
+        <div style={{
           fontSize: TYPE_SCALE.small,
           letterSpacing: TRACK.small,
           fontFamily: "'Geist Mono', ui-monospace, monospace",
           lineHeight: 1.4,
-          visibility: 'hidden',
-        }}>&nbsp;</div>
+          color: C.ink,
+          opacity: 0.92,
+        }}>{KICKER}</div>
         {/* Two-part title with | separator. */}
         <h1 style={{
           fontSize: TYPE_SCALE.display,
@@ -905,14 +905,14 @@ export const ScenarioIntro = ({ n, total }) => (
           lineHeight: 1.2,
         }}>
           把畫面整理成<br/>
-          <span style={{ color: C.gradientOrange }}>具設計規範</span>的系統
+          <span style={{ color: C.gradientOrange }}>具設計一致性</span>的系統
         </div>
         <div style={{
           fontSize: TYPE_SCALE.body,
           color: C.inkMuted,
           lineHeight: 1.5,
         }}>
-          色彩、間距、字級、字型、圓角、狀態、微動態<br/> — 全部回到一致的設計語彙。
+          色彩、間距、字級、字型、圓角、狀態、微動態<br/> — 全部一致性。
         </div>
       </motion.div>
     </motion.div>
@@ -929,7 +929,7 @@ export const ThreeStepFramework = ({ n, total }) => (
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="三步驟，從 Code 建立 UI 系統"
+        title="三步驟，從 Code 做畫面設計"
         sub="理解 → 規範 → 系統化"
       />
     </motion.div>
@@ -958,7 +958,7 @@ export const ThreeStepFramework = ({ n, total }) => (
           gradient: 'linear-gradient(90deg, #d44df0 0%, #ff7a3d 100%)',
           numberColor: '#d44df0',
           n: '02',
-          title: '重構設計規範',
+          title: '重構設計樣式',
           sub: '告訴它「對的樣子」',
         },
         {
@@ -1152,7 +1152,7 @@ export const Step2Inventory = ({ n, total }) => (
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="Step 2｜重構設計規範：盤點與收斂共用元件"
+        title="Step 2｜重構設計樣式：盤點與收斂共用元件"
         sub="找出現有共用元件、統一樣式"
       />
     </motion.div>
@@ -1216,7 +1216,7 @@ export const Step2Channels = ({ n, total }) => (
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="Step 2｜重構設計規範：三種調整方式"
+        title="Step 2｜重構設計樣式：三種調整方式"
         sub="依問題類型選擇不同方式：Prompt、截圖、Figma MCP"
       />
     </motion.div>
@@ -1339,7 +1339,7 @@ export const Step2SeeScreen = ({ n, total }) => {
       <motion.div variants={FADE_UP}>
         <SlideHead
           kicker={KICKER}
-          title="Step 2｜重構設計規範：如何看到 Code 實際畫面"
+          title="Step 2｜重構設計樣式：如何看到 Code 實際畫面"
           sub={' '}
         />
       </motion.div>
@@ -2374,7 +2374,7 @@ export const Foolproof = ({ n, total }) => {
 /* ============================================================
    Chapter metadata + manifest (auto-loaded by main.jsx)
    ============================================================ */
-export const title = '情境二 · Design from Code'
+export const title = '03 情境二 · Design from Code'
 export const subtitle = '透過 Claude Code，將 AI 生成的雜亂介面重構為具一致性的設計系統。'
 
 export default [
