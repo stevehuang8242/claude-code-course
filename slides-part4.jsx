@@ -1464,8 +1464,151 @@ const DesignerInstallAppendix = ({ n, total }) => {
   );
 };
 
+/* SLIDE — 章節回顧 Recap
+ * 一條連續時間軸串起兩段旅程：第二章 0→1 Design to Code、第三章 1→100 Design
+ * from Code，底部以全寬 RPI 帶表達「貫穿每一個階段」並呼應 context window 管理。 */
+const DesignerRecapTimeline = ({ n, total }) => {
+  const ui = "Inter, 'Noto Sans TC', system-ui, sans-serif";
+
+  // 兩段各自獨立、等寬（50% / 50%），欄內步驟為垂直時間軸。
+  const phases = [
+    {
+      chapter: 'CH.02 · 情境一', ratio: '0 → 1', name: 'Design to Code',
+      accent: `linear-gradient(90deg, ${C.gradientViolet}, ${C.gradientMagenta})`,
+      dot:    `linear-gradient(145deg, ${C.gradientViolet}, ${C.gradientMagenta})`,
+      glow: C.gradientMagenta, tint: 'rgba(106,76,245,0.07)',
+      steps: [
+        { num: '01', title: 'Plan Mode → Implement',      desc: '需求討論進入計畫模式，確認後再落地實作' },
+        { num: '02', title: 'Claude Design → Claude Code', desc: '用 Claude Design 生成介面，交接給 Claude Code 接續調整' },
+      ],
+    },
+    {
+      chapter: 'CH.03 · 情境二', ratio: '1 → 100', name: 'Design from Code',
+      accent: `linear-gradient(90deg, ${C.gradientOrange}, ${C.gradientCoral})`,
+      dot:    `linear-gradient(145deg, ${C.gradientOrange}, ${C.gradientCoral})`,
+      glow: C.gradientOrange, tint: 'rgba(255,122,61,0.07)',
+      steps: [
+        { num: '03', title: 'Finetune through Prompts · Images · Figma MCP', desc: '請 Claude Code 把畫面改成想像的樣子' },
+        { num: '04', title: 'Create your Skill.md',                          desc: '把重複流程沉澱為可重用指令（設計 SOP）' },
+      ],
+    },
+  ];
+
+  return (
+    <Animated>
+      <motion.div variants={FADE_UP}>
+        <SlideHead
+          kicker="04 情境三 · RPI Workflow ｜ Recap"
+          title="回顧｜一條從 0→1 到 1→100 的設計工作流"
+          sub="Recap — the designer's end-to-end workflow with AI, held together by RPI."
+        />
+      </motion.div>
+
+      {/* 時間軸：一條水平線貫穿兩段（左右出血至欄邊、兩欄相接成一條），段內項目改為垂直列點 */}
+      <motion.div variants={FADE_UP} style={{
+        marginTop: 36, flex: 1, minHeight: 0, position: 'relative',
+        border: `1px solid ${C.hairline}`, borderRadius: ROUNDED.xl,
+        overflow: 'hidden', display: 'flex',
+      }}>
+        {/* 背景兩段色帶（半透明 tint 區隔兩段，但不切斷水平線） */}
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', pointerEvents: 'none' }}>
+          <div style={{ flex: 1, background: phases[0].tint }} />
+          <div style={{ flex: 1, background: phases[1].tint }} />
+        </div>
+
+        {phases.map((ph, pi) => (
+          <div key={pi} style={{
+            flex: 1, position: 'relative',
+            display: 'flex', flexDirection: 'column',
+            padding: '26px 40px 22px',
+          }}>
+            {/* 段落標題（水平線上方） */}
+            <div style={{ flexShrink: 0 }}>
+              <div style={{ fontSize: 20, color: C.inkMuted, letterSpacing: '0.1em', fontFamily: ui }}>{ph.chapter}</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginTop: 6 }}>
+                <span style={{
+                  fontSize: 44, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1, fontFamily: ui,
+                  background: ph.accent, WebkitBackgroundClip: 'text', backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent', color: 'transparent',
+                }}>{ph.ratio}</span>
+                <span style={{ fontSize: 27, fontWeight: 600, color: C.ink, letterSpacing: '-0.01em', fontFamily: ui }}>{ph.name}</span>
+              </div>
+            </div>
+
+            {/* rail 區：anchor（橫軸節點）+ 垂直步驟列 */}
+            <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column' }}>
+              {/* row0：橫軸節點 + 貫穿水平線 */}
+              <div style={{ position: 'relative', height: 58, flexShrink: 0, display: 'flex' }}>
+                {/* 水平線：左右各出血 40px 抵消 padding，與鄰欄銜接成一條連續線 */}
+                <div style={{
+                  position: 'absolute', left: -40, right: -40, top: 22, height: 3,
+                  transform: 'translateY(-50%)', background: ph.accent, zIndex: 0,
+                }} />
+                <div style={{ position: 'relative', zIndex: 1, width: 48, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: '50%', background: ph.dot, flexShrink: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: `0 0 0 5px ${C.canvas}, 0 0 18px -2px ${ph.glow}`,
+                  }}>
+                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'rgba(255,255,255,0.92)' }} />
+                  </div>
+                  <div style={{ width: 2, flex: 1, background: ph.glow, opacity: 0.5 }} />
+                </div>
+              </div>
+
+              {/* 垂直步驟列：anchor 往下延伸的列點 */}
+              {ph.steps.map((s, i) => {
+                const isLast = i === ph.steps.length - 1;
+                return (
+                  <div key={i} style={{ flex: 1, display: 'flex', gap: 18, alignItems: 'stretch' }}>
+                    <div style={{ width: 48, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{ width: 2, flex: 1, background: ph.glow, opacity: 0.5 }} />
+                      <div style={{
+                        width: 40, height: 40, borderRadius: '50%', background: ph.dot, flexShrink: 0,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: C.ink, fontWeight: 700, fontSize: 16, fontFamily: ui,
+                        boxShadow: `0 0 0 5px ${C.canvas}, 0 0 14px -3px ${ph.glow}`,
+                      }}>{s.num}</div>
+                      <div style={{ width: 2, flex: 1, background: isLast ? 'transparent' : ph.glow, opacity: isLast ? 0 : 0.5 }} />
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingBottom: isLast ? 0 : 4 }}>
+                      <div style={{ fontSize: 24, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em', lineHeight: 1.25 }}>{s.title}</div>
+                      <div style={{ fontSize: 19, color: C.inkMuted, marginTop: 6, lineHeight: 1.45 }}>{s.desc}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </motion.div>
+
+      {/* RPI 貫穿全程（marginBottom 預留與頁碼的間距，避免壓到 SlideNumber） */}
+      <motion.div variants={FADE_UP} style={{
+        marginTop: 22, marginBottom: 44, padding: '20px 30px',
+        background: C.surface1, border: `1px solid ${C.hairline}`,
+        borderRadius: ROUNDED.lg, borderLeft: `4px solid ${C.accentBlue}`,
+        display: 'flex', alignItems: 'center', gap: 24,
+      }}>
+        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: TYPE_SCALE.body, fontWeight: 700, color: C.accentBlue, fontFamily: ui }}>RPI Workflow</span>
+          <span style={{ fontSize: TYPE_SCALE.tiny, color: C.inkMuted, letterSpacing: '0.08em' }}>貫穿每一個階段</span>
+        </div>
+        <div style={{ width: 1, height: 48, background: C.hairline, flexShrink: 0 }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ fontSize: TYPE_SCALE.small, fontWeight: 700, color: C.ink, letterSpacing: '-0.01em' }}>Research → Plan → Implement</div>
+          <div style={{ fontSize: 19, color: C.inkMuted, lineHeight: 1.45 }}>在 context window 局限下，讓 AI 依循乾淨、清楚的脈絡，減少錯誤，準確完成任務。</div>
+        </div>
+      </motion.div>
+
+      <SlideNumber n={n} total={total} />
+    </Animated>
+  );
+};
+
 export {
   DesignerDeskMetaphor,
+  DesignerRecapTimeline,
   DesignerThreeStepsOverview,
   DesignerStep1Research,
   DesignerStep2Plan,
@@ -1504,5 +1647,6 @@ export default [
   { label: 'STEP 1 Research', render: (p) => <DesignerStep1Research {...p} /> },
   { label: 'STEP 2 Plan', render: (p) => <DesignerStep2Plan {...p} /> },
   { label: 'STEP 3 Implement', render: (p) => <DesignerStep3Implement {...p} /> },
+  { label: '章節回顧 Recap', render: (p) => <DesignerRecapTimeline {...p} /> },
   { label: 'Appendix · 安裝指南', appendix: true, render: (p) => <DesignerInstallAppendix {...p} /> },
 ]

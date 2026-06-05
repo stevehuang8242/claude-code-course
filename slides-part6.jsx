@@ -204,7 +204,7 @@ const HwBrief = ({ n, total }) => {
     },
     {
       label: '使用工具',
-      text: '建議使用 Claude Code；若無 Claude Code，亦可使用 Codex 或 Antigravity',
+      text: '建議使用 Claude Code；若無 Claude Code，亦可使用 Codex、Antigravity、Cursor、GitHub Copilot…',
     },
     {
       label: '帳號索取',
