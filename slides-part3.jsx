@@ -811,7 +811,7 @@ export const Ch3Divider = ({ n, total }) => (
           情境二：Design from Code
           
           <br/>
-          如何從 Code 將畫面改成想像中的樣子
+          用 Claude Code 改出理想畫面
         </h1>
         <div style={{
           fontSize: TYPE_SCALE.subtitle,
@@ -929,8 +929,8 @@ export const ThreeStepFramework = ({ n, total }) => (
     <motion.div variants={FADE_UP}>
       <SlideHead
         kicker={KICKER}
-        title="三步驟，從 Code 做畫面設計"
-        sub="理解 → 規範 → 系統化"
+        title="三步驟，用 Claude Code 改出理想畫面"
+        sub="理解 → 規範 → 模組化"
       />
     </motion.div>
 
@@ -1086,7 +1086,7 @@ export const Step1ClaudeMd = ({ n, total }) => (
         }}>CLAUDE<span style={{ textTransform: 'none' }}>.md</span> 是什麼</div>
         {[
           { label: '角色', desc: <><span style={{ fontWeight: 700 }}>專案專屬的「開發守則」</span><br/><span style={{ fontWeight: 400 }}>— 啟動時 Claude 會自動讀過</span></> },
-          { label: '內容', desc: <><span style={{ fontWeight: 700 }}>適用通用規則</span><br/><span style={{ fontWeight: 400 }}>ex 計畫前讀檔、執行前詢問、有疑問就停</span></> },
+          { label: '內容', desc: <><span style={{ fontWeight: 700 }}>適用框架規則，保持簡短、好讀</span><br/><span style={{ fontWeight: 400 }}>ex 技術框架、視覺規範、執行規則</span></> },
         ].map((kp, i) => (
           <div key={i} style={{
             display: 'grid', gridTemplateColumns: '80px 1fr', gap: 16, alignItems: 'baseline',
