@@ -2374,7 +2374,7 @@ export const Foolproof = ({ n, total }) => {
 /* ============================================================
    Chapter metadata + manifest (auto-loaded by main.jsx)
    ============================================================ */
-export const title = '03 情境二 · Design from Code'
+export const title = '情境二 · Design from Code'
 export const subtitle = '透過 Claude Code，將 AI 生成的雜亂介面重構為具一致性的設計系統。'
 
 export default [
