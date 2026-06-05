@@ -17,6 +17,8 @@ import { motion } from 'framer-motion'
 import { useSlideActive } from './useSlideActive.js'
 import { SectionDivider } from './slides_archived.jsx'
 
+import fromRequirementRunResultImg from './Slide/Image/Part2/fromRequirement_runResult.png'
+
 /* ============================================================
    Design tokens — 與 slides-part1.jsx 同步
    ============================================================ */
@@ -793,17 +795,15 @@ const Part2DiscussionPRD = ({ n, total }) => {
                     borderRadius: ROUNDED.pill, padding: '4px 14px', textAlign: 'center',
                   }}>localhost:5173</span>
                 </div>
-                <div style={{
-                  flex: 1, minHeight: 0,
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: 12, padding: 24, textAlign: 'center',
-                  background: C.canvas,
-                  border: `1.5px dashed ${C.hairline}`, margin: 12, borderRadius: ROUNDED.md,
-                }}>
-                  <span style={{ fontSize: 30, opacity: 0.5 }}>🖼</span>
-                  <span style={{ fontSize: TYPE_SCALE.small, color: C.ink, fontWeight: 600, letterSpacing: TRACK.small }}>執行結果截圖待補</span>
-                  <span style={{ fontFamily: MONO, fontSize: 14, color: C.inkMuted }}>npm run dev 跑起來的畫面</span>
-                </div>
+                <img
+                  src={fromRequirementRunResultImg}
+                  alt="npm run dev 跑起來的畫面"
+                  style={{
+                    flex: 1, minHeight: 0, width: '100%',
+                    objectFit: 'cover', objectPosition: 'top',
+                    display: 'block',
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -835,7 +835,7 @@ const DESIGN_SOURCES = [
     headline: 'Figma 內建 AI 生成',
     fit: '探索期',
     rows: [['起點', 'prompt'], ['產出', 'Figma frame'], ['對接', 'export → MCP']],
-    path: ['Prompt 生成', 'Export to MCP', 'AI Coding'],
+    path: ['Prompt 生成', 'Downlad files', 'AI Coding'],
   },
   {
     n: '03',
