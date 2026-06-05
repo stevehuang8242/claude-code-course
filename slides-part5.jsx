@@ -169,12 +169,12 @@ const Part5ThreeTakeaways = ({ n, total }) => {
     {
       accent: C.gradientMagenta,
       main: 'The bar is raised.',
-      lines: ['When 7/10 is free,', 'good enough is not enough.'],
+      lines: ['When 8/10 is free,', 'good enough is not enough.'],
     },
     {
       accent: C.gradientOrange,
       main: 'Craft and taste win.',
-      lines: ['AI delivers 70.', 'You bring the 30.'],
+      lines: ['AI delivers 80.', 'You bring the 20.'],
     },
   ];
   return (
